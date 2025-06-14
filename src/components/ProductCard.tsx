@@ -19,14 +19,14 @@ const cardVariants = {
     rotateX: -7,
     rotateY: 9,
     boxShadow: "0 8px 35px 2px rgba(255, 215, 0, 0.18), 0 1.2px 24px #FFD70025",
-    transition: { type: "spring", stiffness: 410, damping: 30 }
+    transition: { type: "spring" as const, stiffness: 410, damping: 30 }
   },
   tap: {
     scale: 0.98,
     rotateX: 1,
     rotateY: -2,
     boxShadow: "0 2px 18px 0 rgba(255, 215, 0, 0.14)",
-    transition: { type: "spring", stiffness: 310 }
+    transition: { type: "spring" as const, stiffness: 310 }
   }
 };
 

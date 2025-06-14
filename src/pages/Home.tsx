@@ -36,7 +36,7 @@ const Home = () => {
   // Animated Hero Headline Variants
   const heroVariants = {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", duration: 1 } }
+    visible: { opacity: 1, y: 0, transition: { type: "spring" as const, duration: 1 } }
   };
 
   const subVariants = {
@@ -161,7 +161,7 @@ const Home = () => {
                 key={p.id}
                 variants={{
                   hidden: { opacity: 0, y: 30 },
-                  visible: { opacity: 1, y: 0, transition: { type: "spring", duration: 0.55 } }
+                  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, duration: 0.55 } }
                 }}
                 exit={{ opacity: 0, scale: 0.92, filter: "blur(4px)", transition: { duration: 0.3 } }}
               >
