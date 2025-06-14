@@ -2,7 +2,6 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
-import React, { useEffect, useState, useContext, createContext } from "react";
 
 type AuthContextType = {
   user: User | null;
@@ -21,7 +20,7 @@ async function fetchUserRole(userId: string): Promise<string> {
   const { data, error } = await supabase
     .from("user_roles")
     .select("role")
-    .eq("id", userId)
+    .eq("user_id", userId)
     .single();
   // Role might not exist if RLS broken; fallback to "guest"
   if (error || !data?.role) return "guest";
