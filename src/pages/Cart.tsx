@@ -42,7 +42,7 @@ const Cart = () => {
           {items.map(item => (
             <tr key={item._id} className="border-b border-gray-100">
               <td className="py-2 flex items-center gap-3 min-w-[120px]">
-                <img src={item.image || "https://placehold.co/40x40"} alt={item.name} className="w-12 h-12 object-cover rounded" />
+                <img src={item.image || "https://placehold.co/40x40"} alt={item.name} className="w-12 h-12 object-cover rounded-md" style={{ borderRadius: 8 }} />
                 <span className="break-all">{item.name}</span>
               </td>
               <td>
@@ -51,6 +51,7 @@ const Cart = () => {
                     onClick={() => update(item._id, Math.max(1, item.quantity - 1))}
                     aria-label={t("subtract")}
                     className="bg-gray-200 text-black rounded-full px-2 py-1 text-xl font-bold"
+                    style={{ minHeight: 44, borderRadius: 8 }}
                     disabled={item.quantity <= 1}
                   >-</button>
                   <input
@@ -60,19 +61,25 @@ const Cart = () => {
                     value={item.quantity}
                     onChange={e => update(item._id, +e.target.value)}
                     className="w-16 border px-2 py-1 rounded text-center"
+                    style={{ minHeight: 44, borderRadius: 8 }}
                     aria-label={t("quantity")}
                   />
                   <button
                     onClick={() => update(item._id, Math.min(item.stock, item.quantity + 1))}
                     aria-label={t("add")}
                     className="bg-gray-200 text-black rounded-full px-2 py-1 text-xl font-bold"
+                    style={{ minHeight: 44, borderRadius: 8 }}
                     disabled={item.quantity >= (item.stock || 99)}
                   >+</button>
                 </div>
               </td>
               <td>₹{item.price * item.quantity}</td>
               <td>
-                <button onClick={() => remove(item._id)} className="text-red-600 hover:underline">{t("remove")}</button>
+                <button
+                  onClick={() => remove(item._id)}
+                  className="text-red-600 hover:underline"
+                  style={{ minHeight: 44 }}
+                >{t("remove")}</button>
               </td>
             </tr>
           ))}
@@ -82,8 +89,16 @@ const Cart = () => {
         <strong className="text-xl">{t("subtotal")}: ₹{subtotal}</strong>
         <strong className="text-xl">{t("total")}: ₹{total}</strong>
         <div className="flex gap-2 flex-wrap">
-          <button onClick={clear} className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap">{t("clearCart")}</button>
-          <button onClick={() => navigate("/checkout")} className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 shadow whitespace-nowrap">{t("checkout")}</button>
+          <button
+            onClick={clear}
+            className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap"
+            style={{ minHeight: 44, borderRadius: 8 }}
+          >{t("clearCart")}</button>
+          <button
+            onClick={() => navigate("/checkout")}
+            className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 shadow whitespace-nowrap"
+            style={{ minHeight: 44, borderRadius: 8 }}
+          >{t("checkout")}</button>
         </div>
       </div>
     </div>

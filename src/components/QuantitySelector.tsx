@@ -21,7 +21,7 @@ export default function QuantitySelector({
 }: Props) {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center border rounded-xl px-2 py-1 bg-white/90 dark:bg-lux-black/80 shadow-sm gap-1 select-none">
+    <div className="flex items-center border rounded-[8px] px-2 py-1 bg-white/90 dark:bg-lux-black/80 shadow-sm gap-1 select-none min-h-[44px]" style={{ minHeight: 44, borderRadius: 8 }}>
       <Button
         size="icon"
         variant="ghost"
@@ -30,6 +30,7 @@ export default function QuantitySelector({
         disabled={quantity <= 1 || disabled}
         className="!p-2.5"
         tabIndex={0}
+        style={{ minHeight: 38, borderRadius: 8 }}
       >
         <Minus size={20} />
       </Button>
@@ -42,6 +43,7 @@ export default function QuantitySelector({
         disabled={quantity >= stock || disabled}
         className="!p-2.5"
         tabIndex={0}
+        style={{ minHeight: 38, borderRadius: 8 }}
       >
         <Plus size={20} />
       </Button>

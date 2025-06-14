@@ -20,11 +20,11 @@ type AddToCartButtonProps = {
 
 /**
  * Adds to cart (always at least 1), shows toast, and instantly/optimistically updates UI.
+ * Never redirects!
  */
 export default function AddToCartButton({ product, onCartChange, disabled }: AddToCartButtonProps) {
   const { t } = useTranslation();
   const addToCart = useCartStore(s => s.addToCart);
-  // Get cart item for current quantity
   const items = useCartStore(s => s.items);
   const cartItem = items.find(i => i._id === product.id?.toString());
   const quantity = cartItem?.quantity ?? 0;
@@ -58,12 +58,13 @@ export default function AddToCartButton({ product, onCartChange, disabled }: Add
   return (
     <Button
       size="default"
-      className="lux-btn text-base gap-1 relative overflow-hidden focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
+      className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
       aria-label={t("addToCart")}
       onClick={handleClick}
       type="button"
       disabled={disabled}
       tabIndex={0}
+      style={{ minHeight: 44, borderRadius: 8 }}
     >
       <ShoppingCart size={18} /> {t("addToCart")}
     </Button>

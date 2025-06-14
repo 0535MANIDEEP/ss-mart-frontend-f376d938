@@ -7,9 +7,9 @@ import { useTranslation } from "react-i18next";
 
 /**
  * Button: "Buy Now" for a product.
- * - Adds product to cart if not present, then routes to cart (not direct checkout) for summary review.
- * - Uses optimistic instant add (like Flipkart).
- * - Always uses quantity = 1 if not already in cart.
+ * - Adds/updates product to cart (qty=1 if not in cart), then goes to *Checkout* for review.
+ * - Passes minimal info via location state for review and direct checkout UX.
+ * - Always accessible contrast and minimum height.
  */
 type Props = {
   product: {
@@ -41,23 +41,25 @@ export default function BuyNowButton({ product, disabled }: Props) {
         quantity: 1,
         stock: product.stock,
         image: product.image || undefined,
-      });
+      }, 1);
     } else {
       updateQty(product.id.toString(), quantity > 0 ? quantity : 1);
     }
-    navigate("/cart");
+    // Instead of navigating to /cart, go to /checkout, and pass only this product (simulate "single buy")
+    navigate("/checkout", { state: { buyNow: { ...product, quantity: 1 } } });
   };
 
   return (
     <Button
       size="sm"
       variant="secondary"
-      className="ml-2 bg-white dark:bg-lux-black border border-gray-200 hover:bg-amber-100/80 shadow transition-all min-w-[64px] !py-2"
+      className="ml-2 bg-white dark:bg-lux-black border border-gray-300 dark:border-gray-600 hover:bg-amber-100/80 shadow transition-all min-h-[44px] rounded-[8px] text-primary dark:text-lux-gold font-semibold"
       onClick={handleBuyNow}
       aria-label={t("buyNow")}
       type="button"
       disabled={disabled}
       tabIndex={0}
+      style={{ minHeight: 44, borderRadius: 8 }}
     >
       {t("buyNow")}
     </Button>

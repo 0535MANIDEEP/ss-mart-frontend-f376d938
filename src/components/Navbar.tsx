@@ -98,27 +98,27 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center bg-white shadow w-full px-2 sm:px-8 py-2 z-50 sticky top-0 transition select-none border-b border-gray-200">
+    <nav className="flex justify-between items-center bg-white dark:bg-lux-black shadow w-full px-2 sm:px-8 py-2 z-50 sticky top-0 transition select-none border-b border-gray-200 dark:border-lux-gold min-h-[56px]">
       <div className="flex items-center gap-2">
         <button
-          className="md:hidden p-2 focus:outline-none rounded-full hover:bg-gray-50"
+          className="md:hidden p-2 focus:outline-none rounded-full hover:bg-gray-50 dark:hover:bg-gray-900"
           aria-label="Open Menu" onClick={() => setMenuOpen(v => !v)}>
-          <Menu size={24} className="text-gray-700" />
+          <Menu size={24} className="text-gray-700 dark:text-lux-gold" />
         </button>
-        <Link to="/" className="text-2xl font-black text-primary tracking-wide ml-2 sm:ml-0 flex items-center gap-2">
+        <Link to="/" className="text-2xl font-black text-primary dark:text-lux-gold tracking-wide ml-2 sm:ml-0 flex items-center gap-2">
           {t("brand")}
         </Link>
       </div>
-      <div className={`fixed inset-0 z-40 bg-white/90 backdrop-blur-md transform ${menuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-200 md:relative md:inset-auto md:translate-x-0 md:flex md:gap-6 flex flex-col md:flex-row items-center md:static md:bg-transparent md:backdrop-blur-none`}>
+      <div className={`fixed inset-0 z-40 bg-white/90 dark:bg-lux-black backdrop-blur-md transform ${menuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-200 md:relative md:inset-auto md:translate-x-0 md:flex md:gap-6 flex flex-col md:flex-row items-center md:static md:bg-transparent md:backdrop-blur-none`}>
         <button
-          className="md:hidden absolute top-3 right-6 text-lg text-gray-500 hover:text-red-600"
+          className="md:hidden absolute top-3 right-6 text-lg text-gray-500 dark:text-lux-gold hover:text-red-600"
           aria-label="Close Menu"
           onClick={() => setMenuOpen(false)}
         >×</button>
         <span className={
           "flex items-center gap-2 mb-5 md:mb-0 border font-medium px-3 py-1 rounded-full text-sm shadow-sm " +
           (badgeStyle[role as keyof typeof badgeStyle] || badgeStyle.guest)
-        } aria-label="Role">
+        } aria-label="Role" style={{ color: "#232336", background: "#FBFBFE", border: "1.5px solid #E1E1EC" }}>
           <User size={16} /> {loading ? "…" : role}
         </span>
         <div className="flex gap-2 items-center">
@@ -140,12 +140,14 @@ const Navbar = () => {
           <ShoppingCart size={24} />
           <span className="sr-only">{t("cart")}</span>
           {cartCount > 0 && (
-            <span className="absolute -top-2 left-4 bg-emerald-600 text-white rounded-full px-2 py-0.5 text-xs font-bold" style={{ minWidth: 18 }}>
+            <span className="absolute -top-2 left-4 bg-emerald-600 text-white rounded-full px-2 py-0.5 text-xs font-bold"
+                  style={{ minWidth: 18, minHeight: 24, borderRadius: 8, fontSize: 14 }}>
               {cartCount}
             </span>
           )}
           {cartTotal > 0 && (
-            <span className="ml-2 bg-lux-gold/10 px-2 py-0.5 rounded text-lux-gold font-bold text-xs">
+            <span className="ml-2 bg-lux-gold/10 px-2 py-0.5 rounded text-lux-gold font-bold text-xs"
+                  style={{ borderRadius: 8, minHeight: 24 }}>
               ₹{cartTotal}
             </span>
           )}

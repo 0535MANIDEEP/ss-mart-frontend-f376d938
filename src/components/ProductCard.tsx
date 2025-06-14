@@ -133,6 +133,13 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <motion.div
       className="lux-card group hover:scale-105 transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer bg-white dark:bg-lux-black"
+      style={{
+        minHeight: 340,
+        borderRadius: 8,
+        boxShadow: "0 2px 20px 0 rgba(255,215,0,0.10)",
+        margin: "10px",
+        padding: 16,
+      }}
       initial="rest"
       whileHover="hover"
       whileTap="tap"
@@ -149,15 +156,16 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
         onClick={e => { e.stopPropagation(); toDetails(); }}
         tabIndex={0}
         title={name}
+        style={{ marginBottom: 6 }}
       >
         {name}
       </h3>
-      <p className="text-gray-500 dark:text-gray-200 flex-1 mb-2 text-sm truncate" title={desc}>
+      <p className="text-gray-500 dark:text-gray-200 flex-1 mb-2 text-sm truncate" title={desc} style={{ marginBottom: 6 }}>
         {desc.slice(0, 56) || t("noDescription") || "No description"}
       </p>
       <div className="flex items-center justify-between mt-auto">
         <span className="text-lux-gold font-bold text-lg">₹{product.price}</span>
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-2 items-center flex-nowrap">
           {quantity > 0 ? (
               <QuantitySelector
                 quantity={quantity}
