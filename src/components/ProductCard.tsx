@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import { motion } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";
@@ -7,6 +6,10 @@ import { ShoppingCart, Plus, Minus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
+import AddToCartButton from "./AddToCartButton";
+import BuyNowButton from "./BuyNowButton";
+import QuantitySelector from "./QuantitySelector";
+import ProductImage from "./ProductImage";
 
 // Strict type for translated product 
 type MultiLang = { en: string; hi?: string; te?: string };
@@ -81,23 +84,6 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
   const cartItem = items.find(i => i._id === product.id?.toString());
   const quantity = cartItem?.quantity ?? 0;
 
-  const handleAdd = () => {
-    addToCart({
-      _id: product.id.toString(),
-      name: name,
-      price: product.price,
-      quantity: 1,
-      stock: product.stock,
-      image: product.image_url || undefined,
-    });
-    toast({
-      duration: 1250,
-      title: t("addedToCart"),
-      description: <DopamineConfirm />,
-      variant: "default"
-    });
-  };
-
   const handleInc = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     if ((quantity ?? 0) < product.stock) {
@@ -136,25 +122,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
     }
   };
 
-  const handleBuyNow = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!cartItem) {
-      addToCart({
-        _id: product.id.toString(),
-        name: name,
-        price: product.price,
-        quantity: 1,
-        stock: product.stock,
-        image: product.image_url || undefined,
-      });
-    } else {
-      updateQty(product.id.toString(), quantity > 0 ? quantity : 1);
-    }
-    navigate("/checkout");
-  };
-
   const toDetails = () => {
-    // Safe fallback: if custom onClick provided, use it; else default to navigation
     if (onClick) {
       onClick(product);
     } else {
@@ -175,18 +143,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
       role="article"
       onClick={toDetails}
     >
-      <motion.img
-        src={product.image_url || "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&q=70"}
-        alt={name}
-        loading="lazy"
-        className="rounded-t-lg w-full h-40 object-cover mb-3 bg-gradient-to-b from-lux-gold/40 to-gray-200/10 shadow cursor-pointer group-hover:scale-105"
-        style={{ transition: "transform 0.18s,cubic-bezier(0.4,0,0.2,1)" }}
-        initial={{ opacity: 0, scale: 1.04 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.7, ease: "easeOut" }}
-        tabIndex={0}
-        aria-label={t("viewDetails")}
-      />
+      <ProductImage src={product.image_url} alt={name} size="medium" className="mb-3" />
       <h3
         className="text-lg font-semibold mb-1 truncate text-lux-black dark:text-lux-gold cursor-pointer group-hover:underline"
         onClick={e => { e.stopPropagation(); toDetails(); }}
@@ -202,54 +159,16 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
         <span className="text-lux-gold font-bold text-lg">₹{product.price}</span>
         <div className="flex gap-1 items-center">
           {quantity > 0 ? (
-            <motion.div className="flex items-center border rounded-xl px-2 py-1 bg-white/90 dark:bg-lux-black/80 shadow-sm gap-1" layout aria-label={t("quantity")}>
-              <Button size="icon" variant="ghost" onClick={handleDec} className="!p-2.5" aria-label={t("subtract")} tabIndex={0}>
-                <Minus size={20} />
-              </Button>
-              <span className="font-semibold text-green-700 px-1 text-base">{quantity}</span>
-              <Button size="icon" variant="ghost" onClick={handleInc} disabled={quantity >= product.stock} className="!p-2.5" aria-label={t("add")} tabIndex={0}>
-                <Plus size={20} />
-              </Button>
-            </motion.div>
-          ) : (
-            <motion.button
-              className="lux-btn text-base relative overflow-hidden focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
-              aria-label={t("addToCart")}
-              onClick={e => { e.stopPropagation(); handleAdd(); }}
-              whileTap={{ scale: 0.96 }}
-              whileHover={{
-                boxShadow: "0 3px 18px 2px #FFD700, 0 0px 8px #FFD70077",
-                background: "#FFD700",
-              }}
-              tabIndex={0}
-            >
-              <span className="relative z-20 pointer-events-none flex items-center gap-1">
-                <ShoppingCart size={18} /> {t("addToCart")}
-              </span>
-              <motion.span
-                className="absolute inset-0 z-10 pointer-events-none"
-                style={{ borderRadius: "inherit" }}
-                initial={{ opacity: 0 }}
-                whileHover={{
-                  opacity: 1,
-                  background: "radial-gradient(circle at 60% 40%, #ffd70066 10%, #FFD70022 45%, transparent 60%)"
-                }}
-                transition={{ type: "tween", duration: 0.33 }}
-                aria-hidden="true"
+              <QuantitySelector
+                quantity={quantity}
+                stock={product.stock}
+                onInc={handleInc}
+                onDec={handleDec}
               />
-            </motion.button>
+          ) : (
+            <AddToCartButton product={{...product, id: product.id, name, image: product.image_url}} />
           )}
-          <Button
-            size="sm"
-            variant="secondary"
-            className="ml-2 bg-white dark:bg-lux-black border border-gray-200 hover:bg-amber-100/80 shadow transition-all min-w-[64px] !py-2"
-            onClick={handleBuyNow}
-            aria-label={t("buyNow")}
-            type="button"
-            tabIndex={0}
-          >
-            {t("buyNow")}
-          </Button>
+          <BuyNowButton product={{...product, id: product.id, name, image: product.image_url}} />
         </div>
       </div>
     </motion.div>
@@ -258,5 +177,4 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
 
 export default ProductCard;
 
-// Note to user: src/components/ProductCard.tsx is getting quite lengthy (251+ lines). Consider asking for a refactor soon!
-
+// Note to user: src/components/ProductCard.tsx is getting quite lengthy. Consider asking for a refactor soon!
