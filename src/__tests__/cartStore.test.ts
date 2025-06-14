@@ -1,4 +1,5 @@
 
+import { describe, it, beforeEach, expect } from "@jest/globals";
 import { useCartStore } from "../store/cartStore";
 
 describe("Cart store", () => {
