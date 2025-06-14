@@ -16,15 +16,23 @@ const schema = yup.object().shape({
   image: yup.string().url("Must be URL").required("Required"),
 });
 
+type FormValues = {
+  name: string;
+  price: number;
+  stock: number;
+  description: string;
+  image: string;
+};
+
 const AddOrEditProduct = () => {
   const { id } = useParams();
   const isEdit = !!id;
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuthStore();
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
   const {
     register, handleSubmit, reset, setValue, formState: { errors, isSubmitting }, watch
-  } = useForm({
+  } = useForm<FormValues>({
     resolver: yupResolver(schema)
   });
 
@@ -33,15 +41,19 @@ const AddOrEditProduct = () => {
 
     if (isEdit) {
       api.get(`/products/${id}`).then(({ data }) => {
-        // Set form fields
-        Object.entries(data).forEach(([k, v]) => setValue(k, v));
+        // Only set keys that exist in form
+        Object.entries(data).forEach(([k, v]) => {
+          if (["name", "price", "stock", "description", "image"].includes(k)) {
+            setValue(k as keyof FormValues, v);
+          }
+        });
       });
     } else {
       reset();
     }
   }, [isEdit, id, isAuthenticated, navigate, setValue, reset]);
 
-  const onSubmit = async (values) => {
+  const onSubmit = async (values: FormValues) => {
     if (isEdit) {
       await api.put(`/products/${id}`, values);
     } else {

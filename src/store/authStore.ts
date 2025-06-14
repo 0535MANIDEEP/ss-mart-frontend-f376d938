@@ -5,7 +5,14 @@ const AUTH_KEY = "ssmart_token";
 
 const getToken = () => sessionStorage.getItem(AUTH_KEY);
 
-export const useAuthStore = create((set) => ({
+interface AuthState {
+  token: string | null;
+  isAuthenticated: boolean;
+  login: (token: string) => void;
+  logout: () => void;
+}
+
+export const useAuthStore = create<AuthState>((set) => ({
   token: getToken(),
   isAuthenticated: !!getToken(),
   login: (token: string) => {

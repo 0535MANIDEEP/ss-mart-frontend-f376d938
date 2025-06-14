@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -12,7 +11,7 @@ const schema = yup.object().shape({
 });
 
 const Login = () => {
-  const { login } = useAuthStore();
+  const login = useAuthStore(state => state.login);
   const navigate = useNavigate();
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({

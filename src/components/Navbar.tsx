@@ -1,12 +1,14 @@
+
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
 import { useEffect, useState } from "react";
 
 const Navbar = () => {
-  const cart = useCartStore(state => state.items);
-  const { isAuthenticated, logout } = useAuthStore();
-  const cartCount = cart.reduce((s, i) => s + i.quantity, 0);
+  const items = useCartStore(state => state.items);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const logout = useAuthStore(state => state.logout);
+  const cartCount = items.reduce((s, i) => s + i.quantity, 0);
   const location = useLocation();
   const navigate = useNavigate();
 

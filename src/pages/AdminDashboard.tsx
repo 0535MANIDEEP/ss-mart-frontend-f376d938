@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate, Link } from "react-router-dom";
@@ -6,7 +5,8 @@ import api from "@/api/axios";
 import Loader from "@/components/Loader";
 
 const AdminDashboard = () => {
-  const { isAuthenticated, logout } = useAuthStore();
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const logout = useAuthStore(state => state.logout);
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
