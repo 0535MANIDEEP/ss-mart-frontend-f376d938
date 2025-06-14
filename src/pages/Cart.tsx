@@ -12,9 +12,10 @@ const Cart = () => {
   const { t } = useTranslation();
 
   // Defensive: fix for edge-case items
-  const total = Array.isArray(items)
+  const subtotal = Array.isArray(items)
     ? items.reduce((s, i) => s + (i.price * i.quantity), 0)
     : 0;
+  const total = subtotal; // Additional charges (e.g., delivery) can be added later
 
   if (!Array.isArray(items) || !items.length) {
     return (
@@ -45,15 +46,29 @@ const Cart = () => {
                 <span className="break-all">{item.name}</span>
               </td>
               <td>
-                <input
-                  type="number"
-                  min={1}
-                  max={item.stock || 20}
-                  value={item.quantity}
-                  onChange={e => update(item._id, +e.target.value)}
-                  className="w-16 border px-2 py-1 rounded"
-                  aria-label={t("quantity")}
-                />
+                <div className="flex gap-2 items-center">
+                  <button
+                    onClick={() => update(item._id, Math.max(1, item.quantity - 1))}
+                    aria-label={t("subtract")}
+                    className="bg-gray-200 text-black rounded-full px-2 py-1 text-xl font-bold"
+                    disabled={item.quantity <= 1}
+                  >-</button>
+                  <input
+                    type="number"
+                    min={1}
+                    max={item.stock || 20}
+                    value={item.quantity}
+                    onChange={e => update(item._id, +e.target.value)}
+                    className="w-16 border px-2 py-1 rounded text-center"
+                    aria-label={t("quantity")}
+                  />
+                  <button
+                    onClick={() => update(item._id, Math.min(item.stock, item.quantity + 1))}
+                    aria-label={t("add")}
+                    className="bg-gray-200 text-black rounded-full px-2 py-1 text-xl font-bold"
+                    disabled={item.quantity >= (item.stock || 99)}
+                  >+</button>
+                </div>
               </td>
               <td>₹{item.price * item.quantity}</td>
               <td>
@@ -64,6 +79,7 @@ const Cart = () => {
         </tbody>
       </table>
       <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <strong className="text-xl">{t("subtotal")}: ₹{subtotal}</strong>
         <strong className="text-xl">{t("total")}: ₹{total}</strong>
         <div className="flex gap-2 flex-wrap">
           <button onClick={clear} className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap">{t("clearCart")}</button>

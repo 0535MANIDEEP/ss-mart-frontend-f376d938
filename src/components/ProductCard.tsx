@@ -1,4 +1,3 @@
-
 import { FC } from "react";
 import { motion } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";

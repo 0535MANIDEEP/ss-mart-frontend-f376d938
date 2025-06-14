@@ -3,6 +3,7 @@ import ProductCard from "@/components/ProductCard";
 import Loader from "@/components/Loader";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
+import ProductQuickView from "@/components/ProductQuickView";
 
 type MultiLang = { en: string; hi?: string; te?: string };
 type Product = {
@@ -19,11 +20,12 @@ const API_URL = "https://ss-mart-backend.onrender.com/api/products";
 
 const Home = () => {
   const { t } = useTranslation();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [filtered, setFiltered] = useState<Product[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [filtered, setFiltered] = useState<any[]>([]);
   const [category, setCategory] = useState<string>("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
   const heroVariants = {
     hidden: { opacity: 0, y: 40 },
@@ -41,7 +43,7 @@ const Home = () => {
     fetch(API_URL)
       .then(res => res.json())
       .then((data) => {
-        const items: Product[] = Array.isArray(data?.data) ? data.data : [];
+        const items: any[] = Array.isArray(data?.data) ? data.data : [];
         setProducts(items);
       })
       .catch(() => setError(true))
@@ -151,7 +153,7 @@ const Home = () => {
           animate="visible"
         >
           <AnimatePresence>
-            {filtered.map((p: Product) => (
+            {filtered.map((p: any) => (
               <motion.div
                 key={p.id}
                 variants={{
@@ -160,7 +162,7 @@ const Home = () => {
                 }}
                 exit={{ opacity: 0, scale: 0.92, filter: "blur(4px)", transition: { duration: 0.3 } }}
               >
-                <ProductCard product={p} />
+                <ProductCard product={p} onClick={(prod) => setSelectedProduct(prod)} />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -178,6 +180,14 @@ const Home = () => {
           {t("noProducts")}
         </motion.div>
       )}
+
+      {/* Fullscreen ProductQuickView modal */}
+      {selectedProduct &&
+        <ProductQuickView
+          product={selectedProduct}
+          open={true}
+          onClose={() => setSelectedProduct(null)}
+        />}
     </div>
   );
 };
