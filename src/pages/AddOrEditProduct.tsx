@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,7 +8,7 @@ import api from "@/api/axios";
 import Loader from "@/components/Loader";
 import { useAuthStore } from "@/store/authStore";
 
-// Make all fields required for proper types
+// Explicitly define form values for strong typing
 type FormValues = {
   name: string;
   price: number;
@@ -17,7 +17,7 @@ type FormValues = {
   image: string;
 };
 
-const schema: yup.ObjectSchema<FormValues> = yup.object({
+const schema = yup.object({
   name: yup.string().required("Required"),
   price: yup
     .number()
@@ -31,7 +31,7 @@ const schema: yup.ObjectSchema<FormValues> = yup.object({
     .required("Required"),
   description: yup.string().required("Required"),
   image: yup.string().url("Must be URL").required("Required"),
-}) as yup.ObjectSchema<FormValues>;
+});
 
 const AddOrEditProduct = () => {
   const { id } = useParams();
@@ -47,7 +47,15 @@ const AddOrEditProduct = () => {
     formState: { errors, isSubmitting },
     watch,
   } = useForm<FormValues>({
-    resolver: yupResolver<FormValues>(schema)
+    resolver: yupResolver(schema) as any,
+    defaultValues: {
+      name: "",
+      price: 0,
+      stock: 0,
+      description: "",
+      image: "",
+    },
+    mode: "onTouched"
   });
 
   useEffect(() => {
@@ -66,7 +74,13 @@ const AddOrEditProduct = () => {
         });
       });
     } else {
-      reset();
+      reset({
+        name: "",
+        price: 0,
+        stock: 0,
+        description: "",
+        image: "",
+      });
     }
   }, [isEdit, id, isAuthenticated, navigate, setValue, reset]);
 
