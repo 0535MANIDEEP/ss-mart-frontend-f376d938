@@ -1,71 +1,54 @@
 
 import { useTranslation } from "react-i18next";
-import { Menu } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
 import React from "react";
 
+/**
+ * A minimalist, accessible language switcher with live instant toggle.
+ * Uses text-only buttons per requirements.
+ */
 const LANGUAGES = [
-  { label: "English", code: "en", flag: "🇬🇧" },
-  { label: "हिंदी", code: "hi", flag: "🇮🇳" },
-  { label: "తెలుగు", code: "te", flag: "🇮🇳" }
+  { label: "English", code: "en" },
+  { label: "हिंदी", code: "hi" },
+  { label: "తెలుగు", code: "te" }
 ];
 
 export default function LanguageSwitcher() {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
+  // Default to localStorage/lang if set
   const currLang = i18n.language || localStorage.getItem("lang") || "en";
-  // Instead of reload, let i18n/react rerender all content instantly
 
   const handleLang = (lng: string) => {
     i18n.changeLanguage(lng);
     localStorage.setItem("lang", lng);
-    // No reload: i18next-react rerenders instantly!
   };
 
-  const activeFlag =
-    LANGUAGES.find((l) => l.code === currLang)?.flag ||
-    LANGUAGES[0].flag;
-
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label={t("language")}
-          className="rounded-full focus-visible:ring-2 focus-visible:ring-lux-gold relative"
-        >
-          <span className="text-lg mr-0.5">{activeFlag}</span>
-          <Menu size={18} aria-hidden className="ml-0.5" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent side="bottom" align="start" className="rounded-xl shadow-lg bg-white/95 dark:bg-lux-black/95 border border-lux-gold min-w-[140px] mt-1 py-2 px-0 text-base animate-fade-in backdrop-blur-[6px]">
-        {LANGUAGES.map((l) => (
-          <DropdownMenuItem
-            key={l.code}
+    <nav
+      aria-label="Site language"
+      className="flex items-center gap-1 font-semibold text-base select-none"
+    >
+      {LANGUAGES.map((l, idx) => (
+        <React.Fragment key={l.code}>
+          <button
+            type="button"
             onClick={() => handleLang(l.code)}
-            className={`flex items-center gap-2 px-4 py-2 font-medium hover:bg-lux-gold/20 dark:hover:bg-lux-gold/30 transition-colors cursor-pointer rounded-lg ${
-              (l.code === currLang) ? "bg-lux-gold/15 text-lux-gold font-extrabold" : ""
+            className={`transition-colors px-1 ring-offset-2 rounded-md focus-visible:ring-2 focus-visible:ring-lux-gold ${
+              l.code === currLang
+                ? "text-green-700 dark:text-lux-gold underline underline-offset-4 decoration-2 pointer-events-none font-bold"
+                : "hover:text-lux-gold text-gray-700 dark:text-gray-100"
             }`}
-            tabIndex={0}
+            aria-current={l.code === currLang ? "true" : undefined}
             aria-label={l.label}
-            aria-selected={l.code === currLang}
+            disabled={l.code === currLang}
+            tabIndex={0}
           >
-            <span className="text-lg flex-shrink-0">{l.flag}</span>
-            <span>{l.label}</span>
-            {l.code === currLang && (
-              <span className="ml-auto text-xs text-green-700 rounded-full px-2 py-0.5 bg-green-100/40 dark:bg-green-800/50 font-semibold">
-                ✓
-              </span>
-            )}
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+            {l.label}
+          </button>
+          {idx < LANGUAGES.length - 1 && (
+            <span className="mx-1 text-gray-400" aria-hidden>|</span>
+          )}
+        </React.Fragment>
+      ))}
+    </nav>
   );
 }
