@@ -1,35 +1,37 @@
+
 import { useEffect, useState } from "react";
-import ProductCard from "@/components/ProductCard";
-import Loader from "@/components/Loader";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import ProductQuickView from "@/components/ProductQuickView";
+import Loader from "@/components/Loader";
+import ProductGrid from "@/components/ProductGrid";
+import ProductModalManager from "@/components/ProductModalManager";
+import FloatingActions from "@/components/FloatingActions";
 
 type MultiLang = { en: string; hi?: string; te?: string };
 type Product = {
-  id: number;
+  id: number | string;
   name: MultiLang | string;
   description: MultiLang | string;
   price: number;
   stock: number;
   category: string;
-  image_url: string;
+  image_url?: string | null;
 };
 
 const API_URL = "https://ss-mart-backend.onrender.com/api/products";
 
 const Home = () => {
   const { t } = useTranslation();
-  const [products, setProducts] = useState<any[]>([]);
-  const [filtered, setFiltered] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filtered, setFiltered] = useState<Product[]>([]);
   const [category, setCategory] = useState<string>("All");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const heroVariants = {
     hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring" as const, duration: 1 } }
+    visible: { opacity: 1, y: 0, transition: { type: "spring", duration: 1 } }
   };
 
   const subVariants = {
@@ -43,7 +45,7 @@ const Home = () => {
     fetch(API_URL)
       .then(res => res.json())
       .then((data) => {
-        const items: any[] = Array.isArray(data?.data) ? data.data : [];
+        const items: Product[] = Array.isArray(data?.data) ? data.data : [];
         setProducts(items);
       })
       .catch(() => setError(true))
@@ -144,50 +146,16 @@ const Home = () => {
         </motion.p>
       )}
 
-      {/* Product List with animated grid */}
-      {!loading && !error && filtered.length > 0 && (
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 animate-fade-in"
-          variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } } }}
-          initial="hidden"
-          animate="visible"
-        >
-          <AnimatePresence>
-            {filtered.map((p: any) => (
-              <motion.div
-                key={p.id}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, duration: 0.55 } }
-                }}
-                exit={{ opacity: 0, scale: 0.92, filter: "blur(4px)", transition: { duration: 0.3 } }}
-              >
-                <ProductCard product={p} onClick={(prod) => setSelectedProduct(prod)} />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+      {/* Product Grid (re-uses all the same props/components) */}
+      {!loading && !error && (
+        <ProductGrid products={filtered} onCardClick={setSelectedProduct} />
       )}
 
-      {/* Empty state */}
-      {!loading && !error && filtered.length === 0 && (
-        <motion.div
-          className="text-gray-500 text-center my-14 text-xl"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          aria-live="polite"
-        >
-          {t("noProducts")}
-        </motion.div>
-      )}
+      {/* Floating Actions */}
+      <FloatingActions />
 
-      {/* Fullscreen ProductQuickView modal */}
-      {selectedProduct &&
-        <ProductQuickView
-          product={selectedProduct}
-          open={true}
-          onClose={() => setSelectedProduct(null)}
-        />}
+      {/* Modal manager (handles ProductQuickView) */}
+      <ProductModalManager selectedProduct={selectedProduct} onClose={() => setSelectedProduct(null)} />
     </div>
   );
 };
