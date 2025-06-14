@@ -10,12 +10,14 @@ import OrderSuccess from "@/pages/OrderSuccess";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AddOrEditProduct from "@/pages/AddOrEditProduct";
 import Login from "@/auth/Login";
-import ProtectedRoute from "@/auth/ProtectedRoute";
 import { AuthProvider } from "@/hooks/useSupabaseAuth";
 import Auth from "@/pages/Auth";
 import "./i18n";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
+import LoadingScreen from "@/components/LoadingScreen";
+import UnauthorizedScreen from "@/components/UnauthorizedScreen";
+import RoleProtectedRoute from "@/auth/RoleProtectedRoute";
 
 const App = () => (
   <I18nextProvider i18n={i18n}>
@@ -32,13 +34,31 @@ const App = () => (
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-success" element={<OrderSuccess />} />
               <Route path="/auth" element={<Auth />} />
+              {/* Legacy admin login page */}
               <Route path="/admin/login" element={<Login />} />
-              <Route element={<ProtectedRoute />}>
-                <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/product/new" element={<AddOrEditProduct />} />
-                <Route path="/admin/product/edit/:id" element={<AddOrEditProduct />} />
-              </Route>
-              <Route path="*" element={<div className="py-32 text-center text-xl">404 Not Found</div>} />
+
+              {/* Admin protected routes */}
+              <Route
+                path="/admin/dashboard"
+                element={<RoleProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></RoleProtectedRoute>}
+              />
+              <Route
+                path="/admin/product/new"
+                element={<RoleProtectedRoute allowedRoles={["admin"]}><AddOrEditProduct /></RoleProtectedRoute>}
+              />
+              <Route
+                path="/admin/product/edit/:id"
+                element={<RoleProtectedRoute allowedRoles={["admin"]}><AddOrEditProduct /></RoleProtectedRoute>}
+              />
+
+              {/* Unauthorized fallback */}
+              <Route path="/unauthorized" element={<UnauthorizedScreen />} />
+              {/* Loading fallback; can be used for suspense */}
+              <Route path="/loading" element={<LoadingScreen />} />
+
+              <Route path="*" element={
+                <div className="py-32 text-center text-xl">404 Not Found</div>
+              } />
             </Routes>
           </main>
           <Footer />
