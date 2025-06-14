@@ -28,9 +28,13 @@ const ProductDetails = () => {
   const { t } = useTranslation();
   const imgRef = useRef<HTMLImageElement>(null);
 
+  // Always re-calc cartItem for current product
   const cartItem = items.find(i => i._id === id?.toString());
-  const [qty, setQty] = useState(cartItem?.quantity || 1);
+  const stock = product?.stock ?? 0;
+  // qty displayed always matches cart if in cart, else local qty
+  const [qty, setQty] = useState<number>(cartItem?.quantity || 1);
 
+  // Fetch product & sync local qty with cart every change
   useEffect(() => {
     setLoading(true);
     api.get(`/products/${id}`).then(({ data }) => {
@@ -38,31 +42,36 @@ const ProductDetails = () => {
     }).catch(() => {
       setProduct(null);
     }).finally(() => setLoading(false));
-    // Keep cart sync in view
-    setQty(cartItem?.quantity || 1);
-    // eslint-disable-next-line
   }, [id]);
 
+  // Whenever cartItem changes, update qty in UI to always match
   useEffect(() => {
+    // Always sync displayed qty if in cart, else use 1
     setQty(cartItem?.quantity || 1);
     // eslint-disable-next-line
-  }, [cartItem?.quantity]);
+  }, [cartItem?.quantity, items.length]);
 
   if (loading) return <Loader />;
   if (!product) return <div className="text-center py-16 text-gray-700">Product not found.</div>;
 
+  // Cart add logic: set the product to desired qty, no double-adding, always sync
   const onAdd = () => {
-    addToCart({
-      _id: product.id?.toString(),
-      name: product.name,
-      price: product.price,
-      quantity: qty,
-      stock: product.stock,
-      image: product.image,
-    }, qty);
+    // If already in cart, just set to desired qty (not add more)
+    if (cartItem) {
+      updateQty(product.id?.toString(), qty);
+    } else {
+      addToCart({
+        _id: product.id?.toString(),
+        name: product.name,
+        price: product.price,
+        quantity: qty,
+        stock: product.stock,
+        image: product.image,
+      }, qty);
+    }
     toast({
       duration: 1350,
-      title: "Added to cart!",
+      title: t("addedToCart"),
       description: <DopamineConfirm />,
       variant: "default"
     });
@@ -77,20 +86,29 @@ const ProductDetails = () => {
 
   // Quantity zone
   const handleInc = () => {
-    if (qty < product.stock) setQty(qty + 1);
+    if (qty < stock) {
+      setQty(qty + 1);
+      // If already in cart, in-place update cart as well!
+      if (cartItem) updateQty(product.id?.toString(), qty + 1);
+    }
   };
 
   const handleDec = () => {
-    if (qty > 1) setQty(qty - 1);
-    else if (qty === 1 && cartItem) {
+    if (qty > 1) {
+      setQty(qty - 1);
+      // If already in cart, keep it synced
+      if (cartItem) updateQty(product.id?.toString(), qty - 1);
+    } else if (qty === 1 && cartItem) {
+      // Removing from cart, update UI
       removeFromCart(product.id?.toString());
+      setQty(1);
       toast({
         duration: 1000,
-        title: "Removed from cart",
+        title: t("removedFromCart"),
         description: (
           <div className="flex items-center gap-2">
             <Minus size={16} className="inline text-red-600" />
-            Removed from cart
+            {t("removedFromCart")}
           </div>
         ),
         variant: "destructive"
@@ -132,7 +150,7 @@ const ProductDetails = () => {
           size="icon"
           aria-label="Decrease"
           onClick={handleDec}
-          disabled={qty <= 1}
+          disabled={qty <= 1 && !cartItem}
           className="rounded-full"
           tabIndex={0}
         >
@@ -144,7 +162,7 @@ const ProductDetails = () => {
           size="icon"
           aria-label="Increase"
           onClick={handleInc}
-          disabled={qty >= product.stock}
+          disabled={qty >= stock}
           className="rounded-full"
           tabIndex={0}
         >
