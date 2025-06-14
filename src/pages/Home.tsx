@@ -1,14 +1,14 @@
-
 import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import Loader from "@/components/Loader";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
+type MultiLang = { en: string; hi?: string; te?: string };
 type Product = {
   id: number;
-  name: string;
-  description: string;
+  name: MultiLang | string;
+  description: MultiLang | string;
   price: number;
   stock: number;
   category: string;
@@ -25,7 +25,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // Animated Hero Headline Variants
   const heroVariants = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { type: "spring" as const, duration: 1 } }
@@ -54,7 +53,6 @@ const Home = () => {
     else setFiltered(products.filter(p => p.category === category));
   }, [products, category]);
 
-  // Categories with translations
   const categoryList = [
     { label: t("all"), value: "All" },
     { label: t("categories.groceries"), value: "Groceries" },

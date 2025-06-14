@@ -1,3 +1,4 @@
+
 import { useCartStore } from "@/store/cartStore";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -9,6 +10,17 @@ import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useRef } from "react";
 import ProductReviews from "@/components/ProductReviews";
+
+// Helper for translated fields
+function getProductField(
+  data: any,
+  lang: string,
+  fallback: string = ""
+): string {
+  if (!data) return fallback;
+  if (typeof data === "string") return data;
+  return data[lang] || data.en || fallback;
+}
 
 const DopamineConfirm = () => (
   <div className="flex items-center gap-2">
@@ -26,16 +38,13 @@ const ProductDetails = () => {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Always re-calc cartItem for current product
   const cartItem = items.find(i => i._id === id?.toString());
   const stock = product?.stock ?? 0;
-  // qty displayed always matches cart if in cart, else local qty
   const [qty, setQty] = useState<number>(cartItem?.quantity || 1);
 
-  // Fetch product & sync local qty with cart every change
   useEffect(() => {
     setLoading(true);
     api.get(`/products/${id}`).then(({ data }) => {
@@ -45,25 +54,25 @@ const ProductDetails = () => {
     }).finally(() => setLoading(false));
   }, [id]);
 
-  // Whenever cartItem changes, update qty in UI to always match
   useEffect(() => {
-    // Always sync displayed qty if in cart, else use 1
     setQty(cartItem?.quantity || 1);
-    // eslint-disable-next-line
   }, [cartItem?.quantity, items.length]);
 
   if (loading) return <Loader />;
   if (!product) return <div className="text-center py-16 text-gray-700">Product not found.</div>;
 
-  // Cart add logic: set the product to desired qty, no double-adding, always sync
+  // --- Translations for local fields per language
+  const lang = i18n.language || "en";
+  const name = getProductField(product.name, lang, t("noDescription") || "No desc");
+  const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
+
   const onAdd = () => {
-    // If already in cart, just set to desired qty (not add more)
     if (cartItem) {
       updateQty(product.id?.toString(), qty);
     } else {
       addToCart({
         _id: product.id?.toString(),
-        name: product.name,
+        name: name,
         price: product.price,
         quantity: qty,
         stock: product.stock,
@@ -85,11 +94,9 @@ const ProductDetails = () => {
     }, 250);
   };
 
-  // Quantity zone
   const handleInc = () => {
     if (qty < stock) {
       setQty(qty + 1);
-      // If already in cart, in-place update cart as well!
       if (cartItem) updateQty(product.id?.toString(), qty + 1);
     }
   };
@@ -97,10 +104,8 @@ const ProductDetails = () => {
   const handleDec = () => {
     if (qty > 1) {
       setQty(qty - 1);
-      // If already in cart, keep it synced
       if (cartItem) updateQty(product.id?.toString(), qty - 1);
     } else if (qty === 1 && cartItem) {
-      // Removing from cart, update UI
       removeFromCart(product.id?.toString());
       setQty(1);
       toast({
@@ -117,7 +122,6 @@ const ProductDetails = () => {
     }
   };
 
-  // Add image zoom functionality
   const handleImgZoom = (e: React.MouseEvent) => {
     if (window.innerWidth > 600 && imgRef.current) {
       imgRef.current.classList.toggle("scale-105");
@@ -131,22 +135,21 @@ const ProductDetails = () => {
       <img
         ref={imgRef}
         src={product.image || "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=700&q=80"} 
-        alt={product.name}
+        alt={name}
         loading="lazy"
         className="w-full h-64 object-cover rounded mb-4 transition-transform duration-200 cursor-zoom-in hover:scale-105 hover:ring-4 hover:ring-lux-gold"
         onClick={handleImgZoom}
         tabIndex={0}
         aria-label={t("viewDetails")}
       />
-      <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
-      <p className="text-gray-700 dark:text-gray-200 mb-4">{product.description}</p>
+      <h2 className="text-2xl font-bold mb-2 truncate">{name}</h2>
+      <p className="text-gray-700 dark:text-gray-200 mb-4 whitespace-pre-line break-words">{desc}</p>
       <div className="flex items-center mb-4 gap-4">
         <span className="text-green-700 text-xl font-bold">₹{product.price}</span>
         <span className="text-xs bg-lux-gold/10 text-lux-gold border rounded-full px-3 py-1 ml-3">{product.category}</span>
         <span className="ml-6 text-sm text-gray-500">{t("stock", { count: product.stock })}</span>
       </div>
       <div className="flex items-center gap-4 my-4">
-        {/* Quantity selector */}
         <Button
           variant="ghost"
           size="icon"

@@ -1,4 +1,3 @@
-
 {
   "brand": "एसएस मार्ट",
   "cart": "कार्ट",
@@ -40,5 +39,23 @@
   "noProducts": "इस श्रेणी में कोई प्रोडक्ट नहीं मिला।",
   "search": "खोजें",
   "googleMaps": "गूगल मैप्स",
-  "shankarpally": "शंकरपल्ली, तेलंगाना"
+  "shankarpally": "शंकरपल्ली, तेलंगाना",
+  "noReviewsYet": "अभी तक कोई समीक्षा नहीं।",
+  "yourName": "आपका नाम",
+  "submitting": "सबमिट हो रहा है...",
+  "submitReview": "समीक्षा सबमिट करें",
+  "reviewSubmitSuccess": "समीक्षा सबमिट हुई!",
+  "thankYouForReview": "आपकी प्रतिक्रिया के लिए धन्यवाद।",
+  "reviewSubmitError": "समीक्षा विफल",
+  "genericNetworkError": "समीक्षा सबमिट नहीं हो सकी।",
+  "submitAnonymously": "गुमनाम रूप से सबमिट करें",
+  "rating": "रेटिंग",
+  "rate": "रेट",
+  "writeReview": "अपनी समीक्षा लिखें...",
+  "loadingReviews": "समीक्षाएँ लोड हो रही हैं...",
+  "reviewSingle": "समीक्षा",
+  "reviewPlural": "समीक्षाएँ",
+  "anonymous": "अनाम",
+  "nameRequired": "नाम आवश्यक",
+  "namePrompt": "कृपया नाम दें या गुमनाम रूप में सबमिट करें।"
 }

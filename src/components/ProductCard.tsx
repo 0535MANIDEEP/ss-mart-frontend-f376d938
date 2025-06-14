@@ -8,11 +8,12 @@ import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
-// Strict type for product props (future-friendly)
+// Strict type for translated product 
+type MultiLang = { en: string; hi?: string; te?: string };
 type Product = {
   id: number | string;
-  name: string;
-  description: string;
+  name: MultiLang | string;
+  description: MultiLang | string;
   price: number;
   stock: number;
   category: string;
@@ -44,18 +45,32 @@ const DopamineConfirm = () => (
   </div>
 );
 
+function getProductField(
+  data: MultiLang | string | undefined,
+  lang: string,
+  fallback: string = ""
+): string {
+  if (!data) return fallback;
+  if (typeof data === "string") return data;
+  return data[lang as keyof MultiLang] || data.en || fallback;
+}
+
 const ProductCard: FC<{ product: Product }> = ({ product }) => {
   const addToCart = useCartStore(s => s.addToCart);
   const updateQty = useCartStore(s => s.updateQuantity);
   const removeFromCart = useCartStore(s => s.removeFromCart);
   const items = useCartStore(s => s.items);
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
-  // Defensive: prop types check for shape
   if (!product || typeof product.id !== "number" && typeof product.id !== "string") {
     return <div className="text-red-500 text-center p-2">Invalid product data.</div>;
   }
+
+  // Translated name/desc
+  const lang = i18n.language || "en";
+  const name = getProductField(product.name, lang, t("noDescription") || "No desc");
+  const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
 
   const cartItem = items.find(i => i._id === product.id?.toString());
   const quantity = cartItem?.quantity ?? 0;
@@ -63,7 +78,7 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
   const handleAdd = () => {
     addToCart({
       _id: product.id.toString(),
-      name: product.name,
+      name: name,
       price: product.price,
       quantity: 1,
       stock: product.stock,
@@ -115,13 +130,12 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
     }
   };
 
-  // "Buy Now": add 1 to cart (or update) then go to /checkout
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!cartItem) {
       addToCart({
         _id: product.id.toString(),
-        name: product.name,
+        name: name,
         price: product.price,
         quantity: 1,
         stock: product.stock,
@@ -152,7 +166,7 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
     >
       <motion.img
         src={product.image_url || "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&q=70"}
-        alt={product.name}
+        alt={name}
         loading="lazy"
         className="rounded-t-lg w-full h-40 object-cover mb-3 bg-gradient-to-b from-lux-gold/40 to-gray-200/10 shadow cursor-pointer group-hover:scale-105"
         style={{ transition: "transform 0.18s,cubic-bezier(0.4,0,0.2,1)" }}
@@ -166,14 +180,16 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
         className="text-lg font-semibold mb-1 truncate text-lux-black dark:text-lux-gold cursor-pointer group-hover:underline"
         onClick={e => { e.stopPropagation(); toDetails(); }}
         tabIndex={0}
+        title={name}
       >
-        {product.name}
+        {name}
       </h3>
-      <p className="text-gray-500 dark:text-gray-200 flex-1 mb-2 text-sm">{product.description?.slice(0, 56) || t("noDescription") || "No description"}</p>
+      <p className="text-gray-500 dark:text-gray-200 flex-1 mb-2 text-sm truncate" title={desc}>
+        {desc.slice(0, 56) || t("noDescription") || "No description"}
+      </p>
       <div className="flex items-center justify-between mt-auto">
         <span className="text-lux-gold font-bold text-lg">₹{product.price}</span>
         <div className="flex gap-1 items-center">
-          {/* Quantity controls if in cart */}
           {quantity > 0 ? (
             <motion.div className="flex items-center border rounded-xl px-2 py-1 bg-white/90 dark:bg-lux-black/80 shadow-sm gap-1" layout aria-label={t("quantity")}>
               <Button size="icon" variant="ghost" onClick={handleDec} className="!p-2.5" aria-label={t("subtract")} tabIndex={0}>
@@ -212,7 +228,6 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
               />
             </motion.button>
           )}
-          {/* Buy Now, big touch target, clear aria */}
           <Button
             size="sm"
             variant="secondary"
@@ -232,3 +247,4 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
 
 export default ProductCard;
 
+// Note to user: src/components/ProductCard.tsx is getting quite lengthy (235+ lines). Consider asking for a refactor soon!

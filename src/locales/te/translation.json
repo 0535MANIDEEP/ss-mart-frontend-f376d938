@@ -1,4 +1,3 @@
-
 {
   "brand": "ఎస్‌ఎస్ మార్ట్",
   "cart": "కార్ట్",
@@ -40,5 +39,23 @@
   "noProducts": "ఈ క్యాటగిరీలో ఉత్పత్తులు లేవు.",
   "search": "శోధించండి",
   "googleMaps": "గూగుల్ మ్యాప్స్",
-  "shankarpally": "శంకర్‌పల్లి, తెలంగాణ"
+  "shankarpally": "శంకర్‌పల్లి, తెలంగాణ",
+  "noReviewsYet": "ఇంకా సమీక్షలు లేవు.",
+  "yourName": "మీ పేరు",
+  "submitting": "సమర్పించబడుతోంది...",
+  "submitReview": "సమీక్షను సమర్పించండి",
+  "reviewSubmitSuccess": "సమీక్ష సమర్పించబడింది!",
+  "thankYouForReview": "మీ అభిప్రాయం కోసం ధన్యవాదాలు.",
+  "reviewSubmitError": "సమీక్ష విఫలమైంది",
+  "genericNetworkError": "సమీక్షను సమర్పించలేకపోయింది.",
+  "submitAnonymously": "అజ్ఞాతంగా సమర్పించండి",
+  "rating": "రేటింగ్",
+  "rate": "రేట్",
+  "writeReview": "మీ సమీక్షను రాయండి...",
+  "loadingReviews": "సమీక్షలు లోడవుతున్నాయి...",
+  "reviewSingle": "సమీక్ష",
+  "reviewPlural": "సమీక్షలు",
+  "anonymous": "అజ్ఞాతం",
+  "nameRequired": "పేరు అవసరం",
+  "namePrompt": "దయచేసి మీ పేరును ఇవ్వండి లేదా అజ్ఞాతంగా సమర్పించండి."
 }

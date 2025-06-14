@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,15 +15,20 @@ type Review = {
   username: string | null;
   created_at: string;
 };
+type ReviewBreakdown = { [key: number]: number };
 
-type ReviewsResponse = {
-  success: boolean;
-  reviews: Review[];
-};
-
-type ReviewBreakdown = {
-  [key: number]: number;
-};
+// -- Local review persistence helpers
+function getLocalReviews(productId: string): Review[] {
+  try {
+    const r = localStorage.getItem(`review_${productId}`);
+    return r ? JSON.parse(r) : [];
+  } catch {
+    return [];
+  }
+}
+function setLocalReviews(productId: string, reviews: Review[]) {
+  localStorage.setItem(`review_${productId}`, JSON.stringify(reviews.slice(0, 100)));
+}
 
 function getTimeAgo(date: string) {
   const d = new Date(date);
@@ -43,7 +49,7 @@ function getTimeAgo(date: string) {
 }
 
 export default function ProductReviews({ productId }: { productId: string }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
@@ -51,27 +57,13 @@ export default function ProductReviews({ productId }: { productId: string }) {
   const [username, setUsername] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Fetch reviews on mount & when productId changes
   useEffect(() => {
     setLoading(true);
-    setError(null);
-    fetch(`/api/products/${productId}/reviews`)
-      .then(async r => {
-        if (!r.ok) throw new Error("Network error");
-        const data: ReviewsResponse = await r.json();
-        if (data.success) setReviews(data.reviews);
-        else {
-          setReviews([]);
-          setError("Failed to load reviews.");
-        }
-      })
-      .catch(() => {
-        setReviews([]);
-        setError("Could not load reviews from server.");
-      })
-      .finally(() => setLoading(false));
+    setTimeout(() => {
+      setReviews(getLocalReviews(productId));
+      setLoading(false);
+    }, 250);
   }, [productId]);
 
   const averageRating = reviews.length
@@ -84,68 +76,39 @@ export default function ProductReviews({ productId }: { productId: string }) {
   reviews.forEach(r => { breakdown[r.rating] = (breakdown[r.rating] ?? 0) + 1; });
   const maxBarWidth = 85;
 
-  // Submission handler
   async function handleReviewSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!rating || submitting) return;
     if (!isAnonymous && !username.trim()) {
       toast({
-        title: "Name required",
-        description: "Please provide your name or submit anonymously.",
+        title: t("nameRequired") || "Name required",
+        description: t("namePrompt") || "Please provide your name or submit anonymously.",
         variant: "destructive"
       });
       return;
     }
     setSubmitting(true);
-    // Prepare body per API contract
-    const body: Record<string, any> = {
+    // add review to localStorage instead of API
+    const newReview: Review = {
+      id: Date.now(),
       rating,
       review_text: reviewText.trim(),
-      is_anonymous: isAnonymous
+      is_anonymous: isAnonymous,
+      username: isAnonymous ? null : username.trim() || null,
+      created_at: new Date().toISOString()
     };
-    if (!isAnonymous && username.trim()) body.username = username.trim();
-
-    // Show spinner in button
-    try {
-      const res = await fetch(`/api/products/${productId}/reviews`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body)
-      });
-      const data = await res.json();
-      if (res.ok && data.success) {
-        toast({
-          title: t("reviewSubmitSuccess") || "Review submitted!",
-          description: t("thankYouForReview") || "Thank you for your feedback.",
-          variant: "default"
-        });
-        // Optimistically append newest review
-        setReviews(old => [{
-          id: Date.now(), // temp id
-          rating,
-          review_text: reviewText.trim(),
-          is_anonymous: isAnonymous,
-          username: isAnonymous ? null : username.trim() || null,
-          created_at: new Date().toISOString()
-        }, ...old].slice(0, 100));
-        setRating(5);
-        setReviewText("");
-        setIsAnonymous(true);
-        setUsername("");
-      } else {
-        toast({
-          title: t("reviewSubmitError") || "Review failed",
-          description: (data && data.message) || "Could not submit review.",
-          variant: "destructive"
-        });
-      }
-    } catch {
-      toast({
-        title: t("reviewSubmitError") || "Review failed",
-        description: t("genericNetworkError") || "Could not submit review.",
-        variant: "destructive"
-      });
-    }
+    const nextReviews = [newReview, ...getLocalReviews(productId)];
+    setLocalReviews(productId, nextReviews);
+    setReviews(nextReviews);
+    toast({
+      title: t("reviewSubmitSuccess") || "Review submitted!",
+      description: t("thankYouForReview") || "Thank you for your feedback.",
+      variant: "default"
+    });
+    setRating(5);
+    setReviewText("");
+    setIsAnonymous(true);
+    setUsername("");
     setSubmitting(false);
   }
 
@@ -169,11 +132,10 @@ export default function ProductReviews({ productId }: { productId: string }) {
           <span className="ml-2">{averageRating.toFixed(1)}</span>
         </div>
         <span className="text-base text-gray-600">
-          ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
+          ({reviewCount} {reviewCount === 1 ? t("reviewSingle") || "review" : t("reviewPlural") || "reviews"})
         </span>
       </div>
-
-      {/* Rating breakdown bar */}
+      {/* Rating breakdown */}
       <div className="mb-3 space-y-1 max-w-xs">
         {[5,4,3,2,1].map(star => (
           <div className="flex items-center gap-1" key={star}>
@@ -195,7 +157,6 @@ export default function ProductReviews({ productId }: { productId: string }) {
           </div>
         ))}
       </div>
-
       {/* Review form */}
       <form onSubmit={handleReviewSubmit} className="mb-7 space-y-3" aria-label="Submit product review">
         <div className="flex flex-col sm:flex-row gap-2 items-center">
@@ -267,16 +228,10 @@ export default function ProductReviews({ productId }: { productId: string }) {
           )}
         </Button>
       </form>
-
-      {/* Review list + errors */}
+      {/* Review list */}
       <div>
         {loading ? (
-          <div className="text-gray-400 text-sm">Loading reviews...</div>
-        ) : error ? (
-          <div className="text-red-600 bg-red-50 dark:bg-red-900/60 my-3 p-2 rounded">
-            <span className="font-semibold">Error: </span>
-            {error}
-          </div>
+          <div className="text-gray-400 text-sm">{t("loadingReviews") || "Loading reviews..."}</div>
         ) : (
           <>
             {reviews.length === 0 && (

@@ -20,13 +20,23 @@ interface CartState {
   updateQuantity: (id: string, qty: number) => void;
   clearCart: () => void;
 }
-
 const getCartFromStorage = (): CartItem[] => {
   try {
-    const stored = sessionStorage.getItem(CART_KEY);
+    const stored = localStorage.getItem(CART_KEY); // CHANGED TO localStorage
     return stored ? JSON.parse(stored) : [];
   } catch {
     return [];
+  }
+};
+
+/**
+ * Save cart to localStorage only
+ */
+const setCartToStorage = (items: CartItem[]) => {
+  try {
+    localStorage.setItem(CART_KEY, JSON.stringify(items));
+  } catch (e) {
+    // ignore
   }
 };
 
@@ -40,23 +50,23 @@ export const useCartStore = create<CartState>((set, get) => ({
     } else {
       items.push({ ...product, quantity });
     }
-    sessionStorage.setItem(CART_KEY, JSON.stringify(items));
+    setCartToStorage(items);
     set({ items });
   },
   removeFromCart: (id) => {
     const items = get().items.filter(item => item._id !== id);
-    sessionStorage.setItem(CART_KEY, JSON.stringify(items));
+    setCartToStorage(items);
     set({ items });
   },
   updateQuantity: (id, qty) => {
     const items = get().items.map(item =>
       item._id === id ? { ...item, quantity: qty } : item
     );
-    sessionStorage.setItem(CART_KEY, JSON.stringify(items));
+    setCartToStorage(items);
     set({ items });
   },
   clearCart: () => {
-    sessionStorage.removeItem(CART_KEY);
+    localStorage.removeItem(CART_KEY);
     set({ items: [] });
   }
 }));
