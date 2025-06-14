@@ -11,31 +11,36 @@ import AdminDashboard from "@/pages/AdminDashboard";
 import AddOrEditProduct from "@/pages/AddOrEditProduct";
 import Login from "@/auth/Login";
 import ProtectedRoute from "@/auth/ProtectedRoute";
+import "./i18n";
+import { I18nextProvider } from "react-i18next";
+import i18n from "./i18n";
 
 const App = () => (
-  <BrowserRouter>
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-white via-gray-50 to-green-50">
-      <Navbar />
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/products/:id" element={<ProductDetails />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/order-success" element={<OrderSuccess />} />
-          <Route path="/admin/login" element={<Login />} />
-          <Route element={<ProtectedRoute />}>
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/product/new" element={<AddOrEditProduct />} />
-            <Route path="/admin/product/edit/:id" element={<AddOrEditProduct />} />
-          </Route>
-          <Route path="*" element={<div className="py-32 text-center text-xl">404 Not Found</div>} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
-  </BrowserRouter>
+  <I18nextProvider i18n={i18n}>
+    <BrowserRouter>
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-white via-gray-50 to-green-50 dark:from-lux-black dark:via-gray-950 dark:to-green-950">
+        <Navbar />
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<Navigate to="/home" />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/products/:id" element={<ProductDetails />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/order-success" element={<OrderSuccess />} />
+            <Route path="/admin/login" element={<Login />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/product/new" element={<AddOrEditProduct />} />
+              <Route path="/admin/product/edit/:id" element={<AddOrEditProduct />} />
+            </Route>
+            <Route path="*" element={<div className="py-32 text-center text-xl">404 Not Found</div>} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
+    </BrowserRouter>
+  </I18nextProvider>
 );
 
 export default App;

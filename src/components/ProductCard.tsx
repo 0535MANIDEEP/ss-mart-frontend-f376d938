@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart, Plus, Minus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 
 type Product = {
   id: number;
@@ -47,6 +48,7 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
   const removeFromCart = useCartStore(s => s.removeFromCart);
   const items = useCartStore(s => s.items);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // This cart logic matches CartItem type: our backend uses 'id', cart uses '_id'
   const cartItem = items.find(i => i._id === product.id?.toString());
@@ -125,55 +127,59 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       animate="rest"
       variants={cardVariants}
       tabIndex={0}
-      aria-label={`View details for ${product.name}`}
+      aria-label={t("viewDetails")}
       role="article"
       onClick={toDetails}
     >
       <motion.img
-        src={product.image_url || "https://placehold.co/300x200"}
+        src={product.image_url || "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&q=70"}
         alt={product.name}
         className="rounded-t-lg w-full h-40 object-cover mb-3 bg-gradient-to-b from-lux-gold/40 to-gray-200/10 shadow cursor-pointer group-hover:scale-105 transition"
         loading="lazy"
         initial={{ opacity: 0, scale: 1.1 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
+        tabIndex={0}
+        aria-label={t("viewDetails")}
       />
       <h3
-        className="text-lg font-semibold mb-1 truncate text-lux-black cursor-pointer group-hover:underline"
+        className="text-lg font-semibold mb-1 truncate text-lux-black dark:text-lux-gold cursor-pointer group-hover:underline"
         onClick={e => { e.stopPropagation(); toDetails(); }}
+        tabIndex={0}
       >
         {product.name}
       </h3>
-      <p className="text-gray-500 flex-1 mb-2 text-sm">{product.description?.slice(0, 56) || "No description"}</p>
+      <p className="text-gray-500 dark:text-gray-200 flex-1 mb-2 text-sm">{product.description?.slice(0, 56) || "No description"}</p>
       <div className="flex items-center justify-between mt-auto">
         <span className="text-lux-gold font-bold text-lg">₹{product.price}</span>
         <div className="flex gap-1 items-center">
           {/* Quantity controls if in cart */}
           {quantity > 0 ? (
-            <motion.div className="flex items-center border rounded-xl px-2 py-1 bg-white/90 shadow-sm gap-1" layout>
-              <Button size="icon" variant="ghost" onClick={handleDec} className="!p-1.5" aria-label="Decrease quantity">
-                <Minus size={18} />
+            <motion.div className="flex items-center border rounded-xl px-2 py-1 bg-white/90 dark:bg-lux-black/80 shadow-sm gap-1" layout>
+              <Button size="icon" variant="ghost" onClick={handleDec} className="!p-1.5" aria-label={t("addToCart")} tabIndex={0}>
+                <Minus size={20} />
               </Button>
               <span className="font-semibold text-green-700 px-1 text-base">
                 {quantity}
               </span>
-              <Button size="icon" variant="ghost" onClick={handleInc} disabled={quantity >= product.stock} className="!p-1.5" aria-label="Increase quantity">
-                <Plus size={18} />
+              <Button size="icon" variant="ghost" onClick={handleInc} disabled={quantity >= product.stock} className="!p-1.5" aria-label={t("addToCart")} tabIndex={0}>
+                <Plus size={20} />
               </Button>
             </motion.div>
           ) : (
             <motion.button
-              className="lux-btn text-sm relative overflow-hidden focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
-              aria-label={`Add ${product.name} to cart`}
+              className="lux-btn text-base relative overflow-hidden focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
+              aria-label={t("addToCart")}
               onClick={e => { e.stopPropagation(); handleAdd(); }}
               whileTap={{ scale: 0.96 }}
               whileHover={{
                 boxShadow: "0 3px 18px 2px #FFD700, 0 0px 8px #FFD70077",
                 background: "#FFD700",
               }}
+              tabIndex={0}
             >
               <span className="relative z-20 pointer-events-none flex items-center gap-1">
-                <ShoppingCart size={16} /> Add
+                <ShoppingCart size={18} /> {t("addToCart")}
               </span>
               {/* Neon Ripple */}
               <motion.span
@@ -193,12 +199,13 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
           <Button
             size="sm"
             variant="secondary"
-            className="ml-2 bg-white border border-gray-200 hover:bg-amber-100/80 shadow transition-all"
+            className="ml-2 bg-white dark:bg-lux-black border border-gray-200 hover:bg-amber-100/80 shadow transition-all"
             onClick={handleBuyNow}
-            aria-label="Buy Now"
+            aria-label={t("buyNow")}
             type="button"
+            tabIndex={0}
           >
-            Buy Now
+            {t("buyNow")}
           </Button>
         </div>
       </div>

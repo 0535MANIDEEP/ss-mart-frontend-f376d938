@@ -1,7 +1,9 @@
+
 import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import Loader from "@/components/Loader";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 type Product = {
   id: number;
@@ -15,17 +17,8 @@ type Product = {
 
 const API_URL = "https://ss-mart-backend.onrender.com/api/products";
 
-const categoryList = [
-  "All",
-  "Groceries",
-  "Personal Care",
-  "Beverages",
-  "Snacks",
-  "Household",
-  "Others"
-];
-
 const Home = () => {
+  const { t } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [filtered, setFiltered] = useState<Product[]>([]);
   const [category, setCategory] = useState<string>("All");
@@ -41,11 +34,6 @@ const Home = () => {
   const subVariants = {
     hidden: { opacity: 0, y: 12 },
     visible: { opacity: 1, y: 0, transition: { delay: 0.35, duration: 0.7 } }
-  };
-
-  // Animate reveal for grid
-  const gridVariants = {
-    visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } }
   };
 
   useEffect(() => {
@@ -66,6 +54,17 @@ const Home = () => {
     else setFiltered(products.filter(p => p.category === category));
   }, [products, category]);
 
+  // Categories with translations
+  const categoryList = [
+    { label: t("all"), value: "All" },
+    { label: t("categories.groceries"), value: "Groceries" },
+    { label: t("categories.personalCare"), value: "Personal Care" },
+    { label: t("categories.beverages"), value: "Beverages" },
+    { label: t("categories.snacks"), value: "Snacks" },
+    { label: t("categories.household"), value: "Household" },
+    { label: t("categories.others"), value: "Others" }
+  ];
+
   return (
     <div className="container mx-auto px-2 pt-4 min-h-svh">
       {/* Hero Section */}
@@ -80,14 +79,14 @@ const Home = () => {
           variants={heroVariants}
         >
           <span className="bg-gradient-to-r from-yellow-500 to-yellow-300 bg-clip-text text-transparent drop-shadow-[0_2px_24px_rgba(212,175,55,0.15)]">
-            Welcome to SS MART
+            {t("brand")}
           </span>
         </motion.h1>
         <motion.p
           className="text-lg mb-2 mt-2 leading-relaxed text-lux-gold/90 font-medium"
           variants={subVariants}
         >
-          Sai Sangameshwara Mart &mdash; Shankarpally’s luxury marketplace.
+          Sai Sangameshwara Mart &mdash; {t("shankarpally")}'s luxury marketplace.
         </motion.p>
         <motion.div
           className="flex items-center gap-2 text-sm text-lux-gold font-medium"
@@ -96,15 +95,15 @@ const Home = () => {
           <svg className="inline mr-1" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={2}>
             <circle cx="10" cy="10" r="9" stroke="#FFD700"/><path d="M10 10v4l2 2" stroke="#FFD700"/><path d="M10 6a4 4 0 1 1-2.8 1.2" stroke="#FFD700"/>
           </svg>
-          Shankarpally, Telangana &bull;&nbsp;
+          {t("shankarpally")}, Telangana &bull;&nbsp;
           <a
             href="https://g.co/kgs/v1e9RSN"
             className="underline hover:text-lux-gold"
             target="_blank"
             rel="noopener"
-            aria-label="Google Maps: SS Mart"
+            aria-label={t("googleMaps")}
           >
-            Google Maps
+            {t("googleMaps")}
           </a>
         </motion.div>
       </motion.section>
@@ -119,14 +118,14 @@ const Home = () => {
       >
         {categoryList.map(cat => (
           <button
-            className={`lux-category-btn${cat === category ? " active" : ""}`}
-            key={cat}
-            onClick={() => setCategory(cat)}
-            aria-label={`Show ${cat} products`}
-            aria-selected={cat === category}
+            className={`lux-category-btn${cat.value === category ? " active" : ""}`}
+            key={cat.value}
+            onClick={() => setCategory(cat.value)}
+            aria-label={`Show ${cat.label} products`}
+            aria-selected={cat.value === category}
             tabIndex={0}
             role="tab"
-          >{cat}</button>
+          >{cat.label}</button>
         ))}
       </motion.div>
 
@@ -141,8 +140,7 @@ const Home = () => {
           animate={{ opacity: 1 }}
           aria-live="polite"
         >
-          Error loading products.<br />
-          Please try again later.
+          {t("errorLoading")}
         </motion.p>
       )}
 
@@ -179,7 +177,7 @@ const Home = () => {
           animate={{ opacity: 1 }}
           aria-live="polite"
         >
-          No products found in this category.
+          {t("noProducts")}
         </motion.div>
       )}
     </div>

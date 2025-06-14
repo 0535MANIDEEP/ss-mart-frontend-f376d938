@@ -6,6 +6,8 @@ import api from "@/api/axios";
 import { Button } from "@/components/ui/button";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import { useRef } from "react";
 
 const DopamineConfirm = () => (
   <div className="flex items-center gap-2">
@@ -23,6 +25,8 @@ const ProductDetails = () => {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const imgRef = useRef<HTMLImageElement>(null);
 
   const cartItem = items.find(i => i._id === id?.toString());
   const [qty, setQty] = useState(cartItem?.quantity || 1);
@@ -94,38 +98,75 @@ const ProductDetails = () => {
     }
   };
 
+  // Add image zoom functionality
+  const handleImgZoom = (e: React.MouseEvent) => {
+    if (window.innerWidth > 600 && imgRef.current) {
+      imgRef.current.classList.toggle("scale-105");
+      imgRef.current.classList.toggle("ring-4");
+      imgRef.current.classList.toggle("ring-lux-gold");
+    }
+  };
+
   return (
     <div className="max-w-2xl mx-auto mt-8 bg-white rounded-lg shadow p-6 animate-fade-in">
-      <img src={product.image || "https://placehold.co/400x250"} alt={product.name} className="w-full h-64 object-cover rounded mb-4"/>
+      <img
+        ref={imgRef}
+        src={product.image || "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=700&q=80"} 
+        alt={product.name}
+        className="w-full h-64 object-cover rounded mb-4 transition-transform duration-200 cursor-zoom-in hover:scale-105 hover:ring-4 hover:ring-lux-gold"
+        onClick={handleImgZoom}
+        tabIndex={0}
+        aria-label={t("viewDetails")}
+      />
       <h2 className="text-2xl font-bold mb-2">{product.name}</h2>
-      <p className="text-gray-700 mb-4">{product.description}</p>
+      <p className="text-gray-700 dark:text-gray-200 mb-4">{product.description}</p>
       <div className="flex items-center mb-4 gap-4">
         <span className="text-green-700 text-xl font-bold">₹{product.price}</span>
         <span className="text-xs bg-lux-gold/10 text-lux-gold border rounded-full px-3 py-1 ml-3">{product.category}</span>
-        <span className="ml-6 text-sm text-gray-500">Stock: {product.stock}</span>
+        <span className="ml-6 text-sm text-gray-500">{t("stock", { count: product.stock })}</span>
       </div>
       <div className="flex items-center gap-4 my-4">
         {/* Quantity selector */}
-        <Button variant="ghost" size="icon" aria-label="Decrease" onClick={handleDec} disabled={qty <= 1}>
-          <Minus size={18} />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Decrease"
+          onClick={handleDec}
+          disabled={qty <= 1}
+          className="rounded-full"
+          tabIndex={0}
+        >
+          <Minus size={22} />
         </Button>
         <span className="text-lg font-semibold px-3">{qty}</span>
-        <Button variant="ghost" size="icon" aria-label="Increase" onClick={handleInc} disabled={qty >= product.stock}>
-          <Plus size={18} />
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Increase"
+          onClick={handleInc}
+          disabled={qty >= product.stock}
+          className="rounded-full"
+          tabIndex={0}
+        >
+          <Plus size={22} />
         </Button>
       </div>
       <div className="flex gap-4">
         <Button
           onClick={onAdd}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition flex gap-2 items-center text-base font-semibold shadow"
+          className="bg-green-500 text-white px-6 py-3 !rounded-lg hover:bg-green-600 transition flex gap-2 items-center text-lg font-semibold shadow"
+          aria-label={t("addToCart")}
+          tabIndex={0}
         >
-          <ShoppingCart size={20} /> Add to Cart
+          <ShoppingCart size={24} /> {t("addToCart")}
         </Button>
         <Button
           onClick={handleBuyNow}
-          className="bg-lux-gold text-black px-4 py-2 rounded hover:bg-amber-400 transition flex gap-2 items-center text-base font-bold shadow"
+          className="bg-lux-gold text-black px-6 py-3 !rounded-lg hover:bg-amber-400 transition flex gap-2 items-center text-lg font-bold shadow"
+          aria-label={t("buyNow")}
+          tabIndex={0}
         >
-          Buy Now →
+          {t("buyNow")} →
         </Button>
       </div>
     </div>
