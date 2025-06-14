@@ -5,47 +5,136 @@
 
 @layer base {
   html, body {
-    font-family: 'Poppins', 'Inter', 'DM Sans', sans-serif;
-    background: #F8F8F8;
-    color: #1C1C1E;
+    font-family: 'Poppins', 'Inter', 'DM Sans', 'sans-serif';
+    background: linear-gradient(110deg, #FAFBFF 70%, #FFD70010 100%);
+    color: #232336;
     font-size: 18px;
+    transition: background 0.44s, color 0.23s;
+    min-height: 100vh;
   }
   h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', 'DM Serif Display', serif;
     font-weight: 700;
     letter-spacing: -0.01em;
+    color: #222137;
+  }
+  .dark {
+    background: linear-gradient(120deg, #1B202A 80%, #FFD70014 110%);
+    color: #F4F5F9;
+  }
+  a {
+    color: #282FFB;
+    text-underline-offset: 2px;
+    transition: color .18s;
+  }
+  a:hover {
+    color: #FFD700;
   }
   :focus-visible {
-    outline: 3px solid #D4AF37;
+    outline: 3px solid #FFD700;
     outline-offset: 2px;
+    transition: outline .18s;
   }
   @media (max-width: 600px) {
     html {
       font-size: 17px;
     }
   }
-  .dark {
-    background: #18171d;
-    color: #fff;
-  }
 }
 
 @layer components {
+  /* Luxury Button style - dopamine color with soft gold hover, premium shadow, rounded */
   .lux-btn {
-    @apply font-semibold rounded-lg px-5 py-2 bg-lux-gold text-lux-textdark hover:bg-yellow-400 transition;
+    @apply font-semibold rounded-xl px-6 py-2 bg-lux-grad text-lux-gold shadow-cta border-none transition-all duration-200 focus-visible:ring-2 focus-visible:ring-lux-gold focus-visible:outline-none;
+    letter-spacing: .01em;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 32px #FFD70044, 0 2.5px 12px #282FFB22;
+    background-image: linear-gradient(100deg,#282FFB 20%,#845EC2 65%,#FFD700 110%);
   }
+  .lux-btn:hover, .lux-btn:focus {
+    background: linear-gradient(115deg,#FFD700 2%,#845EC2 60%,#282FFB 100%);
+    color: #232336;
+    animation: cta-glow 0.8s alternate;
+    box-shadow: 0 8px 36px #FFD70088, 0 4px 18px #FFD70033;
+    /* dopamine "pop": keep transitions engaging! */
+    transform: scale(1.045);
+  }
+
+  /* Card: frosted-glass, softened border, luxury shadow, padding, extra rounding */
   .lux-card {
-    @apply shadow-lg rounded-xl bg-white border border-gray-200;
+    @apply rounded-xl p-5 border bg-glass-light shadow-lux backdrop-blur-[8px] border-lux-border transition-all;
+    background: linear-gradient(115deg,rgba(255,255,255,0.88) 56%,#FAFBFF44 110%);
+    border: 1.5px solid #ECECF2;
+    box-shadow: 0 4px 40px 0 rgba(40,47,251,0.07), 0 2.5px 24px #FFD70022;
+    transition: box-shadow .18s, background .28s;
   }
-  .lux-card-dark {
-    @apply shadow-lg rounded-xl bg-lux-black border border-gray-800 text-lux-textlight;
+  .dark .lux-card {
+    @apply bg-glass-dark border-none shadow-frost;
+    background: linear-gradient(115deg,rgba(33,36,52,0.85) 80%,#23233622 120%);
+    color: #F4F5F9;
+    box-shadow: 0 6px 32px 0 rgba(40,47,251,0.11), 0 0.5px 18px #FFD70022;
   }
+
+  /* Hero Section upgrade: deep blue, glass, engaging */
   .lux-hero {
-    @apply bg-lux-black text-lux-textlight p-8 rounded-xl mb-6 shadow-xl flex flex-col items-center;
+    @apply rounded-2xl p-10 mb-8 w-full max-w-3xl mx-auto flex flex-col items-center bg-glass-light shadow-lux;
+    background: linear-gradient(108deg, #282FFB 4%, #845EC2 46%, #FFD700 120%);
+    color: #F4F5F9;
+    box-shadow: 0 12px 60px #FFD70022, 0 6px 30px #282FFB18;
+    border-radius: 2rem;
   }
+  .dark .lux-hero {
+    background: linear-gradient(110deg, #16192A, #FFD70011 130%);
+    color: #F4F5F9;
+  }
+
+  /* Category/Tab Buttons: chic, minimalist glass pills that animate */
   .lux-category-btn {
-    @apply px-4 py-2 rounded-full border border-lux-black text-lux-black font-medium bg-white hover:bg-lux-gold hover:text-lux-black transition;
+    @apply px-5 py-2 rounded-full border border-lux-blue text-lux-blue font-medium bg-glass-light shadow-frost transition relative;
+    letter-spacing: .03em;
+    font-family: 'Poppins', 'Inter', sans-serif;
+    backdrop-filter: blur(2px);
+    background: linear-gradient(110deg,rgba(255,255,255,0.80) 82%,#845EC211 110%);
+    box-shadow: 0 2px 12px #FFD70011;
+    font-size: 1rem;
   }
-  .lux-category-btn.active {
-    @apply bg-lux-gold text-lux-black;
+  .lux-category-btn.active, .lux-category-btn:hover, .lux-category-btn:focus {
+    @apply bg-lux-gold text-lux-black font-bold shadow-cta border-lux-gold;
+    background: linear-gradient(100deg,#FFD700 65%,#FAFBFF 100%);
+    color: #232336;
+    transform: scale(1.06);
+    z-index: 4;
+  }
+
+  /* CTA animated */
+  .lux-cta {
+    @apply bg-lux-gold text-lux-black font-bold px-7 py-2.5 rounded-2xl shadow-cta transition shadow-xl;
+    font-size: 1.2rem;
+    letter-spacing: .02em;
+    animation: cta-glow 1.4s infinite alternate;
+  }
+  .lux-cta:hover, .lux-cta:focus {
+    background: linear-gradient(96deg,#FFD700 70%,#282FFB 130%);
+    color: #fff;
+    box-shadow: 0 8px 36px #FFD700EE, 0 3px 18px #FFD70055;
+    animation: cta-glow 0.8s alternate;
+    transform: scale(1.07);
+  }
+
+  /* NAVBAR & Modals: glass/frosted */
+  .lux-navbar {
+    @apply bg-glass-light/70 dark:bg-glass-dark/80 shadow-frost rounded-xl px-6 py-2;
+    border: 1px solid #ECECF2;
+    backdrop-filter: blur(6px);
+  }
+}
+
+/* Animate dopamine button glow */
+@keyframes cta-glow {
+  0%, 100% {
+    box-shadow: 0 0 18px #FFD70044, 0 3px 32px #FFD70033;
+  }
+  50% {
+    box-shadow: 0 0 54px #FFD700, 0 10px 40px #FAFBFF55;
   }
 }
