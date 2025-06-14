@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import { motion } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";
@@ -17,6 +18,11 @@ type Product = {
   stock: number;
   category: string;
   image_url?: string | null;
+};
+
+type ProductCardProps = {
+  product: Product;
+  onClick?: (prod: Product) => void;
 };
 
 const cardVariants = {
@@ -55,7 +61,7 @@ function getProductField(
   return data[lang as keyof MultiLang] || data.en || fallback;
 }
 
-const ProductCard: FC<{ product: Product }> = ({ product }) => {
+const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
   const addToCart = useCartStore(s => s.addToCart);
   const updateQty = useCartStore(s => s.updateQuantity);
   const removeFromCart = useCartStore(s => s.removeFromCart);
@@ -148,7 +154,12 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
   };
 
   const toDetails = () => {
-    navigate(`/products/${product.id}`);
+    // Safe fallback: if custom onClick provided, use it; else default to navigation
+    if (onClick) {
+      onClick(product);
+    } else {
+      navigate(`/products/${product.id}`);
+    }
   };
 
   return (
@@ -160,7 +171,7 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       animate="rest"
       variants={cardVariants}
       tabIndex={0}
-      aria-label={t("viewDetails")}
+      aria-label={onClick ? undefined : t("viewDetails")}
       role="article"
       onClick={toDetails}
     >
@@ -247,4 +258,5 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
 
 export default ProductCard;
 
-// Note to user: src/components/ProductCard.tsx is getting quite lengthy (235+ lines). Consider asking for a refactor soon!
+// Note to user: src/components/ProductCard.tsx is getting quite lengthy (251+ lines). Consider asking for a refactor soon!
+
