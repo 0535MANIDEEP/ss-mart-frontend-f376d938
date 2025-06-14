@@ -3,6 +3,7 @@ import { useState, useEffect, createContext, useContext } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
 
+// Augment the AuthContext to include user role and loading state
 type AuthContextType = {
   user: User | null;
   session: Session | null;
@@ -15,26 +16,30 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Utility: fetch user's top role (if admin, show admin; if user, show user; else guest)
 async function fetchUserRole(userId: string): Promise<string> {
   if (!userId) return "guest";
   const { data, error } = await supabase
     .from("user_roles")
     .select("role")
-    .eq("user_id", userId)
-    .single();
-  // Role might not exist if RLS broken; fallback to "guest"
-  if (error || !data?.role) return "guest";
-  return data.role;
+    .eq("user_id", userId);
+
+  if (error || !data || data.length === 0) return "guest";
+  // Prefer admin if present
+  const roles = data.map(r => (typeof r.role === "string" ? r.role : ""));
+  if (roles.includes("admin")) return "admin";
+  if (roles.includes("user")) return "user";
+  return "guest";
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
   const [role, setRole] = useState<string>("guest");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Listen to auth state changes
+    // 1. Set up auth state listener before getting session
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -42,7 +47,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       }
     );
-    // 2. Check initial session
+
+    // 2. Then check for existing session
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
       setUser(data.session?.user ?? null);
@@ -54,23 +60,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // Sync role globally on user change
+  // On user change, get the latest role
   useEffect(() => {
+    let alive = true;
     if (user) {
       setLoading(true);
       fetchUserRole(user.id)
-        .then(r => setRole(r))
-        .finally(() => setLoading(false));
+        .then(r => {
+          if (alive) setRole(r);
+        })
+        .finally(() => {
+          if (alive) setLoading(false);
+        });
     } else {
       setRole("guest");
     }
+    return () => {
+      alive = false;
+    };
   }, [user]);
 
   const signUp = async (email: string, password: string) => {
     setLoading(true);
     const redirectUrl = `${window.location.origin}/auth`;
     const { error } = await supabase.auth.signUp({
-      email, password, options: { emailRedirectTo: redirectUrl }
+      email,
+      password,
+      options: { emailRedirectTo: redirectUrl }
     });
     setLoading(false);
     if (!error) return { error: null };
