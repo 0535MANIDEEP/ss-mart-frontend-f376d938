@@ -8,6 +8,7 @@ import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useRef } from "react";
+import ProductReviews from "@/components/ProductReviews";
 
 const DopamineConfirm = () => (
   <div className="flex items-center gap-2">
@@ -187,6 +188,8 @@ const ProductDetails = () => {
           {t("buyNow")} →
         </Button>
       </div>
+      {/* Reviews */}
+      <ProductReviews productId={product?.id?.toString()} />
     </div>
   );
 };
