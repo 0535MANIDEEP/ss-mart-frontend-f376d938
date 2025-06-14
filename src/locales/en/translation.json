@@ -1,4 +1,3 @@
-
 {
   "brand": "SS MART",
   "cart": "Cart",
@@ -40,5 +39,6 @@
   "noProducts": "No products found in this category.",
   "search": "Search",
   "googleMaps": "Google Maps",
-  "shankarpally": "Shankarpally, Telangana"
+  "shankarpally": "Shankarpally, Telangana",
+  "noDescription": "No description"
 }

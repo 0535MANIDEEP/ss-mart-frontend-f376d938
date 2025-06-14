@@ -1,3 +1,4 @@
+
 import { FC } from "react";
 import { motion } from "framer-motion";
 import { useCartStore } from "@/store/cartStore";
@@ -7,14 +8,15 @@ import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
 
+// Strict type for product props (future-friendly)
 type Product = {
-  id: number;
+  id: number | string;
   name: string;
   description: string;
   price: number;
   stock: number;
   category: string;
-  image_url: string;
+  image_url?: string | null;
 };
 
 const cardVariants = {
@@ -50,7 +52,11 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // This cart logic matches CartItem type: our backend uses 'id', cart uses '_id'
+  // Defensive: prop types check for shape
+  if (!product || typeof product.id !== "number" && typeof product.id !== "string") {
+    return <div className="text-red-500 text-center p-2">Invalid product data.</div>;
+  }
+
   const cartItem = items.find(i => i._id === product.id?.toString());
   const quantity = cartItem?.quantity ?? 0;
 
@@ -61,11 +67,11 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       price: product.price,
       quantity: 1,
       stock: product.stock,
-      image: product.image_url,
+      image: product.image_url || undefined,
     });
     toast({
       duration: 1250,
-      title: "Added to cart!",
+      title: t("addedToCart"),
       description: <DopamineConfirm />,
       variant: "default"
     });
@@ -77,11 +83,11 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       updateQty(product.id.toString(), (quantity ?? 0) + 1);
       toast({
         duration: 900,
-        title: "Added another!",
+        title: t("addedAnother"),
         description: (
           <div className="flex items-center gap-2">
             <Plus size={16} className="inline text-green-600" />
-            <span>Added another!</span>
+            <span>{t("addedAnother")}</span>
           </div>
         ),
         variant: "default"
@@ -97,11 +103,11 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       removeFromCart(product.id.toString());
       toast({
         duration: 1000,
-        title: "Removed from cart",
+        title: t("removedFromCart"),
         description: (
           <div className="flex items-center gap-2">
             <Minus size={16} className="inline text-red-600" />
-            Removed from cart
+            {t("removedFromCart")}
           </div>
         ),
         variant: "destructive"
@@ -109,9 +115,22 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
     }
   };
 
+  // "Buy Now": add 1 to cart (or update) then go to /checkout
   const handleBuyNow = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigate(`/products/${product.id}`);
+    if (!cartItem) {
+      addToCart({
+        _id: product.id.toString(),
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        stock: product.stock,
+        image: product.image_url || undefined,
+      });
+    } else {
+      updateQty(product.id.toString(), quantity > 0 ? quantity : 1);
+    }
+    navigate("/checkout");
   };
 
   const toDetails = () => {
@@ -120,7 +139,7 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
 
   return (
     <motion.div
-      className="lux-card group hover:scale-105 transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer"
+      className="lux-card group hover:scale-105 transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer bg-white dark:bg-lux-black"
       initial="rest"
       whileHover="hover"
       whileTap="tap"
@@ -134,9 +153,10 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       <motion.img
         src={product.image_url || "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&q=70"}
         alt={product.name}
-        className="rounded-t-lg w-full h-40 object-cover mb-3 bg-gradient-to-b from-lux-gold/40 to-gray-200/10 shadow cursor-pointer group-hover:scale-105 transition"
         loading="lazy"
-        initial={{ opacity: 0, scale: 1.1 }}
+        className="rounded-t-lg w-full h-40 object-cover mb-3 bg-gradient-to-b from-lux-gold/40 to-gray-200/10 shadow cursor-pointer group-hover:scale-105"
+        style={{ transition: "transform 0.18s,cubic-bezier(0.4,0,0.2,1)" }}
+        initial={{ opacity: 0, scale: 1.04 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.7, ease: "easeOut" }}
         tabIndex={0}
@@ -149,20 +169,18 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       >
         {product.name}
       </h3>
-      <p className="text-gray-500 dark:text-gray-200 flex-1 mb-2 text-sm">{product.description?.slice(0, 56) || "No description"}</p>
+      <p className="text-gray-500 dark:text-gray-200 flex-1 mb-2 text-sm">{product.description?.slice(0, 56) || t("noDescription") || "No description"}</p>
       <div className="flex items-center justify-between mt-auto">
         <span className="text-lux-gold font-bold text-lg">₹{product.price}</span>
         <div className="flex gap-1 items-center">
           {/* Quantity controls if in cart */}
           {quantity > 0 ? (
-            <motion.div className="flex items-center border rounded-xl px-2 py-1 bg-white/90 dark:bg-lux-black/80 shadow-sm gap-1" layout>
-              <Button size="icon" variant="ghost" onClick={handleDec} className="!p-1.5" aria-label={t("addToCart")} tabIndex={0}>
+            <motion.div className="flex items-center border rounded-xl px-2 py-1 bg-white/90 dark:bg-lux-black/80 shadow-sm gap-1" layout aria-label={t("quantity")}>
+              <Button size="icon" variant="ghost" onClick={handleDec} className="!p-2.5" aria-label={t("subtract")} tabIndex={0}>
                 <Minus size={20} />
               </Button>
-              <span className="font-semibold text-green-700 px-1 text-base">
-                {quantity}
-              </span>
-              <Button size="icon" variant="ghost" onClick={handleInc} disabled={quantity >= product.stock} className="!p-1.5" aria-label={t("addToCart")} tabIndex={0}>
+              <span className="font-semibold text-green-700 px-1 text-base">{quantity}</span>
+              <Button size="icon" variant="ghost" onClick={handleInc} disabled={quantity >= product.stock} className="!p-2.5" aria-label={t("add")} tabIndex={0}>
                 <Plus size={20} />
               </Button>
             </motion.div>
@@ -181,7 +199,6 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
               <span className="relative z-20 pointer-events-none flex items-center gap-1">
                 <ShoppingCart size={18} /> {t("addToCart")}
               </span>
-              {/* Neon Ripple */}
               <motion.span
                 className="absolute inset-0 z-10 pointer-events-none"
                 style={{ borderRadius: "inherit" }}
@@ -195,11 +212,11 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
               />
             </motion.button>
           )}
-          {/* Buy Now */}
+          {/* Buy Now, big touch target, clear aria */}
           <Button
             size="sm"
             variant="secondary"
-            className="ml-2 bg-white dark:bg-lux-black border border-gray-200 hover:bg-amber-100/80 shadow transition-all"
+            className="ml-2 bg-white dark:bg-lux-black border border-gray-200 hover:bg-amber-100/80 shadow transition-all min-w-[64px] !py-2"
             onClick={handleBuyNow}
             aria-label={t("buyNow")}
             type="button"
@@ -214,3 +231,4 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
 };
 
 export default ProductCard;
+

@@ -132,6 +132,7 @@ const ProductDetails = () => {
         ref={imgRef}
         src={product.image || "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=700&q=80"} 
         alt={product.name}
+        loading="lazy"
         className="w-full h-64 object-cover rounded mb-4 transition-transform duration-200 cursor-zoom-in hover:scale-105 hover:ring-4 hover:ring-lux-gold"
         onClick={handleImgZoom}
         tabIndex={0}

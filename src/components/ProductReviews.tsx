@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -52,17 +51,26 @@ export default function ProductReviews({ productId }: { productId: string }) {
   const [username, setUsername] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Fetch reviews on mount & when productId changes
   useEffect(() => {
     setLoading(true);
+    setError(null);
     fetch(`/api/products/${productId}/reviews`)
       .then(async r => {
+        if (!r.ok) throw new Error("Network error");
         const data: ReviewsResponse = await r.json();
         if (data.success) setReviews(data.reviews);
-        else setReviews([]);
+        else {
+          setReviews([]);
+          setError("Failed to load reviews.");
+        }
       })
-      .catch(() => setReviews([]))
+      .catch(() => {
+        setReviews([]);
+        setError("Could not load reviews from server.");
+      })
       .finally(() => setLoading(false));
   }, [productId]);
 
@@ -189,9 +197,8 @@ export default function ProductReviews({ productId }: { productId: string }) {
       </div>
 
       {/* Review form */}
-      <form onSubmit={handleReviewSubmit} className="mb-7 space-y-3">
+      <form onSubmit={handleReviewSubmit} className="mb-7 space-y-3" aria-label="Submit product review">
         <div className="flex flex-col sm:flex-row gap-2 items-center">
-          {/* Username input (if not anonymous) */}
           {!isAnonymous && (
             <Input
               value={username}
@@ -201,48 +208,51 @@ export default function ProductReviews({ productId }: { productId: string }) {
               className="w-full sm:w-1/2"
               required
               disabled={submitting}
+              aria-label={t("yourName") || "Your Name"}
             />
           )}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" aria-label={t("rating") || "Rating"}>
             <span className="text-sm">{t("rating") || "Rating"}:</span>
             {[1,2,3,4,5].map(n => (
               <button
                 key={n}
                 type="button"
                 onClick={() => setRating(n)}
-                className={n <= rating ? "text-yellow-500" : "text-gray-400"}
-                aria-label={t("rate") + " " + n}
+                className={`rounded-lg p-0.5 ${n <= rating ? "text-yellow-500" : "text-gray-400"} focus-visible:ring-2 focus-visible:ring-lux-gold`}
+                aria-label={(t("rate") || "Rate") + " " + n}
                 tabIndex={0}
                 disabled={submitting}
+                style={{ minWidth: 32, minHeight: 32 }}
               >
                 <Star fill={n <= rating ? "#fcd34d" : "none"} size={22} />
               </button>
             ))}
           </div>
         </div>
-        {/* Review text area */}
         <Textarea
           placeholder={t("writeReview") || "Write your review..."}
           value={reviewText}
           maxLength={400}
           onChange={e => setReviewText(e.target.value)}
           disabled={submitting}
+          aria-label={t("writeReview") || "Write your review"}
+          className="rounded-lg bg-gray-50 dark:bg-lux-black/60 focus-visible:ring-2 focus-visible:ring-green-400"
         />
-        {/* Anonymous checkbox */}
         <label className="flex items-center gap-2 text-sm cursor-pointer select-none">
           <input
             type="checkbox"
             checked={isAnonymous}
             onChange={e => setIsAnonymous(e.target.checked)}
             disabled={submitting}
-            className="accent-green-600 mr-1"
+            className="accent-green-600 mr-1 min-w-[20px] min-h-[20px]"
+            aria-label={t("submitAnonymously") || "Submit anonymously"}
           />
           {t("submitAnonymously") || "Submit anonymously"}
         </label>
         <Button
           type="submit"
           disabled={submitting || !rating || (!isAnonymous && !username.trim())}
-          className="bg-green-600 text-white px-5 py-2 rounded hover:bg-green-700 min-w-[120px]"
+          className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 min-w-[120px] text-base"
         >
           {submitting ? (
             <span className="flex items-center gap-2">
@@ -258,10 +268,15 @@ export default function ProductReviews({ productId }: { productId: string }) {
         </Button>
       </form>
 
-      {/* Review list */}
+      {/* Review list + errors */}
       <div>
         {loading ? (
           <div className="text-gray-400 text-sm">Loading reviews...</div>
+        ) : error ? (
+          <div className="text-red-600 bg-red-50 dark:bg-red-900/60 my-3 p-2 rounded">
+            <span className="font-semibold">Error: </span>
+            {error}
+          </div>
         ) : (
           <>
             {reviews.length === 0 && (
