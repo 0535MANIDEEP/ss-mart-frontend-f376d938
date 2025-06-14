@@ -3,7 +3,9 @@ import { create } from "zustand";
 
 const CART_KEY = "ssmart_cart";
 
-// Product type as stored in cart
+/**
+ * CartItem: product as stored in cart.
+ */
 export interface CartItem {
   _id: string;
   name: string;
@@ -20,33 +22,40 @@ interface CartState {
   updateQuantity: (id: string, qty: number) => void;
   clearCart: () => void;
 }
+
 const getCartFromStorage = (): CartItem[] => {
   try {
-    const stored = localStorage.getItem(CART_KEY); // CHANGED TO localStorage
-    return stored ? JSON.parse(stored) : [];
+    const stored = localStorage.getItem(CART_KEY);
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    if (!Array.isArray(parsed)) return [];
+    // Validate minimal structure
+    return parsed.filter(i => i && typeof i._id === "string");
   } catch {
     return [];
   }
 };
 
 /**
- * Save cart to localStorage only
+ * Save cart to localStorage only.
  */
 const setCartToStorage = (items: CartItem[]) => {
   try {
     localStorage.setItem(CART_KEY, JSON.stringify(items));
-  } catch (e) {
-    // ignore
-  }
+  } catch {}
 };
 
 export const useCartStore = create<CartState>((set, get) => ({
   items: getCartFromStorage(),
   addToCart: (product, quantity = 1) => {
-    const items = [...get().items];
+    let items = [...get().items];
     const idx = items.findIndex(i => i._id === product._id);
     if (idx > -1) {
-      items[idx].quantity += quantity;
+      // Do not allow quantity to exceed stock
+      items[idx].quantity = Math.min(
+        items[idx].quantity + quantity,
+        product.stock || 99
+      );
     } else {
       items.push({ ...product, quantity });
     }
@@ -59,8 +68,8 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ items });
   },
   updateQuantity: (id, qty) => {
-    const items = get().items.map(item =>
-      item._id === id ? { ...item, quantity: qty } : item
+    let items = get().items.map(item =>
+      item._id === id ? { ...item, quantity: Math.max(1, Math.min(qty, item.stock || 99)) } : item
     );
     setCartToStorage(items);
     set({ items });

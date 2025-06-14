@@ -1,4 +1,3 @@
-
 import { useCartStore } from "@/store/cartStore";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -10,6 +9,7 @@ import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useRef } from "react";
 import ProductReviews from "@/components/ProductReviews";
+import { useSupabaseAuth } from "@/hooks/use-supabase-auth";
 
 // Helper for translated fields
 function getProductField(
@@ -40,6 +40,7 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const imgRef = useRef<HTMLImageElement>(null);
+  const { user, role } = useSupabaseAuth ? useSupabaseAuth() : { user: null, role: "guest" };
 
   const cartItem = items.find(i => i._id === id?.toString());
   const stock = product?.stock ?? 0;
@@ -193,7 +194,14 @@ const ProductDetails = () => {
         </Button>
       </div>
       {/* Reviews */}
-      <ProductReviews productId={product?.id?.toString()} />
+      {role === "guest"
+        ? (
+          <div className="my-6 text-gray-500 bg-yellow-50 border-l-4 border-yellow-300 py-2 px-4 rounded">
+            {t("login")} to leave a review.
+          </div>
+        )
+        : <ProductReviews productId={product?.id?.toString()} />
+      }
     </div>
   );
 };

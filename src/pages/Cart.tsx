@@ -11,9 +11,12 @@ const Cart = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+  // Defensive: fix for edge-case items
+  const total = Array.isArray(items)
+    ? items.reduce((s, i) => s + (i.price * i.quantity), 0)
+    : 0;
 
-  if (!items.length) {
+  if (!Array.isArray(items) || !items.length) {
     return (
       <div className="text-center py-16">
         <h2 className="text-2xl mb-2">{t("emptyCart")}</h2>
@@ -25,7 +28,7 @@ const Cart = () => {
   return (
     <div className="container max-w-3xl mx-auto mt-6 animate-fade-in">
       <h2 className="text-2xl font-bold mb-4">{t("yourCart")}</h2>
-      <table className="w-full text-left">
+      <table className="w-full text-left overflow-x-auto">
         <thead>
           <tr className="border-b border-gray-300">
             <th>{t("product")}</th>
@@ -37,9 +40,9 @@ const Cart = () => {
         <tbody>
           {items.map(item => (
             <tr key={item._id} className="border-b border-gray-100">
-              <td className="py-2 flex items-center gap-3">
+              <td className="py-2 flex items-center gap-3 min-w-[120px]">
                 <img src={item.image || "https://placehold.co/40x40"} alt={item.name} className="w-12 h-12 object-cover rounded" />
-                <span>{item.name}</span>
+                <span className="break-all">{item.name}</span>
               </td>
               <td>
                 <input
@@ -62,13 +65,12 @@ const Cart = () => {
       </table>
       <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
         <strong className="text-xl">{t("total")}: ₹{total}</strong>
-        <div className="flex gap-2">
-          <button onClick={clear} className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1">{t("clearCart")}</button>
-          <button onClick={() => navigate("/checkout")} className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 shadow">{t("checkout")}</button>
+        <div className="flex gap-2 flex-wrap">
+          <button onClick={clear} className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap">{t("clearCart")}</button>
+          <button onClick={() => navigate("/checkout")} className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 shadow whitespace-nowrap">{t("checkout")}</button>
         </div>
       </div>
     </div>
   );
 };
-
 export default Cart;

@@ -9,6 +9,11 @@ type Props = {
   children: React.ReactNode;
 };
 
+/**
+ * Always returns a fallback: never blank screen on role guard!
+ * - Loading: spinner while waiting for role
+ * - Unauthorized: block with fallback screen
+ */
 const RoleProtectedRoute = ({ allowedRoles, children }: Props) => {
   const { loading, user, role } = useSupabaseAuth();
 

@@ -1,3 +1,4 @@
+
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -17,7 +18,6 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
 
-  // Responsive: close menu on nav/navigation
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
   const handleLogout = async () => {
@@ -28,7 +28,6 @@ const Navbar = () => {
 
   return (
     <nav className="flex justify-between items-center bg-white dark:bg-lux-black shadow w-full px-3 sm:px-8 py-3 z-50 sticky top-0 transition select-none">
-      {/* LEFT: Brand + Hamburger */}
       <div className="flex items-center gap-1">
         <button className="md:hidden p-2 focus:outline-none rounded hover:bg-lux-gold/10"
           aria-label="Open Menu" onClick={() => setMenuOpen(v => !v)}>
@@ -38,7 +37,6 @@ const Navbar = () => {
           {t("brand")}
         </Link>
       </div>
-      {/* CENTER/MAIN NAV */}
       <div className={`fixed inset-0 z-50 bg-white/90 dark:bg-lux-black/90 backdrop-blur-sm transform ${menuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 md:relative md:inset-auto md:flex md:gap-8 md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none md:translate-x-0 flex flex-col md:flex-row items-center md:static md:py-0 py-14 px-6 md:p-0`}>
         <button className="md:hidden absolute top-3 right-6 text-lg text-gray-500 hover:text-red-600" aria-label="Close Menu" onClick={() => setMenuOpen(false)}>×</button>
         <span className="text-base italic sm:inline-block mb-5 md:mb-0 text-gray-600 dark:text-gray-300">
@@ -83,13 +81,11 @@ const Navbar = () => {
         </Link>
         {user ? (
           <>
-            {/* Admin controls */}
             {role === "admin" && (
               <Link to="/admin/dashboard" className="hover:underline flex items-center gap-1 text-green-600 font-semibold">
                 <Shield className="size-4" /> Admin {t("dashboard")}
               </Link>
             )}
-            {/* User controls */}
             {(role === "user" || role === "admin") && (
               <Link to="/order-success" className="hover:underline flex items-center gap-1">
                 <User className="size-4" /> {t("account") || "Account"}

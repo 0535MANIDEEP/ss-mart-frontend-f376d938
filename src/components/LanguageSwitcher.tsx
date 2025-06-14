@@ -14,7 +14,6 @@ const LANGUAGES = [
 
 export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
-  // Default to localStorage/lang if set
   const currLang = i18n.language || localStorage.getItem("lang") || "en";
 
   const handleLang = (lng: string) => {
@@ -32,20 +31,19 @@ export default function LanguageSwitcher() {
           <button
             type="button"
             onClick={() => handleLang(l.code)}
-            className={`transition-colors px-1 ring-offset-2 rounded-md focus-visible:ring-2 focus-visible:ring-lux-gold ${
-              l.code === currLang
+            className={`transition-colors min-w-[60px] px-1 ring-offset-2 rounded-md focus-visible:ring-2 focus-visible:ring-lux-gold whitespace-nowrap
+              ${l.code === currLang
                 ? "text-green-700 dark:text-lux-gold underline underline-offset-4 decoration-2 pointer-events-none font-bold"
-                : "hover:text-lux-gold text-gray-700 dark:text-gray-100"
-            }`}
+                : "hover:text-lux-gold text-gray-700 dark:text-gray-100"}
+            `}
             aria-current={l.code === currLang ? "true" : undefined}
-            aria-label={l.label}
             disabled={l.code === currLang}
             tabIndex={0}
           >
             {l.label}
           </button>
           {idx < LANGUAGES.length - 1 && (
-            <span className="mx-1 text-gray-400" aria-hidden>|</span>
+            <span className="mx-1 text-gray-400 select-none" aria-hidden="true">|</span>
           )}
         </React.Fragment>
       ))}
