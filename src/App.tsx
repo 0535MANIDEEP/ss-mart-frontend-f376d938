@@ -29,8 +29,6 @@ const LazyAdminDashboard = React.lazy(() => import("@/pages/AdminDashboard"));
 const LazyAddOrEditProduct = React.lazy(() => import("@/pages/AddOrEditProduct"));
 const LazyLogin = React.lazy(() => import("@/auth/Login"));
 const LazyAuth = React.lazy(() => import("@/pages/Auth"));
-const LoadingScreen = React.lazy(() => import("@/components/LoadingScreen"));
-const UnauthorizedScreen = React.lazy(() => import("@/components/UnauthorizedScreen"));
 
 const App = () => (
   <I18nextProvider i18n={i18n}>
