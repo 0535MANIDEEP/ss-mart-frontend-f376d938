@@ -1,3 +1,4 @@
+
 import { useCartStore } from "@/store/cartStore";
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -9,7 +10,8 @@ import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { useRef } from "react";
 import ProductReviews from "@/components/ProductReviews";
-import { useSupabaseAuth } from "@/hooks/use-supabase-auth";
+// FIX: Use correct import path/casing
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 
 // Helper for translated fields
 function getProductField(
@@ -40,7 +42,7 @@ const ProductDetails = () => {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const imgRef = useRef<HTMLImageElement>(null);
-  const { user, role } = useSupabaseAuth ? useSupabaseAuth() : { user: null, role: "guest" };
+  const { user, role } = useSupabaseAuth();
 
   const cartItem = items.find(i => i._id === id?.toString());
   const stock = product?.stock ?? 0;
@@ -209,3 +211,4 @@ const ProductDetails = () => {
 export default ProductDetails;
 
 // Note to user: src/pages/ProductDetails.tsx is getting quite lengthy (200+ lines). Consider asking for a refactor soon!
+
