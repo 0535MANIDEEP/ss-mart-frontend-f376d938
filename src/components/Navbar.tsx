@@ -8,11 +8,74 @@ import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import AuthModal from "./AuthModal";
+import { Button } from "@/components/ui/button";
 
-const roleBadgeColor = {
-  guest: "bg-gray-200 text-gray-700 border-gray-300",
-  user: "bg-blue-100 text-blue-700 border-blue-300",
-  admin: "bg-lux-gold/20 text-yellow-700 border-yellow-400 font-bold"
+const badgeStyle = {
+  guest: "bg-gray-100 text-gray-600 border-gray-300",
+  user: "bg-blue-50 text-blue-800 border-blue-300",
+  admin: "bg-yellow-100 text-amber-700 border-yellow-400 font-bold"
+};
+
+const NavbarRoleItems = ({ role, user, t, onLogin, onSignup, onLogout }) => {
+  switch (role) {
+    case "guest":
+      return (
+        <>
+          <Button
+            onClick={onLogin}
+            className="bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2 min-h-[44px] text-white font-semibold focus-visible:ring-2 focus-visible:ring-blue-400"
+          ><LogIn /> {t("login")}</Button>
+          <Button
+            onClick={onSignup}
+            className="bg-emerald-600 hover:bg-emerald-700 rounded-lg px-4 py-2 min-h-[44px] text-white font-semibold focus-visible:ring-2 focus-visible:ring-green-400"
+          ><User /> {t("signUp")}</Button>
+        </>
+      );
+    case "user":
+      return (
+        <>
+          <Link
+            to="/home"
+            className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
+          >
+            <Home className="inline mr-1" /> {t("home")}
+          </Link>
+          <Link
+            to="/cart"
+            className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
+          >
+            <ShoppingCart className="inline mr-1" /> {t("cart")}
+          </Link>
+          <Link
+            to="/order-success"
+            className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
+          >
+            <User className="inline mr-1" /> {t("profile")}
+          </Link>
+          <Button
+            onClick={onLogout}
+            className="bg-red-500 hover:bg-red-600 rounded-lg px-4 py-2 min-h-[44px] text-white font-semibold focus-visible:ring-2 focus-visible:ring-red-400 ml-2"
+          >
+            <LogOut /> {t("logout")}
+          </Button>
+        </>
+      );
+    case "admin":
+      return (
+        <>
+          <Link
+            to="/admin/dashboard"
+            className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-yellow-400 font-semibold"
+          ><Shield className="inline mb-0.5" /> {t("dashboard")}</Link>
+          <Button
+            onClick={onLogout}
+            className="bg-red-500 hover:bg-red-600 rounded-lg px-4 py-2 min-h-[44px] text-white font-semibold focus-visible:ring-2 focus-visible:ring-red-400"
+          ><LogOut /> {t("logout")}</Button>
+        </>
+      );
+    default:
+      return null;
+  }
 };
 
 const Navbar = () => {
@@ -24,8 +87,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
-
-  // MODAL state
   const [authModal, setAuthModal] = useState<null | "login" | "signup">(null);
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
@@ -36,114 +97,65 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const displayRole = loading
-    ? "..."
-    : role === "user"
-    ? t("user") || "User"
-    : role === "admin"
-    ? t("admin") || "Admin"
-    : t("guest") || "Guest";
-
   return (
-    <nav className="flex justify-between items-center bg-white dark:bg-lux-black shadow w-full px-3 sm:px-8 py-3 z-50 sticky top-0 transition select-none">
-      <div className="flex items-center gap-1">
-        <button className="md:hidden p-2 focus:outline-none rounded hover:bg-lux-gold/10"
+    <nav className="flex justify-between items-center bg-white shadow w-full px-2 sm:px-8 py-2 z-50 sticky top-0 transition select-none border-b border-gray-200">
+      <div className="flex items-center gap-2">
+        <button
+          className="md:hidden p-2 focus:outline-none rounded-full hover:bg-gray-50"
           aria-label="Open Menu" onClick={() => setMenuOpen(v => !v)}>
-          <Menu size={28} className="text-gray-700 dark:text-lux-gold" />
+          <Menu size={24} className="text-gray-700" />
         </button>
-        <Link to="/" className="text-2xl font-extrabold text-green-600 dark:text-lux-gold tracking-wide ml-1 sm:ml-0 focus:outline-none flex items-center gap-2">
+        <Link to="/" className="text-2xl font-black text-primary tracking-wide ml-2 sm:ml-0 flex items-center gap-2">
           {t("brand")}
         </Link>
       </div>
-      <div className={`fixed inset-0 z-50 bg-white/90 dark:bg-lux-black/90 backdrop-blur-sm transform ${menuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 md:relative md:inset-auto md:flex md:gap-8 md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none md:translate-x-0 flex flex-col md:flex-row items-center md:static md:py-0 py-14 px-6 md:p-0`}>
-        <button className="md:hidden absolute top-3 right-6 text-lg text-gray-500 hover:text-red-600" aria-label="Close Menu" onClick={() => setMenuOpen(false)}>×</button>
-        <span className={`flex items-center gap-2 mb-5 md:mb-0 ${roleBadgeColor[role as keyof typeof roleBadgeColor] || roleBadgeColor.guest} border font-medium px-3 py-1 rounded-full text-sm shadow-sm`} aria-label="Role">
-          <User size={16} className="inline -mt-0.5" />
-          {displayRole}
+      <div className={`fixed inset-0 z-40 bg-white/90 backdrop-blur-md transform ${menuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-200 md:relative md:inset-auto md:translate-x-0 md:flex md:gap-6 flex flex-col md:flex-row items-center md:static md:bg-transparent md:backdrop-blur-none`}>
+        <button
+          className="md:hidden absolute top-3 right-6 text-lg text-gray-500 hover:text-red-600"
+          aria-label="Close Menu"
+          onClick={() => setMenuOpen(false)}
+        >×</button>
+        <span className={
+          "flex items-center gap-2 mb-5 md:mb-0 border font-medium px-3 py-1 rounded-full text-sm shadow-sm " +
+          (badgeStyle[role as keyof typeof badgeStyle] || badgeStyle.guest)
+        } aria-label="Role">
+          <User size={16} /> {loading ? "…" : role}
         </span>
-        <Link
-          to="/home"
-          className={`mx-3 hover:underline text-base ${location.pathname === "/home" ? "font-bold text-lux-gold underline" : "text-gray-700 dark:text-gray-100"}`}
-          tabIndex={0}
-        >
-          <Home className="inline mr-1 -mt-1" size={19} /> {t("home")}
-        </Link>
-        <Link
-          to="/products/1"
-          className={`mx-3 hover:underline text-base ${location.pathname.startsWith("/products") ? "font-bold text-lux-gold underline" : "text-gray-700 dark:text-gray-100"}`}
-          tabIndex={0}
-        >
-          {t("products")}
-        </Link>
+        <div className="flex gap-2 items-center">
+          <NavbarRoleItems
+            role={role || "guest"}
+            user={user}
+            t={t}
+            onLogin={() => setAuthModal("login")}
+            onSignup={() => setAuthModal("signup")}
+            onLogout={handleLogout}
+          />
+        </div>
         <Link
           to="/cart"
-          className="relative flex items-center group mx-3 focus:outline-none"
+          className="ml-5 relative flex items-center group focus:outline-none"
           aria-label={t("cart")}
           tabIndex={0}
         >
-          <ShoppingCart size={26} className="mr-1 group-hover:scale-110 transition-transform text-green-600 dark:text-lux-gold" />
-          <span className="hidden sm:inline text-lg">{t("cart")}</span>
+          <ShoppingCart size={24} />
+          <span className="sr-only">{t("cart")}</span>
           {cartCount > 0 && (
-            <span
-              className="absolute -top-1.5 left-4 sm:left-6 bg-green-600 text-white rounded-full px-2 py-0.5 text-xs font-bold animate-pulse"
-              style={{ minWidth: 18 }}
-              aria-label={`${cartCount} ${t("cart")}`}
-            >
+            <span className="absolute -top-2 left-4 bg-emerald-600 text-white rounded-full px-2 py-0.5 text-xs font-bold" style={{ minWidth: 18 }}>
               {cartCount}
             </span>
           )}
           {cartTotal > 0 && (
-            <span className="ml-2 text-sm font-bold text-green-800 dark:text-lux-gold bg-lux-gold/10 px-2 py-0.5 rounded">
+            <span className="ml-2 bg-lux-gold/10 px-2 py-0.5 rounded text-lux-gold font-bold text-xs">
               ₹{cartTotal}
             </span>
           )}
         </Link>
-        {user ? (
-          <>
-            <span className="flex flex-col items-start md:items-center md:flex-row gap-1 md:gap-1">
-              <span className="text-xs text-gray-500 font-medium">{user.email}</span>
-              <span className="md:ml-1 text-xs text-gray-400">({role})</span>
-            </span>
-            {role === "admin" && (
-              <Link to="/admin/dashboard" className="hover:underline flex items-center gap-1 text-green-600 font-semibold">
-                <Shield className="size-4" /> Admin {t("dashboard")}
-              </Link>
-            )}
-            {(role === "user" || role === "admin") && (
-              <Link to="/order-success" className="hover:underline flex items-center gap-1">
-                <User className="size-4" /> {t("account") || "Account"}
-              </Link>
-            )}
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition focus:outline-none flex items-center gap-1"
-            >
-              <LogOut className="size-4" /> {t("logout")}
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              onClick={() => setAuthModal("login")}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded mr-3 font-medium flex items-center gap-1 transition"
-            >
-              <LogIn className="size-4" /> Login
-            </button>
-            <button
-              onClick={() => setAuthModal("signup")}
-              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded font-medium flex items-center gap-1 transition"
-            >
-              <User className="size-4" /> Sign Up
-            </button>
-          </>
-        )}
-        <div className="flex gap-4 ml-4 mt-6 md:mt-0 items-center">
+        <div className="flex gap-2 ml-3 mt-6 md:mt-0 items-center">
           <ThemeToggle />
           <LanguageSwitcher />
         </div>
       </div>
-      {/* Modal for Auth */}
-      <AuthModal open={!!authModal} mode={authModal as "login"|"signup"|null} onClose={() => setAuthModal(null)} />
+      <AuthModal open={!!authModal} mode={authModal as "login" | "signup" | null} onClose={() => setAuthModal(null)} />
     </nav>
   );
 };
