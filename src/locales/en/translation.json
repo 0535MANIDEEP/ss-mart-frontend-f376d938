@@ -58,5 +58,22 @@
   "reviewPlural": "reviews",
   "anonymous": "Anonymous",
   "nameRequired": "Name required",
-  "namePrompt": "Please provide your name or submit anonymously."
+  "namePrompt": "Please provide your name or submit anonymously.",
+  "products": "Products",
+  "name": "Name",
+  "edit": "Edit",
+  "delete": "Delete",
+  "actions": "Actions",
+  "addProduct": "Add Product",
+  "saveChanges": "Save Changes",
+  "required": "Required",
+  "numberRequired": "Number required",
+  "priceMin": "Price must be at least 1",
+  "stockNonNegative": "Non-negative",
+  "imageUrl": "Image URL",
+  "description": "Description",
+  "productNotFound": "Product not found.",
+  "orderSent": "Order Sent!",
+  "orderSentMsg": "We’ve sent your order request via WhatsApp. SS MART will confirm availability shortly.",
+  "continueShopping": "Continue Shopping"
 }

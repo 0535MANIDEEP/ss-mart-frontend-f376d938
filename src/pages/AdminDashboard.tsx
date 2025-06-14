@@ -1,10 +1,13 @@
+
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate, Link } from "react-router-dom";
 import api from "@/api/axios";
 import Loader from "@/components/Loader";
+import { useTranslation } from "react-i18next";
 
 const AdminDashboard = () => {
+  const { t } = useTranslation();
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const logout = useAuthStore(state => state.logout);
   const navigate = useNavigate();
@@ -24,8 +27,10 @@ const AdminDashboard = () => {
   return (
     <div className="max-w-5xl mx-auto mt-6 animate-fade-in">
       <div className="flex justify-between items-center mb-5">
-        <h2 className="text-2xl font-extrabold">Admin Dashboard</h2>
-        <Link to="/admin/product/new" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition shadow">New Product</Link>
+        <h2 className="text-2xl font-extrabold">{t("dashboard")}</h2>
+        <Link to="/admin/product/new" className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition shadow">
+          {t("addProduct")}
+        </Link>
       </div>
       {loading
         ? <Loader />
@@ -33,23 +38,23 @@ const AdminDashboard = () => {
           <table className="w-full border shadow bg-white rounded">
             <thead>
               <tr className="bg-gray-100">
-                <th className="py-2 px-2">Name</th>
-                <th>Price</th>
-                <th>Stock</th>
+                <th className="py-2 px-2">{t("name")}</th>
+                <th>{t("price")}</th>
+                <th>{t("stock")}</th>
                 <th>ID</th>
-                <th className="w-32">Actions</th>
+                <th className="w-32">{t("actions")}</th>
               </tr>
             </thead>
             <tbody>
               {products.map(prod => (
                 <tr key={prod._id} className="border-b last:border-0">
-                  <td className="py-1 px-2">{prod.name}</td>
+                  <td className="py-1 px-2">{typeof prod.name === "object" ? prod.name.en : prod.name}</td>
                   <td>₹{prod.price}</td>
                   <td>{prod.stock}</td>
                   <td className="text-xs">{prod._id.slice(-6)}</td>
                   <td>
-                    <Link className="text-blue-600 hover:underline mr-2" to={`/admin/product/edit/${prod._id}`}>Edit</Link>
-                    <button className="text-red-500 hover:underline">Delete</button>
+                    <Link className="text-blue-600 hover:underline mr-2" to={`/admin/product/edit/${prod._id}`}>{t("edit")}</Link>
+                    <button className="text-red-500 hover:underline">{t("delete")}</button>
                   </td>
                 </tr>
               ))}
@@ -57,7 +62,7 @@ const AdminDashboard = () => {
           </table>
         )}
       {!loading && !products.length && (
-        <p className="text-gray-500 text-center my-12">No products in inventory.</p>
+        <p className="text-gray-500 text-center my-12">{t("noProducts")}</p>
       )}
     </div>
   );

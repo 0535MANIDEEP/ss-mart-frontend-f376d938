@@ -59,7 +59,7 @@ const ProductDetails = () => {
   }, [cartItem?.quantity, items.length]);
 
   if (loading) return <Loader />;
-  if (!product) return <div className="text-center py-16 text-gray-700">Product not found.</div>;
+  if (!product) return <div className="text-center py-16 text-gray-700">{t("productNotFound")}</div>;
 
   // --- Translations for local fields per language
   const lang = i18n.language || "en";
@@ -153,7 +153,7 @@ const ProductDetails = () => {
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Decrease"
+          aria-label={t("subtract")}
           onClick={handleDec}
           disabled={qty <= 1 && !cartItem}
           className="rounded-full"
@@ -165,7 +165,7 @@ const ProductDetails = () => {
         <Button
           variant="ghost"
           size="icon"
-          aria-label="Increase"
+          aria-label={t("add")}
           onClick={handleInc}
           disabled={qty >= stock}
           className="rounded-full"
@@ -174,7 +174,7 @@ const ProductDetails = () => {
           <Plus size={22} />
         </Button>
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-4 flex-wrap">
         <Button
           onClick={onAdd}
           className="bg-green-500 text-white px-6 py-3 !rounded-lg hover:bg-green-600 transition flex gap-2 items-center text-lg font-semibold shadow"
@@ -199,3 +199,5 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
+
+// Note to user: src/pages/ProductDetails.tsx is getting quite lengthy (200+ lines). Consider asking for a refactor soon!

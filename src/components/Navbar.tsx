@@ -1,3 +1,4 @@
+
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
@@ -79,7 +80,7 @@ const Navbar = () => {
           className={`mx-3 hover:underline text-base ${location.pathname.startsWith("/products") ? "font-bold text-lux-gold underline" : "text-gray-700 dark:text-gray-100"}`}
           tabIndex={0}
         >
-          Products
+          {t("products")}
         </Link>
         <Link
           to="/cart"

@@ -45,6 +45,7 @@ const DopamineConfirm = () => (
   </div>
 );
 
+// Support dynamic translation with fallback
 function getProductField(
   data: MultiLang | string | undefined,
   lang: string,
@@ -64,7 +65,7 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
   const { t, i18n } = useTranslation();
 
   if (!product || typeof product.id !== "number" && typeof product.id !== "string") {
-    return <div className="text-red-500 text-center p-2">Invalid product data.</div>;
+    return <div className="text-red-500 text-center p-2">{t("productNotFound")}</div>;
   }
 
   // Translated name/desc

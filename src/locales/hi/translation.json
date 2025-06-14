@@ -57,5 +57,22 @@
   "reviewPlural": "समीक्षाएँ",
   "anonymous": "अनाम",
   "nameRequired": "नाम आवश्यक",
-  "namePrompt": "कृपया नाम दें या गुमनाम रूप में सबमिट करें।"
+  "namePrompt": "कृपया नाम दें या गुमनाम रूप में सबमिट करें।",
+  "products": "प्रोडक्ट्स",
+  "name": "नाम",
+  "edit": "संपादित करें",
+  "delete": "हटाएं",
+  "actions": "एक्शन्स",
+  "addProduct": "प्रोडक्ट जोड़ें",
+  "saveChanges": "बदलाव सहेजें",
+  "required": "आवश्यक",
+  "numberRequired": "संख्या आवश्यक",
+  "priceMin": "न्यूनतम मूल्य 1 होना चाहिए",
+  "stockNonNegative": "ऋणात्मक नहीं",
+  "imageUrl": "इमेज URL",
+  "description": "विवरण",
+  "productNotFound": "प्रोडक्ट नहीं मिला।",
+  "orderSent": "ऑर्डर भेजा गया!",
+  "orderSentMsg": "हमने आपकी ऑर्डर अनुरोध व्हाट्सएप पर भेज दी है। एसएस मार्ट जल्द ही उपलब्धता की पुष्टि करेगा।",
+  "continueShopping": "खरीदारी जारी रखें"
 }
