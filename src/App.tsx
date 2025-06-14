@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -34,50 +35,49 @@ const App = () => (
   <I18nextProvider i18n={i18n}>
     <AuthProvider>
       <BrowserRouter>
-        <RouterManager>
-          <div className="min-h-screen flex flex-col bg-gradient-to-br from-white via-gray-50 to-green-50 dark:from-lux-black dark:via-gray-950 dark:to-green-950">
-            <Navbar />
-            <main className="flex-1">
-              <Suspense fallback={<LoadingScreen />}>
-                <Routes>
-                  <Route path="/" element={<Navigate to="/home" />} />
-                  <Route path="/home" element={<LazyHome />} />
-                  <Route path="/products/:id" element={<LazyProductDetails />} />
-                  <Route path="/cart" element={<LazyCart />} />
-                  <Route path="/checkout" element={<LazyCheckout />} />
-                  <Route path="/order-success" element={<LazyOrderSuccess />} />
-                  <Route path="/auth" element={<LazyAuth />} />
-                  {/* Legacy admin login page */}
-                  <Route path="/admin/login" element={<LazyLogin />} />
+        <RouterManager />
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-white via-gray-50 to-green-50 dark:from-lux-black dark:via-gray-950 dark:to-green-950">
+          <Navbar />
+          <main className="flex-1">
+            <Suspense fallback={<LoadingScreen />}>
+              <Routes>
+                <Route path="/" element={<Navigate to="/home" />} />
+                <Route path="/home" element={<LazyHome />} />
+                <Route path="/products/:id" element={<LazyProductDetails />} />
+                <Route path="/cart" element={<LazyCart />} />
+                <Route path="/checkout" element={<LazyCheckout />} />
+                <Route path="/order-success" element={<LazyOrderSuccess />} />
+                <Route path="/auth" element={<LazyAuth />} />
+                {/* Legacy admin login page */}
+                <Route path="/admin/login" element={<LazyLogin />} />
 
-                  {/* Admin protected routes */}
-                  <Route
-                    path="/admin/dashboard"
-                    element={<RoleProtectedRoute allowedRoles={["admin"]}><LazyAdminDashboard /></RoleProtectedRoute>}
-                  />
-                  <Route
-                    path="/admin/product/new"
-                    element={<RoleProtectedRoute allowedRoles={["admin"]}><LazyAddOrEditProduct /></RoleProtectedRoute>}
-                  />
-                  <Route
-                    path="/admin/product/edit/:id"
-                    element={<RoleProtectedRoute allowedRoles={["admin"]}><LazyAddOrEditProduct /></RoleProtectedRoute>}
-                  />
+                {/* Admin protected routes */}
+                <Route
+                  path="/admin/dashboard"
+                  element={<RoleProtectedRoute allowedRoles={["admin"]}><LazyAdminDashboard /></RoleProtectedRoute>}
+                />
+                <Route
+                  path="/admin/product/new"
+                  element={<RoleProtectedRoute allowedRoles={["admin"]}><LazyAddOrEditProduct /></RoleProtectedRoute>}
+                />
+                <Route
+                  path="/admin/product/edit/:id"
+                  element={<RoleProtectedRoute allowedRoles={["admin"]}><LazyAddOrEditProduct /></RoleProtectedRoute>}
+                />
 
-                  {/* Unauthorized fallback */}
-                  <Route path="/unauthorized" element={<UnauthorizedScreen />} />
-                  {/* Loading fallback; can be used for suspense */}
-                  <Route path="/loading" element={<LoadingScreen />} />
+                {/* Unauthorized fallback */}
+                <Route path="/unauthorized" element={<UnauthorizedScreen />} />
+                {/* Loading fallback; can be used for suspense */}
+                <Route path="/loading" element={<LoadingScreen />} />
 
-                  <Route path="*" element={
-                    <div className="py-32 text-center text-xl">404 Not Found</div>
-                  } />
-                </Routes>
-              </Suspense>
-            </main>
-            <Footer />
-          </div>
-        </RouterManager>
+                <Route path="*" element={
+                  <div className="py-32 text-center text-xl">404 Not Found</div>
+                } />
+              </Routes>
+            </Suspense>
+          </main>
+          <Footer />
+        </div>
       </BrowserRouter>
     </AuthProvider>
   </I18nextProvider>
