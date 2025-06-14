@@ -63,7 +63,8 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
     });
     toast({
       duration: 1250,
-      title: <DopamineConfirm />,
+      title: "Added to cart!",
+      description: <DopamineConfirm />,
       variant: "default"
     });
   };
@@ -74,11 +75,14 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       updateQty(product.id.toString(), (quantity ?? 0) + 1);
       toast({
         duration: 900,
-        variant: "default",
-        title: <div className="flex items-center gap-2">
+        title: "Added another!",
+        description: (
+          <div className="flex items-center gap-2">
             <Plus size={16} className="inline text-green-600" />
             <span>Added another!</span>
           </div>
+        ),
+        variant: "default"
       });
     }
   };
@@ -91,7 +95,13 @@ const ProductCard: FC<{ product: Product }> = ({ product }) => {
       removeFromCart(product.id.toString());
       toast({
         duration: 1000,
-        title: <div className="flex items-center gap-2"><Minus size={16} className="inline text-red-600" />Removed from cart</div>,
+        title: "Removed from cart",
+        description: (
+          <div className="flex items-center gap-2">
+            <Minus size={16} className="inline text-red-600" />
+            Removed from cart
+          </div>
+        ),
         variant: "destructive"
       });
     }

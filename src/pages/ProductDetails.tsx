@@ -58,7 +58,8 @@ const ProductDetails = () => {
     }, qty);
     toast({
       duration: 1350,
-      title: <DopamineConfirm />,
+      title: "Added to cart!",
+      description: <DopamineConfirm />,
       variant: "default"
     });
   };
@@ -81,7 +82,13 @@ const ProductDetails = () => {
       removeFromCart(product.id?.toString());
       toast({
         duration: 1000,
-        title: <div className="flex items-center gap-2"><Minus size={16} className="inline text-red-600" />Removed from cart</div>,
+        title: "Removed from cart",
+        description: (
+          <div className="flex items-center gap-2">
+            <Minus size={16} className="inline text-red-600" />
+            Removed from cart
+          </div>
+        ),
         variant: "destructive"
       });
     }
