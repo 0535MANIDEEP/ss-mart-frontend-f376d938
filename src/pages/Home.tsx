@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import Loader from "@/components/Loader";
@@ -151,7 +150,7 @@ const Home = () => {
       {!loading && !error && filtered.length > 0 && (
         <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 animate-fade-in"
-          variants={gridVariants}
+          variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 0.2 } } }}
           initial="hidden"
           animate="visible"
         >
