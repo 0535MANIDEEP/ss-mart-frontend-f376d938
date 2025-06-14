@@ -1,9 +1,7 @@
-
 import { render, screen } from "@testing-library/react";
 import ProductReviews from "../components/ProductReviews";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
-import { describe, it, beforeEach, expect } from "@jest/globals";
 
 describe("ProductReviews", () => {
   beforeEach(() => {
