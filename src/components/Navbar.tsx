@@ -3,12 +3,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useEffect, useMemo, useState } from "react";
-import { ShoppingCart, Menu, User, LogIn, LogOut, Home, Shield } from "lucide-react";
+import { ShoppingCart, Menu, User, LogIn, Shield, LogOut, Home } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import AuthModal from "./AuthModal";
 
-// Role badge color mapping for clarity
 const roleBadgeColor = {
   guest: "bg-gray-200 text-gray-700 border-gray-300",
   user: "bg-blue-100 text-blue-700 border-blue-300",
@@ -17,13 +17,16 @@ const roleBadgeColor = {
 
 const Navbar = () => {
   const items = useCartStore(state => state.items);
-  const { user, signOut, role, loading } = useSupabaseAuth();
+  const { user, role, signOut, loading } = useSupabaseAuth();
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
   const cartTotal = useMemo(() => items.reduce((s, i) => s + i.price * i.quantity, 0), [items]);
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useTranslation();
+
+  // MODAL state
+  const [authModal, setAuthModal] = useState<null | "login" | "signup">(null);
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
 
@@ -33,14 +36,13 @@ const Navbar = () => {
     navigate("/");
   };
 
-  // Display role badge text
   const displayRole = loading
     ? "..."
     : role === "user"
-      ? t("user") || "User"
-      : role === "admin"
-        ? t("admin") || "Admin"
-        : t("guest") || "Guest";
+    ? t("user") || "User"
+    : role === "admin"
+    ? t("admin") || "Admin"
+    : t("guest") || "Guest";
 
   return (
     <nav className="flex justify-between items-center bg-white dark:bg-lux-black shadow w-full px-3 sm:px-8 py-3 z-50 sticky top-0 transition select-none">
@@ -98,6 +100,10 @@ const Navbar = () => {
         </Link>
         {user ? (
           <>
+            <span className="flex flex-col items-start md:items-center md:flex-row gap-1 md:gap-1">
+              <span className="text-xs text-gray-500 font-medium">{user.email}</span>
+              <span className="md:ml-1 text-xs text-gray-400">({role})</span>
+            </span>
             {role === "admin" && (
               <Link to="/admin/dashboard" className="hover:underline flex items-center gap-1 text-green-600 font-semibold">
                 <Shield className="size-4" /> Admin {t("dashboard")}
@@ -117,12 +123,18 @@ const Navbar = () => {
           </>
         ) : (
           <>
-            <Link
-              to="/auth"
-              className={`${location.pathname === "/auth" ? "font-bold text-green-600 dark:text-lux-gold" : ""} hover:underline flex items-center gap-1`}
+            <button
+              onClick={() => setAuthModal("login")}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded mr-3 font-medium flex items-center gap-1 transition"
             >
-              <LogIn className="size-4" /> {t("adminLogin")}
-            </Link>
+              <LogIn className="size-4" /> Login
+            </button>
+            <button
+              onClick={() => setAuthModal("signup")}
+              className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded font-medium flex items-center gap-1 transition"
+            >
+              <User className="size-4" /> Sign Up
+            </button>
           </>
         )}
         <div className="flex gap-4 ml-4 mt-6 md:mt-0 items-center">
@@ -130,9 +142,10 @@ const Navbar = () => {
           <LanguageSwitcher />
         </div>
       </div>
+      {/* Modal for Auth */}
+      <AuthModal open={!!authModal} mode={authModal as "login"|"signup"|null} onClose={() => setAuthModal(null)} />
     </nav>
   );
 };
 
 export default Navbar;
-
