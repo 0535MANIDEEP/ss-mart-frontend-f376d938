@@ -10,6 +10,8 @@ import AddToCartButton from "./AddToCartButton";
 import BuyNowButton from "./BuyNowButton";
 import QuantitySelector from "./QuantitySelector";
 import ProductImage from "./ProductImage";
+import { Link } from "react-router-dom";
+import { ROUTES } from "@/routes";
 
 // Strict type for translated product 
 type MultiLang = { en: string; hi?: string; te?: string };
@@ -126,7 +128,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
     if (onClick) {
       onClick(product);
     } else {
-      navigate(`/products/${product.id}`);
+      navigate(ROUTES.PRODUCT(product.id));
     }
   };
 
@@ -150,10 +152,20 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
       role="article"
       onClick={toDetails}
     >
-      <ProductImage src={product.image_url} alt={name} size="medium" className="mb-3" />
+      <Link
+        to={ROUTES.PRODUCT(product.id)}
+        onClick={e => e.stopPropagation()}
+        tabIndex={0}
+        aria-label={t("viewDetails")}
+        title={name}
+        className="block"
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
+        <ProductImage src={product.image_url} alt={name} size="medium" className="mb-3" />
+      </Link>
       <h3
         className="text-lg font-semibold mb-1 truncate text-lux-black dark:text-lux-gold cursor-pointer group-hover:underline"
-        onClick={e => { e.stopPropagation(); toDetails(); }}
+        onClick={e => { e.stopPropagation(); navigate(ROUTES.PRODUCT(product.id)); }}
         tabIndex={0}
         title={name}
         style={{ marginBottom: 6 }}

@@ -1,3 +1,4 @@
 
 import { Navigate } from "react-router-dom";
-export default function Index() { return <Navigate to="/home" />; }
+import { ROUTES } from "@/routes";
+export default function Index() { return <Navigate to={ROUTES.HOME} />; }

@@ -9,6 +9,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import AuthModal from "./AuthModal";
 import { Button } from "@/components/ui/button";
+import { ROUTES } from "@/routes";
 
 const badgeStyle = {
   guest: "bg-gray-100 text-gray-600 border-gray-300",
@@ -35,19 +36,19 @@ const NavbarRoleItems = ({ role, user, t, onLogin, onSignup, onLogout }) => {
       return (
         <>
           <Link
-            to="/home"
+            to={ROUTES.HOME}
             className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             <Home className="inline mr-1" /> {t("home")}
           </Link>
           <Link
-            to="/cart"
+            to={ROUTES.CART}
             className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             <ShoppingCart className="inline mr-1" /> {t("cart")}
           </Link>
           <Link
-            to="/order-success"
+            to={ROUTES.ORDER_SUCCESS}
             className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
           >
             <User className="inline mr-1" /> {t("profile")}
@@ -64,7 +65,7 @@ const NavbarRoleItems = ({ role, user, t, onLogin, onSignup, onLogout }) => {
       return (
         <>
           <Link
-            to="/admin/dashboard"
+            to={ROUTES.ADMIN_DASHBOARD}
             className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-yellow-400 font-semibold"
           ><Shield className="inline mb-0.5" /> {t("dashboard")}</Link>
           <Button
@@ -94,7 +95,7 @@ const Navbar = () => {
   const handleLogout = async () => {
     await signOut();
     localStorage.clear();
-    navigate("/");
+    navigate(ROUTES.ROOT);
   };
 
   return (
@@ -105,7 +106,7 @@ const Navbar = () => {
           aria-label="Open Menu" onClick={() => setMenuOpen(v => !v)}>
           <Menu size={24} className="text-gray-700 dark:text-lux-gold" />
         </button>
-        <Link to="/" className="text-2xl font-black text-primary dark:text-lux-gold tracking-wide ml-2 sm:ml-0 flex items-center gap-2">
+        <Link to={ROUTES.ROOT} className="text-2xl font-black text-primary dark:text-lux-gold tracking-wide ml-2 sm:ml-0 flex items-center gap-2">
           {t("brand")}
         </Link>
       </div>
@@ -132,7 +133,7 @@ const Navbar = () => {
           />
         </div>
         <Link
-          to="/cart"
+          to={ROUTES.CART}
           className="ml-5 relative flex items-center group focus:outline-none"
           aria-label={t("cart")}
           tabIndex={0}

@@ -4,6 +4,7 @@ import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import LoadingScreen from "@/components/LoadingScreen";
 import UnauthorizedScreen from "@/components/UnauthorizedScreen";
+import { ROUTES } from "@/routes";
 
 /**
  * Central router gate that handles:
@@ -16,12 +17,12 @@ const RouterManager = () => {
   const location = useLocation();
 
   if (loading) return <LoadingScreen />;
-  // Always allow /unauthorized, /loading, /not-found for all users
-  if (["/unauthorized", "/loading", "/not-found"].includes(location.pathname)) return <Outlet />;
-  // Special routes: redirect admin to dashboard root
-  if (role === "admin" && location.pathname === "/home") return <Navigate to="/admin/dashboard" replace />;
+  // Always allow unauthorized, loading, not-found for all users
+  if ([ROUTES.UNAUTHORIZED, ROUTES.LOADING, ROUTES.NOT_FOUND].includes(location.pathname)) return <Outlet />;
+  // Special route: redirect admin to dashboard root
+  if (role === "admin" && location.pathname === ROUTES.HOME) return <Navigate to={ROUTES.ADMIN_DASHBOARD} replace />;
   if (!user && (location.pathname.startsWith("/admin") || location.pathname.startsWith("/order-success"))) {
-    return <Navigate to="/unauthorized" />;
+    return <Navigate to={ROUTES.UNAUTHORIZED} />;
   }
   return <Outlet />;
 };
