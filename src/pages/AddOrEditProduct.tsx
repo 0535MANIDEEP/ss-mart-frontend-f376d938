@@ -1,6 +1,6 @@
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -8,14 +8,7 @@ import api from "@/api/axios";
 import Loader from "@/components/Loader";
 import { useAuthStore } from "@/store/authStore";
 
-const schema = yup.object().shape({
-  name: yup.string().required("Required"),
-  price: yup.number().typeError("Number required").min(1).required("Required"),
-  stock: yup.number().min(0, "Non-negative").required("Required"),
-  description: yup.string().required("Required"),
-  image: yup.string().url("Must be URL").required("Required"),
-});
-
+// Make all fields required for proper types
 type FormValues = {
   name: string;
   price: number;
@@ -24,6 +17,22 @@ type FormValues = {
   image: string;
 };
 
+const schema: yup.ObjectSchema<FormValues> = yup.object({
+  name: yup.string().required("Required"),
+  price: yup
+    .number()
+    .typeError("Number required")
+    .min(1, "Price must be at least 1")
+    .required("Required"),
+  stock: yup
+    .number()
+    .typeError("Number required")
+    .min(0, "Non-negative")
+    .required("Required"),
+  description: yup.string().required("Required"),
+  image: yup.string().url("Must be URL").required("Required"),
+}) as yup.ObjectSchema<FormValues>;
+
 const AddOrEditProduct = () => {
   const { id } = useParams();
   const isEdit = !!id;
@@ -31,9 +40,14 @@ const AddOrEditProduct = () => {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
   const {
-    register, handleSubmit, reset, setValue, formState: { errors, isSubmitting }, watch
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors, isSubmitting },
+    watch,
   } = useForm<FormValues>({
-    resolver: yupResolver(schema)
+    resolver: yupResolver<FormValues>(schema)
   });
 
   useEffect(() => {
@@ -41,10 +55,13 @@ const AddOrEditProduct = () => {
 
     if (isEdit) {
       api.get(`/products/${id}`).then(({ data }) => {
-        // Only set keys that exist in form
-        Object.entries(data).forEach(([k, v]) => {
+        // Only set keys that exist in form strictly
+        (Object.entries(data) as [keyof FormValues, unknown][]).forEach(([k, v]) => {
           if (["name", "price", "stock", "description", "image"].includes(k)) {
-            setValue(k as keyof FormValues, v);
+            setValue(
+              k,
+              v as FormValues[typeof k]
+            );
           }
         });
       });
@@ -53,7 +70,7 @@ const AddOrEditProduct = () => {
     }
   }, [isEdit, id, isAuthenticated, navigate, setValue, reset]);
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
     if (isEdit) {
       await api.put(`/products/${id}`, values);
     } else {
