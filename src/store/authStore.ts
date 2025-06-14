@@ -1,8 +1,6 @@
-
+// Deprecated authStore; keep legacy interface for AdminDashboard
 import { create } from "zustand";
-
 const AUTH_KEY = "ssmart_token";
-
 const getToken = () => sessionStorage.getItem(AUTH_KEY);
 
 interface AuthState {
@@ -11,7 +9,6 @@ interface AuthState {
   login: (token: string) => void;
   logout: () => void;
 }
-
 export const useAuthStore = create<AuthState>((set) => ({
   token: getToken(),
   isAuthenticated: !!getToken(),
@@ -24,3 +21,4 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ token: null, isAuthenticated: false });
   }
 }));
+// Prefer useSupabaseAuth moving forward.

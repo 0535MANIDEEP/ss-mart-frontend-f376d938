@@ -1,17 +1,17 @@
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useAuthStore } from "@/store/authStore";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useEffect, useState, useMemo } from "react";
-import { ShoppingCart, Menu } from "lucide-react";
+import { ShoppingCart, Menu, User, LogIn, LogOut } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
   const items = useCartStore(state => state.items);
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-  const logout = useAuthStore(state => state.logout);
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated); // legacy
+  const { user, signOut } = useSupabaseAuth();
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
   // NEW: Live total price for nav cart
   const cartTotal = useMemo(() => items.reduce((s, i) => s + i.price * i.quantity, 0), [items]);
@@ -24,18 +24,18 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const storedRole = localStorage.getItem("role");
-    if (storedRole === "admin") {
+    // We'll check role from Supabase soon. For now keep legacy logic.
+    if (user && user.email === "admin@example.com") {
       setRole("Admin");
-    } else if (storedRole) {
+    } else if (user) {
       setRole("User");
     } else {
       setRole("Guest");
     }
-  }, [isAuthenticated]);
+  }, [user]);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await signOut();
     localStorage.clear();
     navigate("/");
   };
@@ -61,7 +61,6 @@ const Navbar = () => {
           {t("brand")}
         </Link>
       </div>
-
       {/* CENTER/MAIN: Nav Links */}
       <div className={`fixed inset-0 z-50 bg-white/90 dark:bg-lux-black/90 backdrop-blur-sm transform ${menuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 md:relative md:inset-auto md:flex md:gap-8 md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none md:translate-x-0 flex flex-col md:flex-row items-center md:static md:py-0 py-14 px-6 md:p-0`}>
         <button className="md:hidden absolute top-3 right-6 text-lg text-gray-500 hover:text-red-600" aria-label="Close Menu" onClick={() => setMenuOpen(false)}>×</button>
@@ -107,23 +106,25 @@ const Navbar = () => {
             </span>
           )}
         </Link>
-        {isAuthenticated ? (
+        {user ? (
           <>
             <Link to="/admin/dashboard" className="hover:underline">{t("dashboard")}</Link>
             <button
               onClick={handleLogout}
-              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition focus:outline-none"
+              className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition focus:outline-none flex items-center gap-1"
             >
-              {t("logout")}
+              <LogOut className="size-4" /> {t("logout")}
             </button>
           </>
         ) : (
-          <Link
-            to="/admin/login"
-            className={`${location.pathname === "/admin/login" ? "font-bold text-green-600 dark:text-lux-gold" : ""} hover:underline`}
-          >
-            {t("adminLogin")}
-          </Link>
+          <>
+            <Link
+              to="/auth"
+              className={`${location.pathname === "/auth" ? "font-bold text-green-600 dark:text-lux-gold" : ""} hover:underline flex items-center gap-1`}
+            >
+              <LogIn className="size-4" /> {t("adminLogin")}
+            </Link>
+          </>
         )}
         <div className="flex gap-4 ml-4 mt-6 md:mt-0 items-center">
           {/* RIGHT: Dark mode + Language text-only switcher */}
