@@ -8,6 +8,13 @@ import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 
+// Role badge color mapping for clarity
+const roleBadgeColor = {
+  guest: "bg-gray-200 text-gray-700 border-gray-300",
+  user: "bg-blue-100 text-blue-700 border-blue-300",
+  admin: "bg-lux-gold/20 text-yellow-700 border-yellow-400 font-bold"
+};
+
 const Navbar = () => {
   const items = useCartStore(state => state.items);
   const { user, signOut, role, loading } = useSupabaseAuth();
@@ -26,6 +33,15 @@ const Navbar = () => {
     navigate("/");
   };
 
+  // Display role badge text
+  const displayRole = loading
+    ? "..."
+    : role === "user"
+      ? t("user") || "User"
+      : role === "admin"
+        ? t("admin") || "Admin"
+        : t("guest") || "Guest";
+
   return (
     <nav className="flex justify-between items-center bg-white dark:bg-lux-black shadow w-full px-3 sm:px-8 py-3 z-50 sticky top-0 transition select-none">
       <div className="flex items-center gap-1">
@@ -39,8 +55,9 @@ const Navbar = () => {
       </div>
       <div className={`fixed inset-0 z-50 bg-white/90 dark:bg-lux-black/90 backdrop-blur-sm transform ${menuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-300 md:relative md:inset-auto md:flex md:gap-8 md:bg-transparent md:dark:bg-transparent md:backdrop-blur-none md:translate-x-0 flex flex-col md:flex-row items-center md:static md:py-0 py-14 px-6 md:p-0`}>
         <button className="md:hidden absolute top-3 right-6 text-lg text-gray-500 hover:text-red-600" aria-label="Close Menu" onClick={() => setMenuOpen(false)}>×</button>
-        <span className="text-base italic sm:inline-block mb-5 md:mb-0 text-gray-600 dark:text-gray-300">
-          {t("loggedInAs")}: <strong>{loading ? "..." : role.charAt(0).toUpperCase() + role.slice(1)}</strong>
+        <span className={`flex items-center gap-2 mb-5 md:mb-0 ${roleBadgeColor[role as keyof typeof roleBadgeColor] || roleBadgeColor.guest} border font-medium px-3 py-1 rounded-full text-sm shadow-sm`} aria-label="Role">
+          <User size={16} className="inline -mt-0.5" />
+          {displayRole}
         </span>
         <Link
           to="/home"
@@ -118,3 +135,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
