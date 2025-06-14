@@ -128,7 +128,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
     if (onClick) {
       onClick(product);
     } else {
-      navigate(ROUTES.PRODUCT(product.id));
+      navigate(ROUTES.PRODUCT(product.id.toString()));
     }
   };
 
@@ -153,7 +153,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={toDetails}
     >
       <Link
-        to={ROUTES.PRODUCT(product.id)}
+        to={ROUTES.PRODUCT(product.id.toString())}
         onClick={e => e.stopPropagation()}
         tabIndex={0}
         aria-label={t("viewDetails")}
@@ -165,7 +165,7 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
       </Link>
       <h3
         className="text-lg font-semibold mb-1 truncate text-lux-black dark:text-lux-gold cursor-pointer group-hover:underline"
-        onClick={e => { e.stopPropagation(); navigate(ROUTES.PRODUCT(product.id)); }}
+        onClick={e => { e.stopPropagation(); navigate(ROUTES.PRODUCT(product.id.toString())); }}
         tabIndex={0}
         title={name}
         style={{ marginBottom: 6 }}
@@ -186,9 +186,9 @@ const ProductCard: FC<ProductCardProps> = ({ product, onClick }) => {
                 onDec={handleDec}
               />
           ) : (
-            <AddToCartButton product={{...product, id: product.id, name, image: product.image_url}} />
+            <AddToCartButton product={{...product, id: product.id.toString(), name, image: product.image_url}} />
           )}
-          <BuyNowButton product={{...product, id: product.id, name, image: product.image_url}} />
+          <BuyNowButton product={{...product, id: product.id.toString(), name, image: product.image_url}} />
         </div>
       </div>
     </motion.div>
