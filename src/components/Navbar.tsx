@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useEffect, useMemo, useState } from "react";
-import { ShoppingCart, Menu, User, LogIn, LogOut, Home, Admin } from "lucide-react";
+import { ShoppingCart, Menu, User, LogIn, LogOut, Home, Shield } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
@@ -86,7 +86,7 @@ const Navbar = () => {
             {/* Admin controls */}
             {role === "admin" && (
               <Link to="/admin/dashboard" className="hover:underline flex items-center gap-1 text-green-600 font-semibold">
-                <Admin className="size-4" /> Admin {t("dashboard")}
+                <Shield className="size-4" /> Admin {t("dashboard")}
               </Link>
             )}
             {/* User controls */}
