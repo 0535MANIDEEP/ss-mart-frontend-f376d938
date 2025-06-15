@@ -5,63 +5,93 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
 const heroVariants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, duration: 1 as const } },
+  hidden: { opacity: 0, y: 32 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", duration: 0.7 } },
 };
 const subVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { delay: 0.35, duration: 0.7 as const } },
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { delay: 0.21, duration: 0.6 } },
 };
 
 const HeroSection: React.FC = () => {
   const { t } = useTranslation();
   return (
     <motion.section
-      className="lux-hero animate-fade-in w-full max-w-2xl mx-auto"
+      className="w-full max-w-2xl mx-auto mt-2 sm:mt-6 mb-6 px-2"
       initial="hidden"
       animate="visible"
       aria-label="SS MART Introduction"
     >
-      <motion.h1
-        className="text-4xl lg:text-5xl font-bold mb-2 tracking-tight font-sans"
-        variants={heroVariants}
-      >
-        <span className="bg-gradient-to-r from-yellow-500 to-yellow-300 bg-clip-text text-transparent drop-shadow-[0_2px_24px_rgba(212,175,55,0.15)]">
-          {t("brand")}
-        </span>
-      </motion.h1>
-      <motion.p
-        className="text-lg mb-2 mt-2 leading-relaxed text-lux-gold/90 font-medium"
-        variants={subVariants}
-      >
-        Sai Sangameshwara Mart &mdash; {t("shankarpally")}'s luxury marketplace.
-      </motion.p>
-      <div className="flex flex-col gap-2 mt-2">
-        {/* App banner for showroom mode */}
-        <div className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded text-center text-sm font-semibold dark:bg-[#E8C40033] dark:text-lux-gold border border-yellow-300 mb-2">
-          ⚠️ No Delivery. Visit SS MART to complete your reservation!
-        </div>
-        <Button className="bg-primary text-white rounded-lg px-5 py-2 text-lg font-semibold shadow hover:bg-primary/90 max-w-xs mx-auto">
-          Browse & Reserve In-Store
-        </Button>
-      </div>
       <motion.div
-        className="flex items-center gap-2 text-sm text-lux-gold font-medium mt-3"
-        variants={subVariants}
+        className="bg-white/90 dark:bg-[#191929] border border-yellow-200 dark:border-[#FFD70033] rounded-2xl shadow-frost py-7 px-3 xs:px-7 flex flex-col items-center animate-fade-in"
+        variants={heroVariants}
+        style={{
+          boxShadow: "0 4px 20px 0 #FFD70011, 0 0.5px 12px #FFD70011"
+        }}
       >
-        <svg className="inline mr-1" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={2}>
-          <circle cx="10" cy="10" r="9" stroke="#FFD700"/><path d="M10 10v4l2 2" stroke="#FFD700"/><path d="M10 6a4 4 0 1 1-2.8 1.2" stroke="#FFD700"/>
-        </svg>
-        {t("shankarpally")}, Telangana &bull;&nbsp;
-        <a
-          href="https://g.co/kgs/v1e9RSN"
-          className="underline hover:text-lux-gold"
-          target="_blank"
-          rel="noopener"
-          aria-label={t("googleMaps")}
+        <motion.h1
+          className="text-3xl xs:text-4xl font-bold mb-1 text-center font-sans tracking-wide"
+          style={{
+            color: "#FFD700",
+            textShadow: "0 4px 16px #FFD70022"
+          }}
+          variants={heroVariants}
         >
-          {t("googleMaps")}
-        </a>
+          SS MART
+        </motion.h1>
+        <motion.p
+          className="text-base xs:text-lg mb-2 mt-2 leading-snug sm:leading-relaxed text-gray-800 dark:text-lux-gold font-medium text-center"
+          style={{ fontWeight: 500 }}
+          variants={subVariants}
+        >
+          Sai Sangameshwara Mart &mdash; <span className="hidden xs:inline">{t("shankarpally")},</span> Telangana's luxury marketplace.
+        </motion.p>
+
+        {/* Delivery warning */}
+        <motion.div
+          className="my-3 xs:my-3 bg-yellow-50 border border-yellow-300 dark:bg-[#E8C40033] dark:border-[#FFD70055] text-yellow-900 dark:text-lux-gold w-full rounded-lg px-3 py-2 font-semibold shadow text-sm flex items-center justify-center text-center"
+          variants={subVariants}
+          style={{ maxWidth: 410 }}
+        >
+          <span className="flex gap-1.5 items-center justify-center text-md">
+            <span aria-hidden="true">⚠️</span>
+            <span>{t("noDelivery") || "No Delivery. Visit SS MART to complete your reservation!"}</span>
+          </span>
+        </motion.div>
+
+        <motion.div
+          className="w-full flex justify-center mt-1 mb-2"
+          variants={subVariants}
+        >
+          <Button
+            className="bg-lux-blue hover:bg-lux-gold/90 text-white dark:text-lux-black font-bold rounded-xl px-6 py-2 transition w-full max-w-xs text-center shadow-cta text-lg"
+          >
+            {t("browseReserveNow") || "Browse & Reserve In-Store"}
+          </Button>
+        </motion.div>
+
+        <motion.div
+          className="flex flex-col xs:flex-row xs:items-center gap-y-1 xs:gap-x-2 text-sm text-lux-gold/95 font-medium mt-2 text-center xs:text-start justify-center"
+          variants={subVariants}
+        >
+          <span className="flex items-center gap-1">
+            <svg className="inline" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={2}>
+              <circle cx="9" cy="9" r="7.8" stroke="#FFD700"/><path d="M9 10v3l2 2" stroke="#FFD700"/><path d="M9 6a4 4 0 1 1-2.6 1.2" stroke="#FFD700"/>
+            </svg>
+            <span className="ml-0.5">{t("shankarpally")},{" Telangana"}</span>
+          </span>
+          <span className="hidden xs:inline">•</span>
+          <a
+            href="https://g.co/kgs/v1e9RSN"
+            className="underline hover:text-lux-blue font-medium ml-0.5"
+            style={{ textDecorationThickness: 2 }}
+            target="_blank"
+            rel="noopener"
+            aria-label={t("googleMaps")}
+          >
+            {t("googleMaps")}
+          </a>
+        </motion.div>
       </motion.div>
     </motion.section>
   );
