@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
@@ -104,7 +103,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="w-full sticky top-0 z-50 bg-white/90 dark:bg-lux-black/90 border-b border-gray-200 dark:border-lux-gold shadow backdrop-blur-md">
+      <nav className="w-full sticky top-0 z-50 bg-white/90 dark:bg-lux-black/90 border-b border-gray-200 dark:border-lux-gold backdrop-blur-md">
         <div className="flex items-center justify-between px-4 sm:px-8 py-2 min-h-[56px] gap-2">
           <div className="flex items-center gap-3">
             {menuButton}

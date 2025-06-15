@@ -63,9 +63,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     useWishlistStore.getState().fetchWishlist(user);
   }, [user]);
 
+  // Universal translation for name and description
   const lang = i18n.language || "en";
-  const name = getProductField(product.name, lang, t("noDescription") || "No desc");
-  const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
+  const name = t(product.name) || getProductField(product.name, lang, t("noDescription") || "No desc");
+  const desc = t(product.description) || getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
   // Add to Cart: Only works if qty > 0, resets qty after, fires toast
@@ -117,7 +118,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <>
       <motion.div
-        className="product-card-root group hover:scale-[1.025] hover:shadow-lg focus-within:scale-[1.025] transition-transform outline-none"
+        className="product-card-root group hover:scale-[1.025] focus-within:scale-[1.025] transition-transform outline-none bg-white dark:bg-[#232336] border border-yellow-100 dark:border-[#FFD70033] rounded-xl"
         style={{ minHeight: 420 }}
         initial="rest"
         whileHover="hover"
@@ -140,7 +141,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
         </div>
         <div
-          className="product-card-image hover:scale-[1.01] group-hover:shadow-xl group-focus-within:scale-[1.01] transition-all"
+          className="product-card-image group-hover:scale-[1.01] group-hover:border-yellow-400 transition-all"
           tabIndex={0}
           aria-label={name}
           role="button"
@@ -163,7 +164,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         </div>
         <div className="product-card-info">
           <h3
-            className="font-bold truncate text-lg card-title focus:underline cursor-pointer text-gray-800 dark:text-[#FFD700] dark:drop-shadow-lg"
+            className="font-bold truncate text-lg card-title focus:underline cursor-pointer text-gray-800 dark:text-[#FFD700]"
             title={name}
             tabIndex={0}
             aria-label={name}
@@ -173,13 +174,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
             }}
             style={{ minHeight: 32 }}
           >
-            {name || <span className="text-red-600">No name</span>}
+            {name || <span className="text-red-600">{t("noDescription")}</span>}
           </h3>
-          <p className="product-card-desc dark:text-[#eedd99] dark:font-medium dark:drop-shadow text-[.98rem]">
-            {desc || <span className="text-red-600">No desc</span>}
+          <p className="product-card-desc dark:text-[#eedd99] dark:font-medium text-[.98rem]">
+            {desc || <span className="text-red-600">{t("noDescription")}</span>}
           </p>
           <div className="flex items-center justify-between mt-1 gap-2">
-            <span className="text-green-700 font-bold text-lg dark:text-lux-gold dark:drop-shadow-lg">₹{product.price}</span>
+            <span className="text-green-700 font-bold text-lg dark:text-lux-gold">{`₹${product.price}`}</span>
             <span
               className={`
                 text-xs px-2 py-1 rounded-full font-medium
@@ -189,14 +190,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
               `}
               style={{ minWidth: 85, textAlign: "center" }}
             >
-              {isOutOfStock ? t("outOfStock") || "Out of Stock" : t("inStock") || "In Stock"}
+              {isOutOfStock ? t("outOfStock") : t("inStock")}
             </span>
           </div>
+          {/* Remove card controls shadow */}
           <div className="product-card-controls">
             {!isOutOfStock ? (
               <div className="qty-atc-row" onClick={e => e.stopPropagation()}>
                 <button
-                  aria-label={t("subtract") || "Minus"}
+                  aria-label={t("subtract")}
                   className="qty-btn hover:scale-110 transition-transform"
                   type="button"
                   disabled={qty === 0}
@@ -205,6 +207,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                     background: "#fff",
                     color: "#232336",
                     border: "1.5px solid #feea9d",
+                    boxShadow: "none"
                   }}
                   onClick={() => setQty(q => (q > 0 ? q - 1 : 0))}
                 >
@@ -212,7 +215,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 </button>
                 <span className="qty-count" aria-live="polite" tabIndex={0}>{qty}</span>
                 <button
-                  aria-label={t("add") || "Plus"}
+                  aria-label={t("add")}
                   className="qty-btn hover:scale-110 transition-transform"
                   type="button"
                   disabled={qty >= product.stock}
@@ -221,20 +224,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                     background: "#232336",
                     color: "#FFD700",
                     border: "1.5px solid #feea9d",
+                    boxShadow: "none"
                   }}
                   onClick={() => setQty(q => Math.min(q + 1, product.stock))}
                 >
                   <Plus size={20} />
                 </button>
-                {/* Reserve in Store (was Add to Cart) */}
+                {/* Reserve in Store */}
                 {qty > 0 && (
                   <Button
                     size="default"
                     className="bg-green-600 text-white rounded-md px-3 py-1 mt-2 hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
-                    aria-label="Reserve in Store"
+                    aria-label={t("reserveInStore") || "Reserve in Store"}
                     onClick={e => {
                       e.stopPropagation();
-                      // Add to "visit list"
                       addToCart({
                         _id: product.id.toString(),
                         name,
@@ -246,7 +249,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
                       toast({
                         duration: 1400,
-                        title: "Reserved! Show summary at SS MART",
+                        title: t("addedToCart"),
                         description: (
                           <div className="flex items-center gap-2">
                             <span className="animate-pulse">✅</span>
@@ -256,20 +259,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                         variant: "default",
                       });
 
-                      setQty(0); // reset count
+                      setQty(0);
                     }}
                     type="button"
                     disabled={isOutOfStock || product.stock < 1}
                     tabIndex={0}
-                    style={{ minHeight: 44, borderRadius: 8, marginLeft: 8 }}
+                    style={{ minHeight: 44, borderRadius: 8, marginLeft: 8, boxShadow: "none" }}
                   >
-                    Reserve in Store
+                    {t("reserveInStore") || "Reserve in Store"}
                   </Button>
                 )}
               </div>
             ) : (
               <div className="out-of-stock-text dark:text-[#ff8877] dark:bg-[#352221]/50">
-                {t("outOfStock") || "Out of Stock"}
+                {t("outOfStock")}
               </div>
             )}
           </div>
@@ -281,8 +284,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
             aria-label={t("viewDetails")}
             tabIndex={0}
             type="button"
+            style={{ boxShadow: "none" }}
           >
-            {t("viewDetails") || "View Product"}
+            {t("viewDetails")}
           </Button>
         </div>
       </motion.div>

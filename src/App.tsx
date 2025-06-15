@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -33,9 +32,10 @@ const LazyAddOrEditProduct = React.lazy(() => import("@/pages/AddOrEditProduct")
 const LazyLogin = React.lazy(() => import("@/auth/Login"));
 const LazyAuth = React.lazy(() => import("@/pages/Auth"));
 const LazyVisitList = React.lazy(() => import("@/pages/VisitList"));
+import PageWrapper from "@/layout/PageWrapper";
 
 const App = () => (
-  <I18nextProvider i18n={i18n}>
+  <PageWrapper>
     <AuthProvider>
       <BrowserRouter>
         <RouterManager />
@@ -85,7 +85,7 @@ const App = () => (
         </div>
       </BrowserRouter>
     </AuthProvider>
-  </I18nextProvider>
+  </PageWrapper>
 );
 
 export default App;

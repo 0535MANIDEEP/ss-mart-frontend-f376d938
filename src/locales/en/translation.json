@@ -1,16 +1,23 @@
+
 {
   "brand": "SS MART",
   "cart": "Cart",
   "addToCart": "Add to Cart",
   "buyNow": "Buy Now",
+  "reserveInStore": "Reserve in Store",
   "shopNow": "Shop now",
   "checkout": "Checkout",
   "clearCart": "Clear Cart",
+  "clearVisitList": "Clear Visit List",
   "yourCart": "Your Cart",
+  "visitListTitle": "Your In-Store Reservation Summary",
+  "visitListSubtitle": "Please show this summary at SS MART, Shankarpally counter to complete your purchase.",
   "product": "Product",
   "quantity": "Qty",
+  "qty": "Qty",
   "price": "Price",
   "total": "Total",
+  "estimatedTotal": "Estimated Total",
   "remove": "Remove",
   "loggedInAs": "Logged in as",
   "logout": "Logout",
@@ -18,6 +25,8 @@
   "home": "Home",
   "dashboard": "Dashboard",
   "emptyCart": "Your cart is empty",
+  "visitListEmpty": "Your In-Store Reservation Summary is Empty",
+  "browseReserveNow": "Browse & Reserve Now",
   "all": "All",
   "categories": {
     "groceries": "Groceries",
@@ -31,6 +40,8 @@
   "removedFromCart": "Removed from cart",
   "addedAnother": "Added another!",
   "stock": "Stock: {{count}}",
+  "inStock": "In Stock",
+  "outOfStock": "Out of Stock",
   "viewDetails": "View Details",
   "language": "Language",
   "darkMode": "Dark Mode",
@@ -75,5 +86,6 @@
   "productNotFound": "Product not found.",
   "orderSent": "Order Sent!",
   "orderSentMsg": "We’ve sent your order request via WhatsApp. SS MART will confirm availability shortly.",
-  "continueShopping": "Continue Shopping"
+  "continueShopping": "Continue Shopping",
+  "downloadVisitListJSON": "Download Visit List JSON"
 }
