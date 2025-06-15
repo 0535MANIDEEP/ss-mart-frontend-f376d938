@@ -65,7 +65,12 @@ const HeroSection: React.FC = () => {
           variants={subVariants}
         >
           <Button
-            className="bg-lux-blue hover:bg-lux-gold/90 text-white dark:text-lux-black font-bold rounded-xl px-6 py-2 transition w-full max-w-xs text-center shadow-cta text-lg"
+            className="lux-cta w-full max-w-xs text-center text-lg"
+            style={{
+              background: "linear-gradient(96deg,#FFD700 70%,#282FFB 130%)",
+              color: "#1B202A",
+              boxShadow: "0 8px 36px #FFD700EE, 0 3px 18px #FFD70055"
+            }}
           >
             {t("browseReserveNow") || "Browse & Reserve In-Store"}
           </Button>
