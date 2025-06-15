@@ -2,7 +2,9 @@
 import React from "react";
 import Loader from "@/components/Loader";
 import ProductGrid from "@/components/ProductGrid";
-
+/**
+ * ProductList shows a loader/error/debug before showing the grid of ProductCards
+ */
 type Product = {
   id: number | string;
   name: any;
@@ -19,16 +21,6 @@ interface ProductListProps {
   allProducts: Product[];
   onCardClick: (product: Product) => void;
 }
-function DebugBox({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className="bg-yellow-100 border border-yellow-600 rounded-xl p-4 my-6 shadow-md"
-      style={{ zIndex: 1000 }}
-    >
-      {children}
-    </div>
-  );
-}
 const ProductList: React.FC<ProductListProps> = ({
   loading,
   error,
@@ -39,35 +31,21 @@ const ProductList: React.FC<ProductListProps> = ({
   if (loading) return <Loader />;
   if (error)
     return (
-      <DebugBox>
+      <div className="bg-yellow-100 border border-yellow-600 rounded-xl p-4 my-6 shadow-md text-center">
         <div className="text-red-700 font-bold text-lg mb-2">Error</div>
         <div className="text-sm text-gray-800">{error}</div>
-        <div className="mt-2 text-yellow-800">
-          <strong>Tips:</strong>
-          <ul className="list-disc ml-5 text-sm">
-            <li>
-              If you’re using Supabase and have <span className="font-mono">Row Level Security</span> ON, make sure you have a <span className="font-mono">SELECT USING (true)</span> policy for <span className="font-mono">products</span>.
-            </li>
-            <li>
-              See console logs for more details. Open browser dev tools (F12) and look for "Fetched Products" or "Fetch Products Error".
-            </li>
-            <li>
-              If using a custom REST API, ensure <span className="font-mono">API endpoint</span> is not blocked (CORS/network error).
-            </li>
-          </ul>
-        </div>
-      </DebugBox>
+      </div>
     );
   if (!products.length)
     return (
-      <DebugBox>
-        <p className="text-center text-yellow-900 font-semibold">
+      <div className="bg-yellow-100 border border-yellow-600 rounded-xl p-4 my-6 shadow-md text-center">
+        <p className="text-yellow-900 font-semibold">
           No products found for your search or filters.<br />
           {allProducts.length === 0
-            ? "The products list is empty. See data fetch logs above."
-            : "Try searching or switching categories, or broaden your search terms."}
+            ? "No products in inventory. Contact admin."
+            : "Try searching or changing category."}
         </p>
-      </DebugBox>
+      </div>
     );
   // Normal grid
   return <ProductGrid products={products} onCardClick={onCardClick} />;

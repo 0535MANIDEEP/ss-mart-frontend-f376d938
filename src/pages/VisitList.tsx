@@ -23,8 +23,8 @@ const VisitList = () => {
   if (!Array.isArray(items) || !items.length) {
     return (
       <div className="text-center py-16">
-        <h2 className="text-2xl mb-2">Your In-Store Reservation Summary is Empty</h2>
-        <Link to="/" className="text-green-600 underline">Browse & Reserve Now</Link>
+        <h2 className="text-2xl mb-2">{t("visitListEmpty") || "Your In-Store Reservation Summary is Empty"}</h2>
+        <Link to="/" className="text-green-600 underline">{t("browseReserveNow") || "Browse & Reserve Now"}</Link>
       </div>
     );
   }
@@ -34,11 +34,11 @@ const VisitList = () => {
       remove(item._id);
       toast({
         duration: 1000,
-        title: "Removed from Visit List",
+        title: t("removedFromVisitList") || "Removed from Visit List",
         description: (
           <div className="flex items-center gap-2">
             <Minus size={16} className="inline text-red-600" />
-            Removed from Visit List
+            {t("removedFromVisitList") || "Removed from Visit List"}
           </div>
         ),
         variant: "destructive"
@@ -60,16 +60,18 @@ const VisitList = () => {
 
   return (
     <div className="container max-w-3xl mx-auto mt-6 animate-fade-in bg-white dark:bg-[#222230] p-4 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-1 text-gray-900 dark:text-lux-gold">Your In-Store Reservation Summary</h2>
+      <h2 className="text-2xl font-bold mb-1 text-gray-900 dark:text-lux-gold">
+        {t("visitListTitle") || "Your In-Store Reservation Summary"}
+      </h2>
       <p className="text-sm text-gray-500 mt-1">
-        Please show this summary at SS MART, Shankarpally counter to complete your purchase.
+        {t("visitListSubtitle") || "Please show this summary at SS MART, Shankarpally counter to complete your purchase."}
       </p>
       <table className="w-full text-left overflow-x-auto mt-4">
         <thead>
           <tr className="border-b border-gray-300 dark:border-[#FFD70033]">
-            <th>Product</th>
-            <th>Qty</th>
-            <th>Price</th>
+            <th>{t("product") || "Product"}</th>
+            <th>{t("qty") || "Qty"}</th>
+            <th>{t("price") || "Price"}</th>
             <th className="w-8"></th>
           </tr>
         </thead>
@@ -77,10 +79,10 @@ const VisitList = () => {
           {items.map(item => (
             <tr key={item._id} className="border-b border-gray-100 dark:border-[#FFD70022]">
               <td className="py-2 flex items-center gap-3 min-w-[120px]">
-                <img 
-                  src={item.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80"} 
-                  alt={item.name} 
-                  className="w-12 h-12 object-cover rounded-md bg-gray-100 dark:bg-[#292848]" 
+                <img
+                  src={item.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80"}
+                  alt={item.name}
+                  className="w-12 h-12 object-cover rounded-md bg-gray-100 dark:bg-[#292848]"
                   style={{ borderRadius: 8 }}
                   onError={e => (e.currentTarget.src = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80")}
                 />
@@ -104,15 +106,15 @@ const VisitList = () => {
                   className="text-red-600 hover:underline dark:text-red-400"
                   style={{ minHeight: 44 }}
                   tabIndex={0}
-                  aria-label="Remove"
-                >Remove</button>
+                  aria-label={t("remove")}
+                >{t("remove") || "Remove"}</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
       <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <strong className="text-xl dark:text-lux-gold">Estimated Total: ₹{total}</strong>
+        <strong className="text-xl dark:text-lux-gold">{t("estimatedTotal") || "Estimated Total"}: ₹{total}</strong>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={clear}
@@ -120,7 +122,7 @@ const VisitList = () => {
             style={{ minHeight: 44, borderRadius: 8 }}
             tabIndex={0}
           >
-            Clear Visit List
+            {t("clearVisitList") || "Clear Visit List"}
           </button>
           <DownloadVisitSummary items={items} total={total} />
           <button
@@ -131,7 +133,7 @@ const VisitList = () => {
             tabIndex={0}
             aria-label="Download Visit List JSON"
           >
-            🗄️ Download Visit List JSON
+            🗄️ {t("downloadVisitListJSON") || "Download Visit List JSON"}
           </button>
         </div>
       </div>
