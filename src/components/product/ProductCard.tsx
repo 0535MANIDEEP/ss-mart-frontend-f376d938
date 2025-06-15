@@ -112,23 +112,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         ),
       variant: "default"
     });
-    setQty(0); // Reset mini qty to hide minus/ATC after add (can tweak if you want persistent)
-  };
-
-  // “Buy Now” disables for guest, toast feedback
-  const handleBuyNow = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!user) {
-      toast({
-        duration: 1600,
-        title: t("loginRequired") || "Login Required",
-        description: t("pleaseLoginToBuyNow") || "Please log in to place instant orders.",
-        variant: "destructive"
-      });
-      return;
-    }
-    // Go to checkout with *just* this product, one quantity (in route state).
-    navigate("/checkout", { state: { buyNow: { ...product, quantity: Math.max(1, qty || 1), name, image: product.image_url } } });
+    setQty(0); // Reset mini qty to hide minus/ATC after add
   };
 
   // Card nav: View product
@@ -207,18 +191,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
           {/* === Quantity/ATC Controls: Visibility & Logic === */}
           <div className="mt-3 flex gap-2 flex-wrap items-center bg-white/85 dark:bg-lux-black/60 rounded-lg border border-yellow-100 dark:border-lux-gold/10 p-2 shadow-sm relative z-40 min-h-[54px]">
-            {/* Show only + if qty = 0, else show −, qty, ATC */}
+            {/* Only show controls if not out of stock */}
             {!isOutOfStock && (
               <div
                 onClick={e => e.stopPropagation()}
                 className="flex items-center gap-4 w-full"
               >
+                {/* Only show − and count when qty >= 1; + is always visible (unless maxed out) */}
                 <ProductMiniQtyControl
                   quantity={qty}
                   stock={product.stock}
                   onInc={() => setQty(q => Math.min(q + 1, product.stock))}
                   onDec={() => setQty(q => Math.max(q - 1, 1))}
-                  incDisabled={isOutOfStock}
+                  incDisabled={isOutOfStock || qty >= product.stock}
                   decDisabled={isOutOfStock || qty <= 1}
                 />
                 {/* ATC: Only if qty > 0 */}
@@ -236,20 +221,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                     onCartChange={handleAddToCart}
                   />
                 )}
-                {/* Buy Now */}
-                <Button
-                  className="ml-auto bg-white dark:bg-neutral-800 border border-gray-300 dark:border-gray-600 hover:bg-amber-100/80 dark:hover:bg-yellow-950 shadow transition-all min-h-[44px] rounded-[8px] text-primary dark:text-lux-gold font-semibold text-base"
-                  size="sm"
-                  variant="secondary"
-                  onClick={handleBuyNow}
-                  aria-label={t("buyNow")}
-                  type="button"
-                  tabIndex={0}
-                  disabled={isOutOfStock}
-                  style={{ minHeight: 44, borderRadius: 8 }}
-                >
-                  {t("buyNow")}
-                </Button>
+                {/* ---- BUY NOW REMOVED PER INSTRUCTION (no direct buy in card) ---- */}
               </div>
             )}
             {/* Out of Stock fallback */}
@@ -287,3 +259,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
+
