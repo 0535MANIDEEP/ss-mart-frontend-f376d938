@@ -25,7 +25,7 @@ const ReserveButton: React.FC<ReserveButtonProps> = ({ product, qty, onReserved,
 
   return (
     <Button
-      className="bg-green-600 text-white rounded-md px-3 py-2 mt-2 hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none min-h-[44px] flex items-center gap-2 text-base"
+      className="bg-ssblue-primary text-ssblue-onblue rounded-md px-3 py-2 mt-2 hover:bg-ssblue-secondary focus-visible:ring-2 focus-visible:ring-ssblue-accent focus:outline-none min-h-[44px] flex items-center gap-2 text-base"
       onClick={e => {
         e.stopPropagation();
         handleReserve(product, qty);

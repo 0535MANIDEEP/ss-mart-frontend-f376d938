@@ -12,7 +12,6 @@ import PriceBlock from "@/components/PriceBlock";
 import CartActions from "@/components/CartActions";
 import ReviewSection from "@/components/ReviewSection";
 
-// Helper for translated fields
 function getProductField(
   data: any,
   lang: string,
@@ -45,11 +44,9 @@ const ProductDetails = () => {
   if (loading) return <Loader />;
   if (!product) return <div className="text-center py-16 text-gray-700">{t("productNotFound")}</div>;
 
-  // --- Translations for local fields per language
   const lang = i18n.language || "en";
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
 
-  // --- Prepped cart product shape
   const cartProduct = {
     id: product.id,
     name: name,
@@ -59,7 +56,7 @@ const ProductDetails = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 bg-white rounded-lg shadow p-6 animate-fade-in">
+    <div className="max-w-2xl mx-auto mt-8 bg-ssblue-card rounded-lg border border-ssblue-secondary p-6 animate-fade-in">
       <ProductMeta product={{ ...product, name: product.name, description: product.description, image: product.image }} lang={lang} />
       <PriceBlock price={product.price} category={product.category} stock={product.stock} />
       <CartActions product={cartProduct} cartItem={cartItem} />

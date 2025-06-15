@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "./product/ProductCard";
@@ -48,7 +47,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
 
   return (
     <motion.div
-      className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-7 animate-fade-in bg-white/95 dark:bg-lux-black min-h-[200px] rounded-2xl border border-yellow-400 p-3 sm:p-4"
+      className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 bg-ssblue-card min-h-[200px] rounded-2xl border border-ssblue-secondary p-4 sm:p-6"
       variants={gridVariants}
       initial="hidden"
       animate="visible"
@@ -65,7 +64,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
             }}
             exit={{ opacity: 0, scale: 0.92, filter: "blur(4px)", transition: { duration: 0.3 } }}
             className="min-h-[340px] flex flex-col justify-end"
-            style={{ background: "rgba(255,236,153,0.14)" }}
+            style={{ background: "rgba(236,244,255,0.15)" }}
             data-testid={`product-grid-item-${product.id}`}
           >
             <ProductCard product={product} onClick={() => onCardClick(product)} />
@@ -77,4 +76,3 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
 };
 
 export default ProductGrid;
-

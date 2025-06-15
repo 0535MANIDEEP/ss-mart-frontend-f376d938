@@ -98,12 +98,12 @@ export default function Navbar() {
   ];
 
   const cartBadge = cartCount > 0 && (
-    <span className="ml-2 bg-emerald-600 text-white rounded-full px-2 py-0.5 text-xs font-bold shadow border border-emerald-700">
+    <span className="ml-2 bg-ssblue-secondary text-white rounded-full px-2 py-0.5 text-xs font-bold shadow border border-ssblue-primary">
       {cartCount}
     </span>
   );
   const cartTotalBadge = cartTotal > 0 && (
-    <span className="ml-2 bg-lux-gold/10 px-2 py-0.5 rounded text-lux-gold font-bold text-xs border border-lux-gold/40 shadow">
+    <span className="ml-2 bg-ssblue-card px-2 py-0.5 rounded text-ssblue-primary font-bold text-xs border border-ssblue-secondary shadow">
       ₹{cartTotal}
     </span>
   );
@@ -162,11 +162,12 @@ export default function Navbar() {
               >
                 <Button
                   variant="outline"
-                  className="text-xs sm:text-sm border-ssblue-secondary hover:border-ssblue-primary transition-shadow"
+                  className="text-xs sm:text-sm border-ssblue-secondary hover:border-ssblue-primary transition-shadow text-ssblue-primary"
                   style={{
                     fontWeight: 600,
                     letterSpacing: "0.01em",
-                    borderWidth: 1.2
+                    borderWidth: 1.2,
+                    background: "#F3F9FE"
                   }}
                 >
                   <span className="hidden xs:inline">📍 </span>Find SS MART

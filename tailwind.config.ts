@@ -23,18 +23,17 @@ export default {
         display: ['Playfair Display', 'DM Serif Display', 'serif']
       },
       colors: {
-        // 🌟 New SS MART blue palette
+        // 👇 PRIMARY: SS MART blue palette, no yellow or gold.
         ssblue: {
-          primary: '#1E3A8A',      // Deep blue (main)
-          secondary: '#3B82F6',    // Lighter blue
-          accent: '#60A5FA',       // Accent / hover blue
-          card: '#EFF6FF',         // Card bg
-          border: '#DBEAFE',       // Card border
-          text: '#111827',         // Strong text
-          onblue: '#F9FAFB',       // Text on blue
-          white: '#FFFFFF',        // Pure white
+          primary: '#1E3A8A',
+          secondary: '#3B82F6',
+          accent: '#60A5FA',
+          card: '#EFF6FF',
+          border: '#DBEAFE',
+          text: '#111827',
+          onblue: '#F9FAFB',
+          white: '#FFFFFF',
         },
-        // Some legacy colors retained for fallback
         gray: {
           50: '#F9FAFB',
           100: '#F3F4F6',
@@ -55,12 +54,11 @@ export default {
         sm: "0.5rem",
       },
       boxShadow: {
-        'ssblue': '0 4px 32px 0 rgba(30,58,138,0.13), 0 2px 16px #3B82F644',
-        'cta': '0 6px 28px 0 #60A5FA33, 0 1px 8px #3B82F633',
-        'frost': '0 8px 40px 0 #60A5FA26, 0 2px 12px #1E3A8A11',
+        'ssblue': '0 2.5px 18px 0 rgba(30,58,138,0.09)', // subtle blue, no gold
+        'cta': '0 4px 16px 0 #3B82F633',
+        'frost': '0 6px 24px 0 #60A5FA1C'
       },
       backgroundImage: {
-        // Blue hero and accent gradients
         'ssblue-hero': 'linear-gradient(100deg, #1E3A8A 10%, #3B82F6 80%, #60A5FA 110%)',
         'ssblue-cta': 'linear-gradient(96deg, #3B82F6 70%, #1E3A8A 130%)'
       },

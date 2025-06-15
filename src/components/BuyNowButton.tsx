@@ -5,12 +5,6 @@ import { useCartStore } from "@/store/cartStore";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-/**
- * Button: "Buy Now" for a product.
- * - Adds/updates product to cart (qty=1 if not in cart), then goes to *Checkout* for review.
- * - Passes minimal info via location state for review and direct checkout UX.
- * - Always accessible contrast and minimum height.
- */
 type Props = {
   product: {
     id: string | number;
@@ -50,15 +44,15 @@ export default function BuyNowButton({ product, disabled }: Props) {
 
   return (
     <Button
-      size="sm"
-      variant="secondary"
-      className="ml-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-gray-600 hover:bg-amber-100/80 dark:hover:bg-yellow-950 shadow transition-all min-h-[44px] rounded-[8px] text-primary dark:text-lux-gold font-semibold"
+      size="default"
+      variant="outline"
+      className="ml-2 bg-white dark:bg-ssblue-primary border border-ssblue-secondary hover:bg-ssblue-accent/20 dark:hover:bg-ssblue-accent/30 shadow transition-all min-h-[44px] rounded-md text-ssblue-primary dark:text-ssblue-onblue font-semibold"
       onClick={handleBuyNow}
       aria-label={t("buyNow")}
       type="button"
       disabled={disabled}
       tabIndex={0}
-      style={{ minHeight: 44, borderRadius: 8 }}
+      style={{ minHeight: 44 }}
     >
       {t("buyNow")}
     </Button>

@@ -3,7 +3,7 @@ const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || "9849530828";
 const waLink = `https://wa.me/91${whatsappNumber}`;
 
 const Footer = () => (
-  <footer className="bg-gray-100 text-gray-700 px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-2 border-t">
+  <footer className="bg-ssblue-primary text-ssblue-onblue px-8 py-4 flex flex-col md:flex-row justify-between items-center gap-2 border-t border-ssblue-secondary">
     <div>
       <span className="font-semibold">SS MART</span> &copy; {new Date().getFullYear()}
     </div>
@@ -12,7 +12,7 @@ const Footer = () => (
         href={waLink}
         target="_blank"
         rel="noopener"
-        className="inline-flex items-center gap-2 text-green-600 font-medium hover:underline hover:scale-105 transition"
+        className="inline-flex items-center gap-2 text-ssblue-accent font-medium hover:underline hover:scale-105 transition"
       >
         Order instantly on WhatsApp
         <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">

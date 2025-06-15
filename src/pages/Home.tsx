@@ -9,7 +9,6 @@ import CategoryFilter from "@/components/CategoryFilter";
 import HeroSection from "@/components/HeroSection";
 import ProductList from "@/components/ProductList";
 
-// Types
 type MultiLang = { en: string; hi?: string; te?: string };
 type Product = {
   id: number | string;
@@ -41,7 +40,6 @@ const Home = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Fetch products from API
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -75,7 +73,6 @@ const Home = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  // Filtered & searched products
   const filtered = useMemo(() => {
     let filteredList = products;
     if (category && category !== "All") {
@@ -102,7 +99,7 @@ const Home = () => {
   }, [products, search, category, i18n.language]);
 
   return (
-    <div className="container mx-auto px-2 pt-4 min-h-svh bg-lux-gold/10 relative">
+    <div className="container mx-auto px-2 pt-4 min-h-svh bg-ssblue-card relative">
       <HeroSection />
       <SearchBar value={search} onChange={setSearch} />
       <CategoryFilter category={category} setCategory={setCategory} />
