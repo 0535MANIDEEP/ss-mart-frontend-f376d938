@@ -1,9 +1,9 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Home from "@/pages/Home";
 import ProductDetails from "@/pages/ProductDetails";
-import Cart from "@/pages/Cart";
 import Checkout from "@/pages/Checkout";
 import OrderSuccess from "@/pages/OrderSuccess";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -21,17 +21,18 @@ import React, { Suspense } from "react";
 import RouterManager from "@/components/RouterManager";
 import NotFound from "@/pages/NotFound";
 import { ROUTES } from "@/routes";
-import VisitList from "@/pages/VisitList";
-
+// import Cart from "@/pages/Cart"; // Removed
+// import VisitList from "@/pages/VisitList"; // Don't import directly if you want it lazy!
+// Removed: const LazyCart = React.lazy(() => import("@/pages/Cart"));
 const LazyHome = React.lazy(() => import("@/pages/Home"));
 const LazyProductDetails = React.lazy(() => import("@/pages/ProductDetails"));
-const LazyCart = React.lazy(() => import("@/pages/Cart"));
 const LazyCheckout = React.lazy(() => import("@/pages/Checkout"));
 const LazyOrderSuccess = React.lazy(() => import("@/pages/OrderSuccess"));
 const LazyAdminDashboard = React.lazy(() => import("@/pages/AdminDashboard"));
 const LazyAddOrEditProduct = React.lazy(() => import("@/pages/AddOrEditProduct"));
 const LazyLogin = React.lazy(() => import("@/auth/Login"));
 const LazyAuth = React.lazy(() => import("@/pages/Auth"));
+const LazyVisitList = React.lazy(() => import("@/pages/VisitList"));
 
 const App = () => (
   <I18nextProvider i18n={i18n}>
@@ -46,8 +47,10 @@ const App = () => (
                 <Route path={ROUTES.ROOT} element={<Navigate to={ROUTES.HOME} />} />
                 <Route path={ROUTES.HOME} element={<LazyHome />} />
                 <Route path={ROUTES.PRODUCT()} element={<LazyProductDetails />} />
-                <Route path={ROUTES.CART} element={<VisitList />} /> {/* Cart route now shows Visit List */}
-                <Route path="/visit-list" element={<VisitList />} /> {/* Direct Visit List route for Navbar */}
+                {/* Cart route now shows VisitList (lazy) */}
+                <Route path={ROUTES.CART} element={<LazyVisitList />} />
+                {/* Direct Visit List route for Navbar, also lazy */}
+                <Route path="/visit-list" element={<LazyVisitList />} />
                 <Route path={ROUTES.CHECKOUT} element={<LazyCheckout />} />
                 <Route path={ROUTES.ORDER_SUCCESS} element={<LazyOrderSuccess />} />
                 <Route path={ROUTES.LOGIN} element={<LazyAuth />} />
