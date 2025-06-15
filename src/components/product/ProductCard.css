@@ -5,8 +5,7 @@
 .product-card-root {
   background: #fff;
   border-radius: 1.1rem;
-  /* Removed extra shadow; use subtler border only.
-     Old: box-shadow: 0 4px 32px #ffd7001e, 0 1.5px 8px #282ffb0a; */
+  /* No shadow; use subtler border only. */
   box-shadow: none;
   transition: box-shadow 0.19s, border 0.19s;
   overflow: visible;
@@ -24,9 +23,9 @@
   border-color: #FFD700;
 }
 .dark .product-card-root {
-  background: linear-gradient(100deg, #232336 80%, #21213c 135%);
+  /* Switch from a transparent gradient to a mostly-solid luxurious blue/black. */
+  background: #21213c;
   border: 1.5px solid #FFD70077;
-  /* Removed shadow for dark mode card too */
   box-shadow: none;
 }
 .product-card-top-edges {
@@ -57,8 +56,9 @@
   justify-content: center;
 }
 .dark .product-card-image {
-  background: linear-gradient(to bottom,#292848ef 60%,#FFD70018 110%);
-  border-bottom: 1.5px solid #FFD70022;
+  /* Remove transparency: make solid/near-solid dark bg for image frame */
+  background: #282848;
+  border-bottom: 1.5px solid #FFD70033;
 }
 @media (max-width: 640px) {
   .product-card-image { height: 140px; }
@@ -76,17 +76,18 @@
   position: relative;
 }
 .dark .product-card-info {
-  background: linear-gradient(120deg, #26263e 95%, #FFD70011 120%);
+  /* Switch to (almost) opaque dark background for the card bottom */
+  background: #232336;
   color: #FFD700;
 }
 
 .card-title {
   color: #171742;
-  /* Removed text-shadow! */
+  /* No text-shadow! */
 }
 .dark .card-title {
   color: #FFD700;
-  /* Removed text-shadow from product names in dark mode */
+  text-shadow: none;
 }
 
 .product-card-info .product-card-desc {
@@ -101,7 +102,7 @@
 }
 .dark .product-card-info .product-card-desc {
   color: #ffe9a0;
-  text-shadow: 0 1px 6px #151824;
+  text-shadow: none;
 }
 
 .product-card-controls {
@@ -139,20 +140,20 @@
   outline: none;
 }
 .dark .qty-btn {
-  background: #292848e6;
+  background: #24233C !important; /* much less transparent */
   color: #FFD700;
-  border: 1.5px solid #ffd700aa;
+  border: 1.5px solid #ffd70099;
 }
 .dark .qty-btn:hover, .dark .qty-btn:focus {
-  background: #FFD70055;
-  color: #232336;
+  background: #FFD70099 !important;
+  color: #232336 !important;
   border-color: #FFD700;
   z-index: 1;
 }
 .dark .qty-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: #232336;
+  background: #1a1a2d;
   color: #b2aea1;
 }
 .qty-count {
@@ -166,7 +167,7 @@
 }
 .dark .qty-count {
   color: #FFD700;
-  text-shadow: 0 1px 8px #181824cc;
+  text-shadow: none;
 }
 
 .out-of-stock-text {
@@ -175,10 +176,14 @@
   font-weight: bold;
   padding: 8px 0 7px;
   font-size: 1rem;
+  background: #ffeaea;
+  border-radius: 0.8em;
+  border: 1.5px solid #ffe6e6;
 }
 .dark .out-of-stock-text {
   color: #ff8877;
-  background: #35222188;
+  background: #2d1b1b !important; /* less transparent, stronger bg */
+  border: 1.5px solid #94423c !important;
 }
 
 .view-product-btn {
@@ -221,7 +226,8 @@
   border: 1.5px solid #FFD70044 !important;
 }
 .dark .view-product-btn:hover, .dark .view-product-btn:focus {
-  background: #FFD70055 !important;
+  background: #FFD70099 !important; /* stronger background on hover */
   color: #232336 !important;
 }
+
 
