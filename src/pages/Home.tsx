@@ -1,121 +1,15 @@
+
 import { useEffect, useState, useMemo } from "react";
-import { motion, Variants } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import Loader from "@/components/Loader";
-import ProductGrid from "@/components/ProductGrid";
-import ProductModalManager from "@/components/ProductModalManager";
+import { motion } from "framer-motion";
 import FloatingActions from "@/components/FloatingActions";
+import ProductModalManager from "@/components/ProductModalManager";
 import SearchBar from "@/components/SearchBar";
 import CategoryFilter from "@/components/CategoryFilter";
+import HeroSection from "@/components/HeroSection";
+import ProductList from "@/components/ProductList";
 
-// Reusable debug helper
-function DebugBox({ children }: { children: React.ReactNode }) {
-  return (
-    <div
-      className="bg-yellow-100 border border-yellow-600 rounded-xl p-4 my-6 shadow-md"
-      style={{ zIndex: 1000 }}
-    >
-      {children}
-    </div>
-  );
-}
-
-function HeroSection() {
-  const { t } = useTranslation();
-  const heroVariants: Variants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", duration: 1 as const } },
-  };
-  const subVariants: Variants = {
-    hidden: { opacity: 0, y: 12 },
-    visible: { opacity: 1, y: 0, transition: { delay: 0.35, duration: 0.7 as const } }
-  };
-  return (
-    <motion.section
-      className="lux-hero animate-fade-in w-full max-w-2xl mx-auto"
-      initial="hidden"
-      animate="visible"
-      aria-label="SS MART Introduction"
-    >
-      <motion.h1
-        className="text-4xl lg:text-5xl font-bold mb-2 tracking-tight font-sans"
-        variants={heroVariants}
-      >
-        <span className="bg-gradient-to-r from-yellow-500 to-yellow-300 bg-clip-text text-transparent drop-shadow-[0_2px_24px_rgba(212,175,55,0.15)]">
-          {t("brand")}
-        </span>
-      </motion.h1>
-      <motion.p
-        className="text-lg mb-2 mt-2 leading-relaxed text-lux-gold/90 font-medium"
-        variants={subVariants}
-      >
-        Sai Sangameshwara Mart &mdash; {t("shankarpally")}'s luxury marketplace.
-      </motion.p>
-      <motion.div
-        className="flex items-center gap-2 text-sm text-lux-gold font-medium"
-        variants={subVariants}
-      >
-        <svg className="inline mr-1" width={20} height={20} fill="none" stroke="currentColor" strokeWidth={2}>
-          <circle cx="10" cy="10" r="9" stroke="#FFD700"/><path d="M10 10v4l2 2" stroke="#FFD700"/><path d="M10 6a4 4 0 1 1-2.8 1.2" stroke="#FFD700"/>
-        </svg>
-        {t("shankarpally")}, Telangana &bull;&nbsp;
-        <a
-          href="https://g.co/kgs/v1e9RSN"
-          className="underline hover:text-lux-gold"
-          target="_blank"
-          rel="noopener"
-          aria-label={t("googleMaps")}
-        >
-          {t("googleMaps")}
-        </a>
-      </motion.div>
-    </motion.section>
-  );
-}
-
-function CategoryFilter({ category, setCategory }: { category: string; setCategory: (c: string) => void }) {
-  const { t } = useTranslation();
-  const categoryList = [
-    { label: t("all"), value: "All" },
-    { label: t("categories.groceries"), value: "Groceries" },
-    { label: t("categories.personalCare"), value: "Personal Care" },
-    { label: t("categories.beverages"), value: "Beverages" },
-    { label: t("categories.snacks"), value: "Snacks" },
-    { label: t("categories.household"), value: "Household" },
-    { label: t("categories.others"), value: "Others" }
-  ];
-  return (
-    <motion.div
-      className="flex gap-2 flex-wrap justify-center mb-6"
-      initial={{ opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0, transition: { delay: 0.4, duration: 0.7 } }}
-      aria-label="Product Categories"
-      role="tablist"
-    >
-      {categoryList.map(cat => (
-        <button
-          className={`lux-category-btn${cat.value === category ? " active" : ""}`}
-          key={cat.value}
-          onClick={() => setCategory(cat.value)}
-          aria-label={`Show ${cat.label} products`}
-          aria-selected={cat.value === category}
-          tabIndex={0}
-          role="tab"
-        >{cat.label}</button>
-      ))}
-    </motion.div>
-  );
-}
-
-const CATEGORY_MAP: Record<string, string[]> = {
-  Groceries: ["Grocery", "Groceries"],
-  Snacks: ["Snacks"],
-  "Personal Care": ["Personal Care"],
-  Beverages: ["Beverages"],
-  Household: ["Household"],
-  Others: ["Others"],
-};
-
+// Types
 type MultiLang = { en: string; hi?: string; te?: string };
 type Product = {
   id: number | string;
@@ -127,8 +21,16 @@ type Product = {
   image_url?: string | null;
 };
 
+const CATEGORY_MAP: Record<string, string[]> = {
+  Groceries: ["Grocery", "Groceries"],
+  Snacks: ["Snacks"],
+  "Personal Care": ["Personal Care"],
+  Beverages: ["Beverages"],
+  Household: ["Household"],
+  Others: ["Others"],
+};
+
 const API_URL = "https://ss-mart-backend.onrender.com/api/products";
-// const API_URL = "/api/products"; // If using mock or local
 
 const Home = () => {
   const { t, i18n } = useTranslation();
@@ -139,7 +41,7 @@ const Home = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Fetch API data (unchanged)
+  // Fetch products from API
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -173,19 +75,15 @@ const Home = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  // Find matching products by search/category - done in UI for MVP
+  // Filtered & searched products
   const filtered = useMemo(() => {
     let filteredList = products;
     if (category && category !== "All") {
-      // Allow mapping category synonyms
       const catOptions = CATEGORY_MAP[category] || [category];
-      filteredList = filteredList.filter((p) =>
-        catOptions.includes(p.category)
-      );
+      filteredList = filteredList.filter((p) => catOptions.includes(p.category));
     }
     if (search.trim()) {
       filteredList = filteredList.filter((p) => {
-        // Support searching both multi-lang or plain string name/desc
         const getField = (f: MultiLang | string | undefined) =>
           typeof f === "string"
             ? f
@@ -205,63 +103,21 @@ const Home = () => {
 
   return (
     <div className="container mx-auto px-2 pt-4 min-h-svh bg-lux-gold/10 relative">
-      {/* HERO */}
       <HeroSection />
-
-      {/* MVP SearchBar */}
       <SearchBar value={search} onChange={setSearch} />
-
-      {/* MVP Category Filter */}
       <CategoryFilter category={category} setCategory={setCategory} />
-
-      {/* Loader */}
-      {loading && <Loader />}
-
-      {/* Error or API/Empty fallback */}
-      {!loading && (
-        <>
-          {error && (
-            // ... keep existing code (DebugBox for error) ...
-            <DebugBox>
-              <div className="text-red-700 font-bold text-lg mb-2">Error</div>
-              <div className="text-sm text-gray-800">{error}</div>
-              <div className="mt-2 text-yellow-800">
-                <strong>Tips:</strong>
-                <ul className="list-disc ml-5 text-sm">
-                  <li>
-                    If you’re using Supabase and have <span className="font-mono">Row Level Security</span> ON, make sure you have a <span className="font-mono">SELECT USING (true)</span> policy for <span className="font-mono">products</span>.
-                  </li>
-                  <li>
-                    See console logs for more details. Open browser dev tools (F12) and look for "Fetched Products" or "Fetch Products Error".
-                  </li>
-                  <li>
-                    If using a custom REST API, ensure <span className="font-mono">{API_URL}</span> is not blocked (CORS/network error).
-                  </li>
-                </ul>
-              </div>
-            </DebugBox>
-          )}
-
-          {!error && !filtered.length && (
-            <DebugBox>
-              <p className="text-center text-yellow-900 font-semibold">
-                No products found for your search or filters.<br />
-                {products.length === 0
-                  ? "The products list is empty. See data fetch logs above."
-                  : "Try searching or switching categories, or broaden your search terms."}
-              </p>
-            </DebugBox>
-          )}
-        </>
-      )}
-
-      {/* Product Grid */}
-      {!loading && !error && !!filtered.length && (
-        <ProductGrid products={filtered} onCardClick={setSelectedProduct} />
-      )}
-
+      <ProductList
+        loading={loading}
+        error={error}
+        products={filtered}
+        allProducts={products}
+        onCardClick={setSelectedProduct}
+      />
       <FloatingActions />
-      <ProductModalManager selectedProduct={selectedProduct} onClose={() => setSelectedProduct(null)} />
+      <ProductModalManager
+        selectedProduct={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
     </div>
   );
 };
