@@ -9,10 +9,8 @@ import ProductRatings from "./ProductRatings";
 import { useTranslation } from "react-i18next";
 import { cardVariants } from "./productCardVariants";
 
-/** For i18n multi-language fields */
 export type MultiLang = { en: string; hi?: string; te?: string };
 
-/** Primary product type for product card */
 export type Product = {
   id: number | string;
   name: MultiLang | string;
@@ -28,9 +26,6 @@ export interface ProductCardProps {
   onClick?: (prod: Product) => void;
 }
 
-/**
- * Helper to get translated product field.
- */
 function getProductField(
   data: MultiLang | string | undefined,
   lang: string,
@@ -41,9 +36,6 @@ function getProductField(
   return data[lang as keyof MultiLang] || data.en || fallback;
 }
 
-/**
- * ProductCard: animated, contained, premium card for grid/list.
- */
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
   if (!product || (typeof product.id !== "number" && typeof product.id !== "string")) {
@@ -53,9 +45,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
 
+  // Debug log for inspection
+  console.log("DEBUG RENDER ProductCard", { product, name, desc });
+
   return (
     <motion.div
-      className="lux-card group transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer bg-white dark:bg-lux-black relative shadow-md border border-gray-200 dark:border-lux-gold/30"
+      className="lux-card group transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer bg-yellow-100 border-4 border-blue-400 relative shadow-md"
       style={{ minHeight: 340, borderRadius: 8, margin: 10, padding: 16 }}
       initial="rest"
       whileHover="hover"
@@ -67,14 +62,29 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       role="article"
       onClick={onClick ? () => onClick(product) : undefined}
     >
-      <ProductOutOfStockLabel stock={product.stock} />
-      <ProductImage product={product} name={name} />
-      <ProductInfo product={product} name={name} desc={desc} />
-      <ProductRatings />
-      <ProductControls product={product} name={name} />
+      <div className="absolute left-2 top-2 bg-pink-200 text-xs text-black px-2 rounded z-50 font-bold pointer-events-none">CARD</div>
+      <div className="border border-dashed border-lime-600 mb-2 p-1">
+        <span className="text-xs text-lime-800">OutOfStockLabel</span>
+        <ProductOutOfStockLabel stock={product.stock} />
+      </div>
+      <div className="border border-dashed border-cyan-400 mb-2 p-1">
+        <span className="text-xs text-cyan-800">ProductImage</span>
+        <ProductImage product={product} name={name} />
+      </div>
+      <div className="border border-dashed border-orange-400 mb-2 p-1">
+        <span className="text-xs text-orange-800">ProductInfo</span>
+        <ProductInfo product={product} name={name} desc={desc} />
+      </div>
+      <div className="border border-dashed border-violet-400 mb-2 p-1">
+        <span className="text-xs text-violet-800">ProductRatings</span>
+        <ProductRatings />
+      </div>
+      <div className="border border-dashed border-green-600 mt-auto p-1">
+        <span className="text-xs text-green-800">ProductControls</span>
+        <ProductControls product={product} name={name} />
+      </div>
     </motion.div>
   );
 };
 
 export default ProductCard;
-
