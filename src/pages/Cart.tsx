@@ -2,11 +2,14 @@
 import { useCartStore } from "@/store/cartStore";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import QuantitySelector from "@/components/QuantitySelector";
+import { Minus } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const Cart = () => {
   const items = useCartStore(state => state.items);
   const remove = useCartStore(state => state.removeFromCart);
-  const update = useCartStore(state => state.updateQuantity);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
   const clear = useCartStore(state => state.clearCart);
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -24,6 +27,25 @@ const Cart = () => {
       </div>
     );
   }
+
+  const handleQuantityChange = (item: any, newQty: number) => {
+    if (newQty < 1) {
+      remove(item._id);
+      toast({
+        duration: 1000,
+        title: t("removedFromCart"),
+        description: (
+          <div className="flex items-center gap-2">
+            <Minus size={16} className="inline text-red-600" />
+            {t("removedFromCart")}
+          </div>
+        ),
+        variant: "destructive"
+      });
+    } else {
+      updateQuantity(item._id, newQty);
+    }
+  };
 
   return (
     <div className="container max-w-3xl mx-auto mt-6 animate-fade-in">
@@ -46,34 +68,13 @@ const Cart = () => {
               </td>
               <td>
                 <div className="flex gap-2 items-center">
-                  <button
-                    onClick={() => update(item._id, Math.max(1, item.quantity - 1))}
-                    aria-label={t("subtract")}
-                    className="bg-gray-200 text-black rounded-full px-2 py-1 text-xl font-bold"
-                    style={{ minHeight: 44, borderRadius: 8 }}
-                    disabled={item.quantity <= 1}
-                  >-</button>
-                  <input
-                    type="number"
-                    min={1}
-                    max={item.stock || 20}
-                    value={item.quantity}
-                    onChange={e => {
-                      // Clamp input to min/max
-                      const val = Math.max(1, Math.min(item.stock || 20, Number(e.target.value) || 1));
-                      update(item._id, val);
-                    }}
-                    className="w-16 border px-2 py-1 rounded text-center"
-                    style={{ minHeight: 44, borderRadius: 8 }}
-                    aria-label={t("quantity")}
+                  <QuantitySelector
+                    quantity={item.quantity}
+                    stock={item.stock}
+                    onInc={() => handleQuantityChange(item, item.quantity + 1)}
+                    onDec={() => handleQuantityChange(item, item.quantity - 1)}
+                    disabled={item.stock === 0}
                   />
-                  <button
-                    onClick={() => update(item._id, Math.min(item.stock, item.quantity + 1))}
-                    aria-label={t("add")}
-                    className="bg-gray-200 text-black rounded-full px-2 py-1 text-xl font-bold"
-                    style={{ minHeight: 44, borderRadius: 8 }}
-                    disabled={item.quantity >= (item.stock || 99)}
-                  >+</button>
                 </div>
               </td>
               <td>₹{item.price * item.quantity}</td>
@@ -107,4 +108,5 @@ const Cart = () => {
     </div>
   );
 };
+
 export default Cart;
