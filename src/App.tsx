@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -22,6 +21,7 @@ import React, { Suspense } from "react";
 import RouterManager from "@/components/RouterManager";
 import NotFound from "@/pages/NotFound";
 import { ROUTES } from "@/routes";
+import VisitList from "@/pages/VisitList";
 
 const LazyHome = React.lazy(() => import("@/pages/Home"));
 const LazyProductDetails = React.lazy(() => import("@/pages/ProductDetails"));
@@ -46,7 +46,8 @@ const App = () => (
                 <Route path={ROUTES.ROOT} element={<Navigate to={ROUTES.HOME} />} />
                 <Route path={ROUTES.HOME} element={<LazyHome />} />
                 <Route path={ROUTES.PRODUCT()} element={<LazyProductDetails />} />
-                <Route path={ROUTES.CART} element={<LazyCart />} />
+                <Route path={ROUTES.CART} element={<VisitList />} /> {/* Cart route now shows Visit List */}
+                <Route path="/visit-list" element={<VisitList />} /> {/* Direct Visit List route for Navbar */}
                 <Route path={ROUTES.CHECKOUT} element={<LazyCheckout />} />
                 <Route path={ROUTES.ORDER_SUCCESS} element={<LazyOrderSuccess />} />
                 <Route path={ROUTES.LOGIN} element={<LazyAuth />} />

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -211,9 +210,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 >
                   <Minus size={20} />
                 </button>
-                <span className="qty-count" aria-live="polite" tabIndex={0}>
-                  {qty}
-                </span>
+                <span className="qty-count" aria-live="polite" tabIndex={0}>{qty}</span>
                 <button
                   aria-label={t("add") || "Plus"}
                   className="qty-btn hover:scale-110 transition-transform"
@@ -229,19 +226,44 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 >
                   <Plus size={20} />
                 </button>
-                {/* Add-To-Cart only if qty > 0 */}
+                {/* Reserve in Store (was Add to Cart) */}
                 {qty > 0 && (
                   <Button
                     size="default"
-                    className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in dark:bg-[#FFD70022] dark:text-[#FFD700] dark:border-[#FFD70099] dark:hover:bg-[#FFD700aa] dark:hover:text-[#232336] dark:shadow-xl"
-                    aria-label={t("addToCart")}
-                    onClick={handleAddToCart}
+                    className="bg-green-600 text-white rounded-md px-3 py-1 mt-2 hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
+                    aria-label="Reserve in Store"
+                    onClick={e => {
+                      e.stopPropagation();
+                      // Add to "visit list"
+                      addToCart({
+                        _id: product.id.toString(),
+                        name,
+                        price: product.price,
+                        quantity: qty,
+                        stock: product.stock,
+                        image: product.image_url || getPlaceholderImage(),
+                      }, qty);
+
+                      toast({
+                        duration: 1400,
+                        title: "Reserved! Show summary at SS MART",
+                        description: (
+                          <div className="flex items-center gap-2">
+                            <span className="animate-pulse">✅</span>
+                            <span className="font-semibold">{name} ({qty})</span>
+                          </div>
+                        ),
+                        variant: "default",
+                      });
+
+                      setQty(0); // reset count
+                    }}
                     type="button"
                     disabled={isOutOfStock || product.stock < 1}
                     tabIndex={0}
                     style={{ minHeight: 44, borderRadius: 8, marginLeft: 8 }}
                   >
-                    <ShoppingCart size={18} className="mr-1" /> {t("addToCart")}
+                    Reserve in Store
                   </Button>
                 )}
               </div>
@@ -276,4 +298,3 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
-

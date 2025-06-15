@@ -1,3 +1,5 @@
+
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -18,6 +20,7 @@ import AuthModal from "./AuthModal";
 import { ROUTES } from "@/routes";
 import AuthButtons from "./AuthButtons";
 import clsx from "clsx";
+import { Button } from "@/components/ui/button";
 
 type NavItem = {
   icon: React.ReactNode;
@@ -69,8 +72,8 @@ export default function Navbar() {
     },
     {
       icon: <ShoppingCart className="mr-2" />,
-      label: t("cart"),
-      to: ROUTES.CART,
+      label: "Visit List",
+      to: "/visit-list",
       show: true
     },
     {
@@ -124,7 +127,7 @@ export default function Navbar() {
                 >
                   {n.icon}
                   {n.label}
-                  {n.to === ROUTES.CART ? (
+                  {n.to === "/visit-list" ? (
                     <>
                       {cartBadge}
                       {cartTotalBadge}
@@ -132,6 +135,15 @@ export default function Navbar() {
                   ) : null}
                 </Link>
               ))}
+            {/* Google Maps Button */}
+            <a
+              href="https://g.co/kgs/v1e9RSN"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-3"
+            >
+              <Button variant="outline" className="text-sm">📍 Find SS MART</Button>
+            </a>
           </div>
           <div className="hidden md:flex gap-4 items-center ml-4">
             <ThemeToggle />
@@ -184,7 +196,7 @@ export default function Navbar() {
                 >
                   {n.icon}
                   <span className="ml-1">{n.label}</span>
-                  {n.to === ROUTES.CART ? (
+                  {n.to === "/visit-list" ? (
                     <>
                       {cartBadge}
                       {cartTotalBadge}
@@ -192,6 +204,15 @@ export default function Navbar() {
                   ) : null}
                 </Link>
               ))}
+            {/* Google Maps Button */}
+            <a
+              href="https://g.co/kgs/v1e9RSN"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4"
+            >
+              <Button variant="outline" className="text-sm w-full">📍 Find SS MART</Button>
+            </a>
           </div>
           <div className="mt-auto mb-6">
             <LanguageSwitcher orientation="horizontal" />
