@@ -45,7 +45,6 @@ export default function BuyNowButton({ product, disabled }: Props) {
     } else {
       updateQty(product.id.toString(), quantity > 0 ? quantity : 1);
     }
-    // Instead of navigating to /cart, go to /checkout, and pass only this product (simulate "single buy")
     navigate("/checkout", { state: { buyNow: { ...product, quantity: 1 } } });
   };
 
@@ -53,7 +52,7 @@ export default function BuyNowButton({ product, disabled }: Props) {
     <Button
       size="sm"
       variant="secondary"
-      className="ml-2 bg-white dark:bg-lux-black border border-gray-300 dark:border-gray-600 hover:bg-amber-100/80 shadow transition-all min-h-[44px] rounded-[8px] text-primary dark:text-lux-gold font-semibold"
+      className="ml-2 bg-white dark:bg-neutral-800 border border-gray-300 dark:border-gray-600 hover:bg-amber-100/80 dark:hover:bg-yellow-950 shadow transition-all min-h-[44px] rounded-[8px] text-primary dark:text-lux-gold font-semibold"
       onClick={handleBuyNow}
       aria-label={t("buyNow")}
       type="button"

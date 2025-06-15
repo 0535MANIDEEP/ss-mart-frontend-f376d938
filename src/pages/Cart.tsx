@@ -11,11 +11,10 @@ const Cart = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  // Defensive: fix for edge-case items
   const subtotal = Array.isArray(items)
     ? items.reduce((s, i) => s + (i.price * i.quantity), 0)
     : 0;
-  const total = subtotal; // Additional charges (e.g., delivery) can be added later
+  const total = subtotal;
 
   if (!Array.isArray(items) || !items.length) {
     return (
@@ -59,7 +58,11 @@ const Cart = () => {
                     min={1}
                     max={item.stock || 20}
                     value={item.quantity}
-                    onChange={e => update(item._id, +e.target.value)}
+                    onChange={e => {
+                      // Clamp input to min/max
+                      const val = Math.max(1, Math.min(item.stock || 20, Number(e.target.value) || 1));
+                      update(item._id, val);
+                    }}
                     className="w-16 border px-2 py-1 rounded text-center"
                     style={{ minHeight: 44, borderRadius: 8 }}
                     aria-label={t("quantity")}

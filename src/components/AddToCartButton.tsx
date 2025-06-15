@@ -19,26 +19,14 @@ type AddToCartButtonProps = {
   quantity?: number; // Optional: explicit quantity, only show if ≥ 1
 };
 
-/**
- * Adds to cart (always at least 1), shows toast, and instantly/optimistically updates UI.
- * Never redirects!
- */
 export default function AddToCartButton({ product, onCartChange, disabled, quantity }: AddToCartButtonProps) {
   const { t } = useTranslation();
   const addToCart = useCartStore(s => s.addToCart);
   const items = useCartStore(s => s.items);
   const cartItem = items.find(i => i._id === product.id?.toString());
   const qty = typeof quantity === "number" ? quantity : cartItem?.quantity ?? 0;
-  
-  // Only render button if qty ≥ 1
-  if (qty < 1) return null;
 
-  const DopamineConfirm = () => (
-    <div className="flex items-center gap-2">
-      <span className="animate-pulse">✅</span>
-      <span className="font-semibold text-lux-gold">{t("addedToCart")}</span>
-    </div>
-  );
+  if (qty < 1) return null;
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -61,7 +49,12 @@ export default function AddToCartButton({ product, onCartChange, disabled, quant
     toast({
       duration: 1000,
       title: t("addedToCart"),
-      description: <DopamineConfirm />,
+      description: (
+        <div className="flex items-center gap-2">
+          <span className="animate-pulse">✅</span>
+          <span className="font-semibold text-lux-gold">{t("addedToCart") || "Added to Cart"}</span>
+        </div>
+      ),
       variant: "default"
     });
     if (onCartChange) onCartChange((qty ?? 0) + 1);
