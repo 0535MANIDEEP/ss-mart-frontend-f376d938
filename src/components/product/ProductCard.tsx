@@ -50,6 +50,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
+  // --- Lazy-load wishlist
+  React.useEffect(() => {
+    // Only import useSupabaseAuth and fetchWishlist from the store in parent (or index) for perf, but fine here for MVP
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { useSupabaseAuth } = require("@/hooks/useSupabaseAuth");
+    const { fetchWishlist } = require("@/store/wishlistStore").useWishlistStore.getState();
+    const { user } = useSupabaseAuth();
+    fetchWishlist(user);
+    // This is not optimal for batching, TODO: move to app shell/provider
+    // eslint-disable-next-line
+  }, []);
+
   // Refined card visuals
   return (
     <motion.div
@@ -71,8 +83,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       data-testid="product-card"
     >
       {/* Out of Stock Label, visually prominent in a modern way */}
-      <div className="absolute top-3 right-3 z-20">
+      <div className="absolute top-3 right-3 z-20 flex flex-col gap-2 items-end">
         <ProductOutOfStockLabel stock={product.stock} />
+        <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
       </div>
 
       <div className="w-full h-48 md:h-44 relative">
@@ -122,4 +135,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   );
 };
 
+import WishlistButton from "@/components/WishlistButton";
 export default ProductCard;
+
