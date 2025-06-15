@@ -39,8 +39,13 @@ function getProductField(
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
+  // Debug: log the product each render!
+  console.log("ProductCard rendering:", product);
+
   if (!product || (typeof product.id !== "number" && typeof product.id !== "string")) {
-    return <div className="text-red-500 text-center p-2">{t("productNotFound")}</div>;
+    return <div className="text-red-500 text-center p-2 border-2 border-red-600 bg-red-100">
+      {t("productNotFound") || "PRODUCT NOT FOUND"}
+    </div>;
   }
   const lang = i18n.language || "en";
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
@@ -53,12 +58,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   // Out of stock
   const outOfStock = product.stock <= 0;
 
+  // MAIN DEBUG WRAP
   return (
     <motion.div
       className={`
         rounded-xl shadow-md hover:shadow-lg transition-shadow bg-white dark:bg-[#181929]
-        flex flex-col border border-gray-200 dark:border-lux-gold/25 relative
-        group h-full w-full max-w-xs mx-auto p-0
+        flex flex-col border-4 border-pink-600 !bg-yellow-100 dark:!bg-pink-900
+        relative group h-full w-full max-w-xs mx-auto p-0
         focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
       `}
       style={{ minHeight: 380 }}
@@ -73,11 +79,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={onClick ? () => onClick(product) : undefined}
       data-testid="product-card"
     >
+      {/* Debug header! */}
+      <div className="bg-fuchsia-300 text-lg font-bold px-2 py-1 rounded-t-xl">
+        DEBUG: Card
+      </div>
+
       {/* Optional badge, like "Low Stock", "New", etc */}
       {showBadge && (
         <div
-          className={`absolute top-3 left-3 px-2 py-0.5 rounded-full text-xs font-semibold z-30 ${showBadge.color}`}
-          aria-label={showBadge.text}
+          className={`absolute top-3 left-3 px-2 py-0.5 rounded-full text-xs font-semibold z-30 bg-green-200 text-green-900 border-2 border-green-600`}
+          aria-label="stock-badge"
         >
           {outOfStock ? t("removedFromCart") : t("stock", { count: product.stock })}
         </div>
@@ -87,51 +98,60 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       <ProductOutOfStockLabel stock={product.stock} />
 
       {/* Card layout: Image at top, then info, then controls */}
-      <div className="relative aspect-[1/1] w-full overflow-hidden flex items-center justify-center mb-0 rounded-t-xl">
+      <div className="relative flex flex-col items-center aspect-[1/1] w-full overflow-hidden justify-center mb-0 rounded-t-xl border border-yellow-800 bg-yellow-300/40">
         {/* Product image: full, 1/1 ratio, zoom on hover */}
-        <div className="w-full h-full">
-          <ProductImage
-            product={product}
-            name={name}
-          />
+        <div className="w-full h-full bg-white border border-gray-400 flex items-center justify-center">
+          <span className="block text-xs text-black absolute top-1 left-1 z-10">Image:</span>
+          {/* Make image never null */}
+          {product.image_url || name ? (
+            <ProductImage
+              product={product}
+              name={name}
+            />
+          ) : (
+            <span className="text-red-500">No image/name</span>
+          )}
         </div>
-        {/* Hover zoom effect on img */}
         <div
-          className="absolute inset-0 pointer-events-none rounded-t-xl"
+          className="absolute inset-0 pointer-events-none rounded-t-xl border-2 border-blue-600"
           aria-hidden="true"
         />
       </div>
 
       {/* Info block: name, desc, ratings, price, stock */}
-      <div className="flex flex-col gap-1 px-4 pt-4 pb-2 min-h-[110px]">
-        {/* Product name/title */}
+      <div className="flex flex-col gap-1 px-4 pt-4 pb-2 min-h-[110px] bg-pink-100 border border-pink-400">
         <h3
           className="text-base font-semibold text-lux-black dark:text-lux-gold line-clamp-2 mb-0 cursor-pointer group-hover:underline focus:underline"
           title={name}
           tabIndex={0}
-          aria-label={name}
+          aria-label="name"
           style={{ minHeight: 48 }}
           onClick={e => {
             e.stopPropagation();
             if (onClick) onClick(product);
           }}
         >
-          {name}
+          {/* Show name, or debug if missing */}
+          {name || <span className="text-red-600">No name</span>}
         </h3>
-        {/* Description */}
+
         <p
           className="text-xs text-gray-600 dark:text-gray-300 mt-0 mb-1 line-clamp-2"
           title={desc}
         >
-          {desc}
+          {desc || <span className="text-red-600">No desc</span>}
         </p>
+
         {/* Ratings placeholder */}
-        <ProductRatings />
+        <div className="text-sm text-blue-700">RATINGS PLACEHOLDER</div>
         <div className="flex items-center gap-2">
           <span className="text-primary text-xl font-bold">
             ₹{product.price}
           </span>
-          <span className={`ml-auto text-[13px] px-2 rounded ${outOfStock ? "bg-red-100 text-red-600" : "bg-emerald-50 text-emerald-800"}`}>
+          <span className={`ml-auto text-[13px] px-2 rounded 
+            ${outOfStock ? "bg-red-100 text-red-600" : "bg-emerald-50 text-emerald-800"}
+            border border-black font-bold`
+          }>
             {outOfStock
               ? t("removedFromCart") || "Out of stock"
               : t("stock", { count: product.stock }) || `Stock: ${product.stock}`
@@ -141,7 +161,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       </div>
 
       {/* Actions: QuantitySelector, Add to Cart, Buy Now */}
-      <div className="flex flex-col gap-2 px-4 pb-4 mt-auto w-full">
+      <div className="flex flex-col gap-2 px-4 pb-4 mt-auto w-full bg-yellow-50 border-t-2 border-yellow-700">
+        <div>DEBUG: Controls go here ↓</div>
         <ProductControls
           product={product}
           name={name}
