@@ -50,7 +50,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
   return (
     <motion.div
-      className="lux-card group transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer bg-yellow-100 border-4 border-blue-400 relative shadow-md"
+      className="lux-card group transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer relative shadow-md border-2 border-yellow-300 bg-white dark:bg-[#23232b] text-black dark:text-lux-gold"
       style={{ minHeight: 340, borderRadius: 8, margin: 10, padding: 16 }}
       initial="rest"
       whileHover="hover"

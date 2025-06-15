@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -96,6 +95,15 @@ function CategoryFilter({ category, setCategory }: { category: string; setCatego
   );
 }
 
+const CATEGORY_MAP: Record<string, string[]> = {
+  Groceries: ["Grocery", "Groceries"],
+  Snacks: ["Snacks"],
+  "Personal Care": ["Personal Care"],
+  Beverages: ["Beverages"],
+  Household: ["Household"],
+  Others: ["Others"],
+};
+
 type MultiLang = { en: string; hi?: string; te?: string };
 type Product = {
   id: number | string;
@@ -135,7 +143,11 @@ const Home = () => {
   // Update products view when category or language changes
   useEffect(() => {
     if (category === "All") setFiltered(products);
-    else setFiltered(products.filter((p) => p.category === category));
+    else {
+      // filter with plural/singular match
+      const catOptions = CATEGORY_MAP[category] || [category];
+      setFiltered(products.filter((p) => catOptions.includes(p.category)));
+    }
   }, [products, category, i18n.language]);
 
   return (
