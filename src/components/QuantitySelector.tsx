@@ -25,7 +25,9 @@ export default function QuantitySelector({
       <Button
         size="icon"
         variant="ghost"
-        onClick={onDec}
+        onClick={() => {
+          if (quantity > 1 && !disabled) onDec();
+        }}
         aria-label={t("subtract")}
         disabled={quantity <= 1 || disabled}
         className="!p-2.5"
@@ -38,7 +40,9 @@ export default function QuantitySelector({
       <Button
         size="icon"
         variant="ghost"
-        onClick={onInc}
+        onClick={() => {
+          if (quantity < stock && !disabled) onInc();
+        }}
         aria-label={t("add")}
         disabled={quantity >= stock || disabled}
         className="!p-2.5"

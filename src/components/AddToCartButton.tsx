@@ -16,18 +16,22 @@ type AddToCartButtonProps = {
   };
   onCartChange?: (quantity: number) => void;
   disabled?: boolean;
+  quantity?: number; // Optional: explicit quantity, only show if ≥ 1
 };
 
 /**
  * Adds to cart (always at least 1), shows toast, and instantly/optimistically updates UI.
  * Never redirects!
  */
-export default function AddToCartButton({ product, onCartChange, disabled }: AddToCartButtonProps) {
+export default function AddToCartButton({ product, onCartChange, disabled, quantity }: AddToCartButtonProps) {
   const { t } = useTranslation();
   const addToCart = useCartStore(s => s.addToCart);
   const items = useCartStore(s => s.items);
   const cartItem = items.find(i => i._id === product.id?.toString());
-  const quantity = cartItem?.quantity ?? 0;
+  const qty = typeof quantity === "number" ? quantity : cartItem?.quantity ?? 0;
+  
+  // Only render button if qty ≥ 1
+  if (qty < 1) return null;
 
   const DopamineConfirm = () => (
     <div className="flex items-center gap-2">
@@ -38,11 +42,19 @@ export default function AddToCartButton({ product, onCartChange, disabled }: Add
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (qty < 1) {
+      toast({
+        title: t("cannotAddZero"),
+        description: t("Please increase quantity to add this product to cart."),
+        variant: "destructive"
+      });
+      return;
+    }
     addToCart({
       _id: product.id.toString(),
       name: product.name,
       price: product.price,
-      quantity: 1,
+      quantity: qty,
       stock: product.stock,
       image: product.image || undefined,
     });
@@ -52,13 +64,13 @@ export default function AddToCartButton({ product, onCartChange, disabled }: Add
       description: <DopamineConfirm />,
       variant: "default"
     });
-    if (onCartChange) onCartChange((quantity ?? 0) + 1);
+    if (onCartChange) onCartChange((qty ?? 0) + 1);
   };
 
   return (
     <Button
       size="default"
-      className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
+      className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in"
       aria-label={t("addToCart")}
       onClick={handleClick}
       type="button"

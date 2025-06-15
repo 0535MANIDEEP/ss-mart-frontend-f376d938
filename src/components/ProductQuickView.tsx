@@ -6,19 +6,13 @@ import { toast } from "@/hooks/use-toast";
 import { useCartStore } from "@/store/cartStore";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import QuantitySelector from "./QuantitySelector";
 
 interface ProductQuickViewProps {
   product: any;
   open: boolean;
   onClose: () => void;
 }
-
-const DopamineConfirm = () => (
-  <div className="flex items-center gap-2">
-    <span className="animate-pulse">✅</span>
-    <span className="font-semibold text-lux-gold">Added to cart!</span>
-  </div>
-);
 
 // Reuse logic for multilingual fields
 function getProductField(data: any, lang: string, fallback: string = ""): string {
@@ -48,6 +42,14 @@ export default function ProductQuickView({ product, open, onClose }: ProductQuic
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
 
   const handleAdd = () => {
+    if (qty < 1) {
+      toast({
+        title: t("cannotAddZero"),
+        description: t("Please increase quantity to add this product to cart."),
+        variant: "destructive"
+      });
+      return;
+    }
     if (cartItem) {
       updateQty(product.id?.toString(), qty);
     } else {
@@ -63,7 +65,12 @@ export default function ProductQuickView({ product, open, onClose }: ProductQuic
     toast({
       duration: 1350,
       title: t("addedToCart"),
-      description: <DopamineConfirm />,
+      description: (
+        <div className="flex items-center gap-2">
+          <span className="animate-pulse">✅</span>
+          <span className="font-semibold text-lux-gold">{t("addedToCart")}</span>
+        </div>
+      ),
       variant: "default"
     });
   };
@@ -121,35 +128,30 @@ export default function ProductQuickView({ product, open, onClose }: ProductQuic
             </div>
             {/* Qty controls */}
             <div className="flex items-center gap-3 my-1 mb-3">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleDec}
-                aria-label={t("subtract")}
-                disabled={qty <= 1}
-                className="rounded-full"
-                tabIndex={0}
-              ><Minus size={20} /></Button>
-              <span className="font-semibold text-lg px-2">{qty}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleInc}
-                aria-label={t("add")}
-                disabled={qty >= stock}
-                className="rounded-full"
-                tabIndex={0}
-              ><Plus size={20} /></Button>
+              <QuantitySelector
+                quantity={qty}
+                stock={stock}
+                onInc={handleInc}
+                onDec={handleDec}
+                disabled={stock <= 0}
+              />
             </div>
-            <div className="flex gap-3 mt-4">
-              <Button
-                onClick={() => { handleAdd(); onClose(); }}
-                className="bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 text-lg font-semibold shadow"
-                aria-label={t("addToCart")}
-                tabIndex={0}
-              >
-                <ShoppingCart size={20} /> {t("addToCart")}
-              </Button>
+            <div className="flex flex-col gap-2 mt-1">
+              {/* Only show Add to Cart when qty ≥ 1 */}
+              {qty >= 1 && (
+                <Button
+                  onClick={() => { handleAdd(); onClose(); }}
+                  className={`bg-green-500 text-white px-5 py-2 rounded-lg hover:bg-green-600 text-lg font-semibold shadow transition-opacity duration-300 ${qty === 1 ? "animate-fade-in" : ""}`}
+                  aria-label={t("addToCart")}
+                  tabIndex={0}
+                  style={{ opacity: qty >= 1 ? 1 : 0.3, pointerEvents: qty >= 1 ? "auto" : "none" }}
+                >
+                  <ShoppingCart size={20} /> {t("addToCart")}
+                </Button>
+              )}
+              {qty < 1 && (
+                <div className="text-gray-500 text-sm">{t("Please increase quantity to add this product to cart.")}</div>
+              )}
               <Button
                 onClick={handleBuyNow}
                 className="bg-lux-gold text-black px-5 py-2 rounded-lg hover:bg-amber-400 text-lg font-bold shadow"
@@ -158,6 +160,9 @@ export default function ProductQuickView({ product, open, onClose }: ProductQuic
               >
                 {t("buyNow")} →
               </Button>
+              <div className="text-xs mt-2 text-gray-400">
+                💡 {t("Click on a product to view details. Use + to increase quantity, and then tap ‘Add to Cart’ to confirm.")}
+              </div>
             </div>
           </div>
         </div>
