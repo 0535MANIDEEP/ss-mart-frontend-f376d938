@@ -22,7 +22,7 @@ const VisitList = () => {
 
   if (!Array.isArray(items) || !items.length) {
     return (
-      <div className="text-center py-16">
+      <div className="text-center py-16 px-2">
         <h2 className="text-2xl mb-2">{t("visitListEmpty") || "Your In-Store Reservation Summary is Empty"}</h2>
         <Link to="/" className="text-green-600 underline">{t("browseReserveNow") || "Browse & Reserve Now"}</Link>
       </div>
@@ -59,67 +59,67 @@ const VisitList = () => {
   };
 
   return (
-    <div className="container max-w-3xl mx-auto mt-6 animate-fade-in bg-white dark:bg-[#222230] p-4 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-1 text-gray-900 dark:text-lux-gold">
-        {t("visitListTitle") || "Your In-Store Reservation Summary"}
-      </h2>
-      <p className="text-sm text-gray-500 mt-1">
+    <div className="container max-w-3xl w-full mx-auto mt-6 animate-fade-in bg-white dark:bg-[#222230] p-2 sm:p-4 rounded-xl shadow-lg">
+      <h2 className="text-2xl font-bold mb-1 text-gray-900 dark:text-lux-gold text-center">{t("visitListTitle") || "Your In-Store Reservation Summary"}</h2>
+      <p className="text-xs sm:text-sm text-gray-500 mt-1 text-center">
         {t("visitListSubtitle") || "Please show this summary at SS MART, Shankarpally counter to complete your purchase."}
       </p>
-      <table className="w-full text-left overflow-x-auto mt-4">
-        <thead>
-          <tr className="border-b border-gray-300 dark:border-[#FFD70033]">
-            <th>{t("product") || "Product"}</th>
-            <th>{t("qty") || "Qty"}</th>
-            <th>{t("price") || "Price"}</th>
-            <th className="w-8"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.map(item => (
-            <tr key={item._id} className="border-b border-gray-100 dark:border-[#FFD70022]">
-              <td className="py-2 flex items-center gap-3 min-w-[120px]">
-                <img
-                  src={item.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80"}
-                  alt={item.name}
-                  className="w-12 h-12 object-cover rounded-md bg-gray-100 dark:bg-[#292848]"
-                  style={{ borderRadius: 8 }}
-                  onError={e => (e.currentTarget.src = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80")}
-                />
-                <span className="break-all dark:text-lux-gold">{item.name}</span>
-              </td>
-              <td>
-                <div className="flex gap-2 items-center">
-                  <QuantitySelector
-                    quantity={item.quantity}
-                    stock={item.stock}
-                    onInc={() => handleQuantityChange(item, item.quantity + 1)}
-                    onDec={() => handleQuantityChange(item, item.quantity - 1)}
-                    disabled={item.stock === 0}
-                  />
-                </div>
-              </td>
-              <td>₹{item.price * item.quantity}</td>
-              <td>
-                <button
-                  onClick={() => remove(item._id)}
-                  className="text-red-600 hover:underline dark:text-red-400"
-                  style={{ minHeight: 44 }}
-                  tabIndex={0}
-                  aria-label={t("remove")}
-                >{t("remove") || "Remove"}</button>
-              </td>
+      <div className="overflow-x-auto mt-3 rounded-lg border border-yellow-100 dark:border-[#FFD70022]">
+        <table className="w-full text-left min-w-[320px]">
+          <thead>
+            <tr className="border-b border-gray-300 dark:border-[#FFD70033] text-xs sm:text-base">
+              <th className="py-2">{t("product") || "Product"}</th>
+              <th className="py-2">{t("qty") || "Qty"}</th>
+              <th className="py-2">{t("price") || "Price"}</th>
+              <th className="w-8"></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {items.map(item => (
+              <tr key={item._id} className="border-b border-gray-100 dark:border-[#FFD70022] align-top">
+                <td className="py-2 flex items-center gap-2 min-w-[88px]">
+                  <img
+                    src={item.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80"}
+                    alt={item.name}
+                    className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-md bg-gray-100 dark:bg-[#292848]"
+                    style={{ borderRadius: 8 }}
+                    onError={e => (e.currentTarget.src = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80")}
+                  />
+                  <span className="break-all dark:text-lux-gold text-xs sm:text-base">{item.name}</span>
+                </td>
+                <td>
+                  <div className="flex gap-2 items-center">
+                    <QuantitySelector
+                      quantity={item.quantity}
+                      stock={item.stock}
+                      onInc={() => handleQuantityChange(item, item.quantity + 1)}
+                      onDec={() => handleQuantityChange(item, item.quantity - 1)}
+                      disabled={item.stock === 0}
+                    />
+                  </div>
+                </td>
+                <td className="text-xs sm:text-base">₹{item.price * item.quantity}</td>
+                <td>
+                  <button
+                    onClick={() => remove(item._id)}
+                    className="text-red-600 hover:underline dark:text-red-400"
+                    style={{ minHeight: 44 }}
+                    tabIndex={0}
+                    aria-label={t("remove")}
+                  >{t("remove") || "Remove"}</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <strong className="text-xl dark:text-lux-gold">{t("estimatedTotal") || "Estimated Total"}: ₹{total}</strong>
+        <strong className="text-lg sm:text-xl dark:text-lux-gold">{t("estimatedTotal") || "Estimated Total"}: ₹{total}</strong>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={clear}
-            className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap dark:bg-[#FFD70021] dark:text-lux-gold dark:hover:bg-[#FFD70066]"
-            style={{ minHeight: 44, borderRadius: 8 }}
+            className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap dark:bg-[#FFD70021] dark:text-lux-gold dark:hover:bg-[#FFD70066] text-xs sm:text-base"
+            style={{ minHeight: 36, borderRadius: 8 }}
             tabIndex={0}
           >
             {t("clearVisitList") || "Clear Visit List"}
@@ -127,7 +127,7 @@ const VisitList = () => {
           <DownloadVisitSummary items={items} total={total} />
           <button
             onClick={handleDownloadJSON}
-            className="bg-[#FFD70033] text-[#232336] border border-[#FFD70088] font-semibold px-4 py-2 rounded flex items-center gap-2 hover:bg-[#FFD70055] dark:bg-[#FFD70033] dark:text-[#FFD700] dark:border-[#FFD700aa]"
+            className="bg-[#FFD70033] text-[#232336] border border-[#FFD70088] font-semibold px-2 py-2 rounded flex items-center gap-2 hover:bg-[#FFD70055] dark:bg-[#FFD70033] dark:text-[#FFD700] dark:border-[#FFD700aa] text-xs sm:text-base"
             style={{ borderRadius: 8 }}
             type="button"
             tabIndex={0}
@@ -142,3 +142,4 @@ const VisitList = () => {
 };
 
 export default VisitList;
+

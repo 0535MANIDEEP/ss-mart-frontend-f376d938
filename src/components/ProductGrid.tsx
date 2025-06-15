@@ -32,7 +32,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
   if (!products || products.length === 0) {
     return (
       <motion.div
-        className="text-gray-700 text-center my-16 text-xl bg-yellow-50 border border-yellow-300 rounded-xl p-8"
+        className="text-gray-700 text-center my-14 sm:my-16 text-base sm:text-xl bg-yellow-50 border border-yellow-300 rounded-xl p-5 sm:p-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         aria-live="polite"
@@ -48,7 +48,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
 
   return (
     <motion.div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 animate-fade-in bg-white/95 dark:bg-lux-black min-h-[200px] rounded-2xl border border-yellow-400 p-4"
+      className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-7 animate-fade-in bg-white/95 dark:bg-lux-black min-h-[200px] rounded-2xl border border-yellow-400 p-3 sm:p-4"
       variants={gridVariants}
       initial="hidden"
       animate="visible"
@@ -77,3 +77,4 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
 };
 
 export default ProductGrid;
+

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
@@ -44,6 +43,15 @@ export default function Navbar() {
   const [authModal, setAuthModal] = useState<null | "login" | "signup">(null);
 
   useEffect(() => setMenuOpen(false), [location.pathname]);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [menuOpen]);
 
   const handleLogout = async () => {
     await signOut();
@@ -105,22 +113,20 @@ export default function Navbar() {
       {/* Nav Container */}
       <nav className="w-full sticky top-0 z-50 bg-white/95 dark:bg-lux-black/90 border-b border-gray-200 dark:border-lux-gold shadow-md backdrop-blur-xl transition-all">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between gap-4 px-2 sm:px-6 py-2 min-h-[60px]">
-
+          <div className="flex items-center justify-between gap-2 px-1.5 sm:px-4 py-2 min-h-[60px]">
             {/* Left: Brand & Menu */}
-            <div className="flex items-center gap-2 md:gap-4">
+            <div className="flex items-center gap-1 md:gap-3">
               {menuButton}
               <Link
                 to={ROUTES.ROOT}
-                className="text-2xl font-black tracking-wide flex items-center gap-2 text-primary dark:text-lux-gold pr-3 pl-1 md:pl-0"
+                className="text-xl sm:text-2xl font-black tracking-wide flex items-center gap-1 sm:gap-2 text-primary dark:text-lux-gold pr-2 pl-0.5 md:pl-0"
                 style={{ letterSpacing: "0.01em" }}
               >
                 {t("brand")}
               </Link>
             </div>
-
             {/* Center nav links */}
-            <div className="hidden md:flex flex-1 items-center justify-center gap-2">
+            <div className="hidden md:flex flex-1 items-center justify-center gap-1 sm:gap-2">
               {navLinks
                 .filter(n => n.show)
                 .map(n => (
@@ -128,9 +134,9 @@ export default function Navbar() {
                     key={n.to}
                     to={n.to}
                     className={clsx(
-                      "flex items-center gap-2 rounded-xl px-5 py-2 min-h-[44px] text-base font-semibold transition-colors duration-150",
-                      "hover:bg-lux-gold/20 dark:hover:bg-lux-gold/10",
-                      "focus:bg-lux-gold/30 dark:focus:bg-lux-gold/20",
+                      "flex items-center gap-2 rounded-xl px-4 py-2 min-h-[42px] text-base font-semibold transition-colors duration-150",
+                      "hover:bg-lux-gold/30 dark:hover:bg-lux-gold/10",
+                      "focus:bg-lux-gold/40 dark:focus:bg-lux-gold/20",
                       "active:ring-2 active:ring-lux-gold/60 active:scale-[.97]",
                       "text-gray-900 dark:text-gray-100"
                     )}
@@ -146,28 +152,28 @@ export default function Navbar() {
                     )}
                   </Link>
                 ))}
+              {/* "Find SS MART" button - hide text in xs for less crowding */}
               <a
                 href="https://g.co/kgs/v1e9RSN"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-4"
+                className="ml-2 sm:ml-4"
               >
                 <Button
                   variant="outline"
-                  className="text-sm border-lux-gold/30 hover:border-lux-gold/65 transition-shadow"
+                  className="text-xs sm:text-sm border-lux-gold/30 hover:border-lux-gold/65 transition-shadow"
                   style={{
                     fontWeight: 600,
                     letterSpacing: "0.01em",
                     borderWidth: 1.2
                   }}
                 >
-                  📍 Find SS MART
+                  <span className="hidden xs:inline">📍 </span>Find SS MART
                 </Button>
               </a>
             </div>
-
             {/* Right section */}
-            <div className="hidden md:flex gap-4 items-center ml-4 pr-2">
+            <div className="hidden md:flex gap-2 sm:gap-4 items-center ml-2 sm:ml-4 pr-1 sm:pr-2">
               <ThemeToggle />
               <LanguageSwitcher />
               <AuthButtons
@@ -182,7 +188,7 @@ export default function Navbar() {
         {/* Mobile drawer */}
         <div
           className={clsx(
-            "fixed inset-0 z-40 bg-white dark:bg-lux-black transition-transform duration-200 px-6 pt-6 pb-32 flex flex-col md:hidden shadow-2xl border-l border-lux-gold/20",
+            "fixed inset-0 z-[60] bg-white dark:bg-lux-black transition-transform duration-200 px-2 pt-4 pb-24 flex flex-col md:hidden shadow-2xl border-l border-lux-gold/20",
             menuOpen
               ? "translate-x-0"
               : "translate-x-full pointer-events-none opacity-0"
@@ -191,27 +197,25 @@ export default function Navbar() {
         >
           {/* Close Button */}
           <button
-            className="absolute top-4 right-6 text-3xl font-bold text-gray-400 hover:text-red-500 focus:outline focus:ring-2 focus:ring-red-400"
+            className="absolute top-3 right-4 text-3xl font-bold text-gray-400 hover:text-red-500 focus:outline focus:ring-2 focus:ring-red-400"
             aria-label="Close menu"
             onClick={() => setMenuOpen(false)}
             tabIndex={0}
           >
             ×
           </button>
-
           {/* Mobile Brand */}
-          <div className="mb-4 flex">
+          <div className="mb-3 flex">
             <Link
               to={ROUTES.ROOT}
-              className="text-2xl font-black tracking-wide flex items-center gap-2 text-primary dark:text-lux-gold pl-1"
+              className="text-xl font-black tracking-wide flex items-center gap-2 text-primary dark:text-lux-gold pl-1"
               onClick={() => setMenuOpen(false)}
             >
               {t("brand")}
             </Link>
           </div>
-
           {/* Mobile nav links */}
-          <div className="flex flex-col gap-2 flex-1">
+          <div className="flex flex-col gap-1 flex-1">
             {navLinks
               .filter(n => n.show)
               .map(n => (
@@ -219,9 +223,9 @@ export default function Navbar() {
                   key={n.to}
                   to={n.to}
                   className={clsx(
-                    "flex items-center px-4 py-3 min-h-[48px] rounded-xl text-lg font-semibold transition-colors",
-                    "hover:bg-lux-gold/20 dark:hover:bg-lux-gold/10",
-                    "focus:bg-lux-gold/30 dark:focus:bg-lux-gold/20",
+                    "flex items-center px-3 py-2 min-h-[44px] rounded-xl text-base font-semibold transition-colors",
+                    "hover:bg-lux-gold/25 dark:hover:bg-lux-gold/10",
+                    "focus:bg-lux-gold/35 dark:focus:bg-lux-gold/20",
                     "active:ring-2 active:ring-lux-gold/50",
                     "text-gray-800 dark:text-gray-100"
                   )}
@@ -243,26 +247,26 @@ export default function Navbar() {
               href="https://g.co/kgs/v1e9RSN"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-5"
+              className="mt-5 block"
             >
               <Button
                 variant="outline"
-                className="text-sm w-full border-lux-gold/30 hover:border-lux-gold/65"
+                className="text-xs w-full border-lux-gold/30 hover:border-lux-gold/65"
                 style={{
                   fontWeight: 600,
                   letterSpacing: "0.01em",
                   borderWidth: 1.2
                 }}
               >
-                📍 Find SS MART
+                <span className="hidden xs:inline mr-1">📍</span>Find SS MART
               </Button>
             </a>
           </div>
-          <div className="mt-auto mb-3">
+          <div className="mt-auto mb-2">
             <LanguageSwitcher orientation="horizontal" />
           </div>
           {/* Mobile Auth + Theme toggle */}
-          <div className="sticky bottom-0 pb-2 bg-white dark:bg-lux-black border-t border-gray-200/60 dark:border-lux-gold/40">
+          <div className="sticky bottom-0 pb-1 bg-white dark:bg-lux-black border-t border-gray-200/60 dark:border-lux-gold/40">
             <AuthButtons
               onLogin={() => {
                 setAuthModal("login");
@@ -278,7 +282,7 @@ export default function Navbar() {
               }}
               asFooter
             />
-            <div className="flex justify-center mt-3">
+            <div className="flex justify-center mt-2">
               <ThemeToggle />
             </div>
           </div>
@@ -288,4 +292,3 @@ export default function Navbar() {
     </>
   );
 }
-
