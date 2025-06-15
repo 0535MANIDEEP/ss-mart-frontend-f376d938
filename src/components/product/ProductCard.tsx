@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -44,22 +43,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
   const [open, setOpen] = React.useState(false);
 
-  // Find if this item is already in the cart
+  // Cart item, reused everywhere
   const cartItem = cartItems.find(
     (item: any) => item._id === product.id?.toString()
   );
 
-  // If cart has this, init local quantity to what's in the cart, else 0
-  const [qty, setQty] = React.useState(cartItem ? cartItem.quantity : 0);
+  // UX update: quantity is always 0 at first
+  const [qty, setQty] = React.useState(0);
 
-  // Sync local quantity to reflect cart if ever changed elsewhere
+  // Reset qty to 0 after a successful add, or when cartItems updates (only if this product is in the cart)
   React.useEffect(() => {
-    if (cartItem && cartItem.quantity !== qty) setQty(cartItem.quantity);
-    // If product is out of stock, force to 0
-    if (!product || product.stock <= 0) setQty(0);
-    else if (qty > product.stock) setQty(product.stock);
-    // eslint-disable-next-line
-  }, [cartItem?.quantity, product.stock, product.id]);
+    if (cartItem) setQty(0);
+  }, [cartItem?.quantity, product.id]);
 
   React.useEffect(() => {
     useWishlistStore.getState().fetchWishlist(user);
@@ -70,10 +65,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
-  // Universal: feedback (never reset local qty after add)
+  // Add to Cart: Only works if qty > 0, resets qty after, fires toast
   const handleAddToCart = () => {
     if (qty > 0) {
-      // Do add
       addToCart({
         _id: product.id.toString(),
         name,
@@ -94,8 +88,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         ),
         variant: "default",
       });
-      // ❌ Don't reset qty state here!
-      // Optionally: you can disable inputs or show "already in cart" after add
+
+      setQty(0); // Reset visual qty after add
     }
   };
 
@@ -104,7 +98,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     navigate(`/products/${product.id}`);
   };
 
-  // Guidance toast
   const showGuidance = (e: React.KeyboardEvent | React.MouseEvent) => {
     e.stopPropagation();
     toast({
@@ -187,21 +180,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <div className="product-card-controls">
             {!isOutOfStock ? (
               <div className="qty-atc-row" onClick={e => e.stopPropagation()}>
-                {/* You can use your custom reusable QuantitySelector here:
-                  <QuantitySelector
-                    quantity={qty}
-                    stock={product.stock}
-                    onInc={() => setQty(q => Math.min(product.stock, q + 1))}
-                    onDec={() => setQty(q => Math.max(1, q - 1))}
-                  />
-                */}
+                {/* Updated: Allow zero as minimum, hide minus at zero */}
                 <button
                   aria-label={t("subtract") || "Minus"}
                   className="qty-btn"
                   type="button"
-                  disabled={qty <= 1}
+                  disabled={qty === 0}
                   tabIndex={0}
-                  onClick={() => setQty(q => Math.max(1, q - 1))}
+                  onClick={() => setQty(q => (q > 0 ? q - 1 : 0))}
                 >
                   <Minus size={20} />
                 </button>
@@ -218,7 +204,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 >
                   <Plus size={20} />
                 </button>
-                {/* AddToCart appears only when qty > 0 */}
+                {/* Add-To-Cart only if qty > 0 */}
                 {qty > 0 && (
                   <Button
                     size="default"
@@ -265,4 +251,3 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
-

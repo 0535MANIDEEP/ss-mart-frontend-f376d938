@@ -20,16 +20,18 @@ export default function QuantitySelector({
   disabled = false
 }: Props) {
   const { t } = useTranslation();
+
+  // Allow min of 0 now (not 1)
   return (
     <div className="flex items-center border rounded-[8px] px-2 py-1 bg-white/90 dark:bg-lux-black/80 shadow-sm gap-1 select-none min-h-[44px]" style={{ minHeight: 44, borderRadius: 8 }}>
       <Button
         size="icon"
         variant="ghost"
         onClick={() => {
-          if (quantity > 1 && !disabled) onDec();
+          if (quantity > 0 && !disabled) onDec();
         }}
         aria-label={t("subtract")}
-        disabled={quantity <= 1 || disabled}
+        disabled={quantity <= 0 || disabled}
         className="!p-2.5"
         tabIndex={0}
         style={{ minHeight: 38, borderRadius: 8 }}
