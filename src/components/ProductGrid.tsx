@@ -26,6 +26,9 @@ const gridVariants = {
 const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
   const { t } = useTranslation();
 
+  // Log to check render
+  console.log("ProductGrid rendering {0} products", products?.length);
+
   if (!products.length) {
     return (
       <motion.div
