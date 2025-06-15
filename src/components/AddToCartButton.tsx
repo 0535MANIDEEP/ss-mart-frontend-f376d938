@@ -38,6 +38,8 @@ export default function AddToCartButton({ product, onCartChange, disabled, quant
       });
       return;
     }
+
+    // Add to cart using product info; pass correct id
     addToCart({
       _id: product.id.toString(),
       name: product.name,
@@ -45,19 +47,24 @@ export default function AddToCartButton({ product, onCartChange, disabled, quant
       quantity: qty,
       stock: product.stock,
       image: product.image || undefined,
-    });
+    }, qty);
+
     toast({
       duration: 1000,
       title: t("addedToCart"),
       description: (
         <div className="flex items-center gap-2">
           <span className="animate-pulse">✅</span>
-          <span className="font-semibold text-lux-gold">{t("addedToCart") || "Added to Cart"}</span>
+          <span className="font-semibold text-lux-gold">
+            {t("addedToCart") || "Added to Cart"}
+          </span>
         </div>
       ),
       variant: "default"
     });
-    if (onCartChange) onCartChange((qty ?? 0) + 1);
+
+    // Only reset via prop feedback if caller wants it
+    if (onCartChange) onCartChange(qty);
   };
 
   return (

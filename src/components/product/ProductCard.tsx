@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -13,7 +12,6 @@ import { useTranslation } from "react-i18next";
 import { cardVariants } from "./productCardVariants";
 import { Button } from "@/components/ui/button";
 import ProductQuickView from "@/components/ProductQuickView";
-import type { Product } from "./ProductCard";
 import ProductImage from "./ProductImage";
 import AddToCartButton from "@/components/AddToCartButton";
 
@@ -21,8 +19,8 @@ export type MultiLang = { en: string; hi?: string; te?: string };
 
 // Ensures codebase-wide interface is used
 export interface ProductCardProps {
-  product: Product;
-  onClick?: (prod: Product) => void;
+  product: any;
+  onClick?: (prod: any) => void;
 }
 
 function getProductField(
@@ -47,7 +45,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     useWishlistStore.getState().fetchWishlist(user);
   }, [user]);
 
-  // Reset quantity if product/stock changes or out of stock
+  // Reset quantity if product stock changes or is out of stock
   React.useEffect(() => {
     if (!product || product.stock <= 0) setQty(0);
     else if (qty > product.stock) setQty(product.stock);
@@ -58,20 +56,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
-  // Never negative or above stock:
   React.useEffect(() => {
     if (isOutOfStock && qty !== 0) setQty(0);
     else if (qty > product.stock) setQty(product.stock);
     else if (qty < 0) setQty(0);
   }, [product.stock, isOutOfStock, qty]);
 
-  // View full details in modal (or delegate to parent)
   const handleCardClick = () => {
     setOpen(true);
     if (onClick) onClick(product);
   };
 
-  // Keyboard: enter = open modal; ? = show UX hint
   const showGuidance = (e: React.KeyboardEvent | React.MouseEvent) => {
     e.stopPropagation();
     toast({
@@ -82,23 +77,23 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     });
   };
 
-  // Add to cart feedback
-  const handleAddToCart = () => {
+  // Universal: feedback and call (optionally) reset qty after toast
+  const handleAddToCart = (addedQty: number) => {
     toast({
       duration: 1400,
       title: t("addedToCart"),
       description: (
         <div className="flex items-center gap-2">
           <span className="animate-pulse">✅</span>
-          <span className="font-semibold">{name}</span>
+          <span className="font-semibold">{name} ({addedQty})</span>
         </div>
       ),
       variant: "default",
     });
+    // Optionally, reset counter—comment out this line to keep qty
     setQty(0);
   };
 
-  // Always route to `/products/:id`
   const goToProductPage = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     navigate(`/products/${product.id}`);
@@ -124,13 +119,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         }}
         data-testid="product-card"
       >
-        {/* Top edge overlays: out of stock, wishlist */}
+        {/* Top edge overlays */}
         <div className="product-card-top-edges">
           <ProductOutOfStockLabel stock={product.stock} />
           <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
         </div>
-
-        {/* Main image */}
         <div
           className="product-card-image"
           tabIndex={0}
@@ -144,8 +137,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         >
           <ProductImage product={product} name={name} />
         </div>
-
-        {/* Card info */}
         <div className="product-card-info">
           <h3
             className="font-bold truncate text-lg card-title focus:underline cursor-pointer"
@@ -177,8 +168,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
               {isOutOfStock ? t("outOfStock") || "Out of Stock" : t("inStock") || "In Stock"}
             </span>
           </div>
-
-          {/* Qty & Add to Cart */}
           <div className="product-card-controls">
             {!isOutOfStock ? (
               <div className="qty-atc-row" onClick={e => e.stopPropagation()}>
@@ -205,7 +194,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 >
                   <Plus size={20} />
                 </button>
-                {/* Add to Cart: appears only when qty > 0 */}
+                {/* AddToCart appears only when qty > 0 */}
                 {qty > 0 && (
                   <AddToCartButton
                     product={{
@@ -227,8 +216,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
               </div>
             )}
           </div>
-
-          {/* View Product button */}
           <Button
             variant="ghost"
             size="sm"
@@ -254,4 +241,3 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
-

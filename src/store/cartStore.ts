@@ -1,4 +1,3 @@
-
 import { create } from "zustand";
 
 const CART_KEY = "ssmart_cart";
@@ -47,33 +46,45 @@ const setCartToStorage = (items: CartItem[]) => {
 
 export const useCartStore = create<CartState>((set, get) => ({
   items: getCartFromStorage(),
+
   addToCart: (product, quantity = 1) => {
     let items = [...get().items];
     const idx = items.findIndex(i => i._id === product._id);
+    const addQty = Math.max(1, quantity);
+
     if (idx > -1) {
-      // Do not allow quantity to exceed stock
-      items[idx].quantity = Math.min(
-        items[idx].quantity + quantity,
-        product.stock || 99
-      );
+      // Existing item: increment, but never exceed stock
+      const existing = items[idx];
+      const maxStock = product.stock || existing.stock || 99;
+      const newQty = Math.min(existing.quantity + addQty, maxStock);
+      items[idx] = { ...existing, quantity: newQty };
     } else {
-      items.push({ ...product, quantity });
+      // New item: clamp quantity to stock
+      const maxStock = product.stock || 99;
+      const finalQty = Math.min(addQty, maxStock);
+      items.push({ ...product, quantity: finalQty });
     }
+
     setCartToStorage(items);
     set({ items });
   },
+
   removeFromCart: (id) => {
     const items = get().items.filter(item => item._id !== id);
     setCartToStorage(items);
     set({ items });
   },
+
   updateQuantity: (id, qty) => {
     let items = get().items.map(item =>
-      item._id === id ? { ...item, quantity: Math.max(1, Math.min(qty, item.stock || 99)) } : item
+      item._id === id
+        ? { ...item, quantity: Math.max(1, Math.min(qty, item.stock || 99)) }
+        : item
     );
     setCartToStorage(items);
     set({ items });
   },
+
   clearCart: () => {
     localStorage.removeItem(CART_KEY);
     set({ items: [] });
