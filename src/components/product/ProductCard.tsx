@@ -19,6 +19,7 @@ export type Product = {
   stock: number;
   category: string;
   image_url?: string | null;
+  // Optionally: badges?: string[]
 };
 
 export interface ProductCardProps {
@@ -45,13 +46,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
 
-  // Debug log for inspection
-  console.log("DEBUG RENDER ProductCard", { product, name, desc });
+  // Example: dynamic badges (add logic later for real conditions)
+  const showBadge = product.stock <= 5
+    ? { text: t("stock"), color: "bg-red-100 text-red-700 border border-red-300" }
+    : null;
+  // Out of stock
+  const outOfStock = product.stock <= 0;
 
   return (
     <motion.div
-      className="lux-card group transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer relative shadow-md border-2 border-yellow-300 bg-white dark:bg-[#23232b] text-black dark:text-lux-gold"
-      style={{ minHeight: 340, borderRadius: 8, margin: 10, padding: 16 }}
+      className={`
+        rounded-xl shadow-md hover:shadow-lg transition-shadow bg-white dark:bg-[#181929]
+        flex flex-col border border-gray-200 dark:border-lux-gold/25 relative
+        group h-full w-full max-w-xs mx-auto p-0
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
+      `}
+      style={{ minHeight: 380 }}
       initial="rest"
       whileHover="hover"
       whileTap="tap"
@@ -61,27 +71,81 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       aria-label={onClick ? undefined : t("viewDetails")}
       role="article"
       onClick={onClick ? () => onClick(product) : undefined}
+      data-testid="product-card"
     >
-      <div className="absolute left-2 top-2 bg-pink-200 text-xs text-black px-2 rounded z-50 font-bold pointer-events-none">CARD</div>
-      <div className="border border-dashed border-lime-600 mb-2 p-1">
-        <span className="text-xs text-lime-800">OutOfStockLabel</span>
-        <ProductOutOfStockLabel stock={product.stock} />
+      {/* Optional badge, like "Low Stock", "New", etc */}
+      {showBadge && (
+        <div
+          className={`absolute top-3 left-3 px-2 py-0.5 rounded-full text-xs font-semibold z-30 ${showBadge.color}`}
+          aria-label={showBadge.text}
+        >
+          {outOfStock ? t("removedFromCart") : t("stock", { count: product.stock })}
+        </div>
+      )}
+
+      {/* Out of stock label always appears above image */}
+      <ProductOutOfStockLabel stock={product.stock} />
+
+      {/* Card layout: Image at top, then info, then controls */}
+      <div className="relative aspect-[1/1] w-full overflow-hidden flex items-center justify-center mb-0 rounded-t-xl">
+        {/* Product image: full, 1/1 ratio, zoom on hover */}
+        <div className="w-full h-full">
+          <ProductImage
+            product={product}
+            name={name}
+          />
+        </div>
+        {/* Hover zoom effect on img */}
+        <div
+          className="absolute inset-0 pointer-events-none rounded-t-xl"
+          aria-hidden="true"
+        />
       </div>
-      <div className="border border-dashed border-cyan-400 mb-2 p-1">
-        <span className="text-xs text-cyan-800">ProductImage</span>
-        <ProductImage product={product} name={name} />
-      </div>
-      <div className="border border-dashed border-orange-400 mb-2 p-1">
-        <span className="text-xs text-orange-800">ProductInfo</span>
-        <ProductInfo product={product} name={name} desc={desc} />
-      </div>
-      <div className="border border-dashed border-violet-400 mb-2 p-1">
-        <span className="text-xs text-violet-800">ProductRatings</span>
+
+      {/* Info block: name, desc, ratings, price, stock */}
+      <div className="flex flex-col gap-1 px-4 pt-4 pb-2 min-h-[110px]">
+        {/* Product name/title */}
+        <h3
+          className="text-base font-semibold text-lux-black dark:text-lux-gold line-clamp-2 mb-0 cursor-pointer group-hover:underline focus:underline"
+          title={name}
+          tabIndex={0}
+          aria-label={name}
+          style={{ minHeight: 48 }}
+          onClick={e => {
+            e.stopPropagation();
+            if (onClick) onClick(product);
+          }}
+        >
+          {name}
+        </h3>
+        {/* Description */}
+        <p
+          className="text-xs text-gray-600 dark:text-gray-300 mt-0 mb-1 line-clamp-2"
+          title={desc}
+        >
+          {desc}
+        </p>
+        {/* Ratings placeholder */}
         <ProductRatings />
+        <div className="flex items-center gap-2">
+          <span className="text-primary text-xl font-bold">
+            ₹{product.price}
+          </span>
+          <span className={`ml-auto text-[13px] px-2 rounded ${outOfStock ? "bg-red-100 text-red-600" : "bg-emerald-50 text-emerald-800"}`}>
+            {outOfStock
+              ? t("removedFromCart") || "Out of stock"
+              : t("stock", { count: product.stock }) || `Stock: ${product.stock}`
+            }
+          </span>
+        </div>
       </div>
-      <div className="border border-dashed border-green-600 mt-auto p-1">
-        <span className="text-xs text-green-800">ProductControls</span>
-        <ProductControls product={product} name={name} />
+
+      {/* Actions: QuantitySelector, Add to Cart, Buy Now */}
+      <div className="flex flex-col gap-2 px-4 pb-4 mt-auto w-full">
+        <ProductControls
+          product={product}
+          name={name}
+        />
       </div>
     </motion.div>
   );
