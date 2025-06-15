@@ -1,4 +1,3 @@
-
 {
   "brand": "SS MART",
   "cart": "Cart",
@@ -87,5 +86,11 @@
   "orderSent": "Order Sent!",
   "orderSentMsg": "We’ve sent your order request via WhatsApp. SS MART will confirm availability shortly.",
   "continueShopping": "Continue Shopping",
-  "downloadVisitListJSON": "Download Visit List JSON"
+  "downloadVisitListJSON": "Download Visit List JSON",
+  "removedFromVisitList": "Removed from Visit List",
+  "cannotAddZero": "Cannot add zero",
+  "productInteractionHint": "Click product image/name for full details. Adjust quantity, then tap 'Add to Cart'.",
+  "Please increase quantity to add this product to cart.": "Please increase quantity to add this product to cart.",
+  "subtract": "Subtract",
+  "add": "Add"
 }
