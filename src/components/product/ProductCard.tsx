@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { cardVariants } from "./productCardVariants";
 import QuantitySelector from "@/components/QuantitySelector";
 import AddToCartButton from "@/components/AddToCartButton";
+import ProductQuickView from "@/components/ProductQuickView";
 
 export type MultiLang = { en: string; hi?: string; te?: string };
 
@@ -62,20 +63,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
-  // Safe-guard for qty selection (reset if out of stock)
+  // Ensure valid quantity state
   React.useEffect(() => {
     if (isOutOfStock) setQty(1);
     else if (qty > product.stock) setQty(product.stock);
     else if (qty < 1) setQty(1);
   }, [product.stock, isOutOfStock]);
 
-  // Card open modal for detailed view
+  // Modal for details
   const handleCardClick = () => {
     setOpen(true);
     if (onClick) onClick(product);
   };
 
-  // Show quick cart hint (can be deleted if not needed)
   const showGuidance = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     toast({
@@ -90,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     <>
       <motion.div
         className={`
-          bg-white dark:bg-lux-black rounded-xl shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col justify-between min-h-[420px] w-full p-0
+          bg-white dark:bg-lux-black rounded-xl shadow-md hover:shadow-lg transition-all duration-200 overflow-visible flex flex-col justify-between min-h-[420px] w-full p-0
           border border-yellow-200 dark:border-lux-gold/40 group relative
           focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
         `}
@@ -110,19 +110,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         }}
         data-testid="product-card"
       >
-        {/* Out of Stock Label & Wishlist */}
-        <div className="absolute top-3 right-3 z-20 flex flex-col gap-2 items-end">
-          <ProductOutOfStockLabel stock={product.stock} />
-          <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
+        {/* Out of Stock & Wishlist always above, no overlap */}
+        <div className="absolute top-3 right-3 z-30 flex flex-col gap-2 items-end pointer-events-none">
+          <div className="pointer-events-auto">
+            <ProductOutOfStockLabel stock={product.stock} />
+            <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
+          </div>
         </div>
 
-        <div className="w-full h-48 md:h-44 relative">
+        <div className="w-full h-48 md:h-44 relative z-10">
           <ProductImage product={product} name={name} />
         </div>
 
-        <div className="p-4 flex flex-col flex-1 gap-2 pb-3">
+        {/* Info block stays on white background, max width */}
+        <div className="p-4 flex flex-col flex-1 gap-2 pb-3 bg-white dark:bg-lux-black z-20 relative">
           <h3
-            className="text-lg font-semibold text-gray-900 dark:text-lux-gold truncate"
+            className="text-lg font-semibold text-gray-900 dark:text-lux-gold truncate cursor-pointer focus:underline focus:outline-none"
             title={name}
             tabIndex={0}
             aria-label={name}
@@ -151,12 +154,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
             </span>
           </div>
 
-          {/* --- ADD TO CART & QUANTITY SECTION (ALWAYS VISIBLE, even outside modal) --- */}
+          {/* === Add to Cart & Quantity Controls: Always visible, never overlapped === */}
           {!isOutOfStock && (
             <div
-              className="mt-3 flex gap-3 flex-wrap items-center"
+              className="mt-3 flex gap-3 flex-wrap items-center bg-white/85 dark:bg-lux-black/60 rounded-lg border border-yellow-100 dark:border-lux-gold/10 p-2 shadow-sm relative z-40"
               onClick={e => e.stopPropagation()}
-              style={{ zIndex: 3, position: "relative" }}
+              style={{
+                minHeight: 54,
+                // For debug, comment if not needed:
+                // background: "rgba(255,0,0,0.10)"
+              }}
             >
               <QuantitySelector
                 quantity={qty}
@@ -176,13 +183,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           )}
 
           {isOutOfStock && (
-            <div className="mt-4 flex items-center justify-center text-red-500 font-semibold text-sm">
+            <div className="mt-4 flex items-center justify-center text-red-500 font-semibold text-sm z-40">
               {t("outOfStock") || "Out of Stock"}
             </div>
           )}
         </div>
       </motion.div>
-      {/* Modal/QuickView for full details (kept, but not required for common cart actions) */}
+
+      {/* Modal/QuickView for full details */}
       {open && (
         <ProductQuickView
           product={product}
