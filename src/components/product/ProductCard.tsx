@@ -2,16 +2,15 @@
 import React from "react";
 import { motion } from "framer-motion";
 import ProductImage from "./ProductImage";
-import ProductInfo from "./ProductInfo";
-import ProductControls from "./ProductControls";
 import ProductOutOfStockLabel from "./ProductOutOfStockLabel";
-import { useTranslation } from "react-i18next";
-import { cardVariants } from "./productCardVariants";
 import WishlistButton from "@/components/WishlistButton";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useWishlistStore } from "@/store/wishlistStore";
-import ProductQuickView from "@/components/ProductQuickView";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
+import { cardVariants } from "./productCardVariants";
+import QuantitySelector from "@/components/QuantitySelector";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export type MultiLang = { en: string; hi?: string; te?: string };
 
@@ -44,7 +43,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
   const { user } = useSupabaseAuth();
 
+  const [qty, setQty] = React.useState(1);
   const [open, setOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    useWishlistStore.getState().fetchWishlist(user);
+  }, [user]);
 
   if (!product || (typeof product.id !== "number" && typeof product.id !== "string")) {
     return (
@@ -58,21 +62,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
-  // --- Fetch wishlist on mount for MVP (ideally, move to AppShell/Provider)
+  // Safe-guard for qty selection (reset if out of stock)
   React.useEffect(() => {
-    useWishlistStore.getState().fetchWishlist(user);
-  }, [user]);
+    if (isOutOfStock) setQty(1);
+    else if (qty > product.stock) setQty(product.stock);
+    else if (qty < 1) setQty(1);
+  }, [product.stock, isOutOfStock]);
 
-  // UX message on hover/focus/click (for guidance)
+  // Card open modal for detailed view
+  const handleCardClick = () => {
+    setOpen(true);
+    if (onClick) onClick(product);
+  };
+
+  // Show quick cart hint (can be deleted if not needed)
   const showGuidance = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     toast({
       title: t("productInteractionHint") || "How to add to cart",
-      description: t("Click on a product to view details. Use + to increase quantity, and then tap ‘Add to Cart’ to confirm."),
+      description: t(
+        "Click on product for full details. Adjust quantity and tap ‘Add to Cart’ below."
+      ),
     });
   };
 
-  // Card visual: open modal on click or ENTER key
   return (
     <>
       <motion.div
@@ -90,9 +103,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         tabIndex={0}
         aria-label={onClick ? undefined : t("viewDetails")}
         role="article"
-        onClick={() => setOpen(true)}
+        onClick={handleCardClick}
         onKeyDown={e => {
-          if (e.key === "Enter") setOpen(true);
+          if (e.key === "Enter") handleCardClick();
           else if (e.key === "?") showGuidance(e);
         }}
         data-testid="product-card"
@@ -138,13 +151,38 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
             </span>
           </div>
 
-          {/* No Add to Cart controls here; all logic is moved to the modal */}
-          <div className="mt-4 flex gap-2">
-            {/* Empty space for alignment */}
-          </div>
+          {/* --- ADD TO CART & QUANTITY SECTION (ALWAYS VISIBLE, even outside modal) --- */}
+          {!isOutOfStock && (
+            <div
+              className="mt-3 flex gap-3 flex-wrap items-center"
+              onClick={e => e.stopPropagation()}
+              style={{ zIndex: 3, position: "relative" }}
+            >
+              <QuantitySelector
+                quantity={qty}
+                stock={product.stock}
+                onInc={() => setQty(q => Math.min(q + 1, product.stock))}
+                onDec={() => setQty(q => Math.max(q - 1, 1))}
+                disabled={isOutOfStock}
+              />
+              <AddToCartButton product={{
+                id: product.id,
+                name: name,
+                price: product.price,
+                stock: product.stock,
+                image: product.image_url
+              }} quantity={qty} disabled={isOutOfStock || product.stock < 1} />
+            </div>
+          )}
+
+          {isOutOfStock && (
+            <div className="mt-4 flex items-center justify-center text-red-500 font-semibold text-sm">
+              {t("outOfStock") || "Out of Stock"}
+            </div>
+          )}
         </div>
       </motion.div>
-      {/* Modal/QuickView for add to cart logic */}
+      {/* Modal/QuickView for full details (kept, but not required for common cart actions) */}
       {open && (
         <ProductQuickView
           product={product}
