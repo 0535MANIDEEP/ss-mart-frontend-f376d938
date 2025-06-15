@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useForm, SubmitHandler, FieldValues } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,6 +7,7 @@ import api from "@/api/axios";
 import Loader from "@/components/Loader";
 import { useAuthStore } from "@/store/authStore";
 import { useTranslation } from "react-i18next";
+import ImageUploader from "@/components/ImageUploader";
 
 // Explicitly define form values for strong typing
 type FormValues = {
@@ -87,6 +87,13 @@ const AddOrEditProduct = () => {
     }
   }, [isEdit, id, isAuthenticated, navigate, setValue, reset]);
 
+  // Only update the image URL in form when uploader is successful
+  const handleImageUpload = (url: string) => {
+    setValue("image", url, { shouldDirty: true });
+  };
+
+  const imageUrl = watch("image");
+
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
     if (isEdit) {
       await api.put(`/products/${id}`, values);
@@ -119,7 +126,8 @@ const AddOrEditProduct = () => {
         </div>
         <div>
           <label className="block font-semibold">{t("imageUrl")}</label>
-          <input {...register("image")} className="w-full border rounded px-3 py-2" />
+          <ImageUploader onUpload={handleImageUpload} value={imageUrl} />
+          <input {...register("image")} type="hidden" value={imageUrl || ""} />
           {errors.image && <span className="text-red-600 text-xs">{errors.image.message}</span>}
         </div>
         <div>
