@@ -3,87 +3,38 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
 import { useEffect, useMemo, useState } from "react";
-import { ShoppingCart, Menu, User, LogIn, Shield, LogOut, Home } from "lucide-react";
+import {
+  ShoppingCart,
+  Menu,
+  User,
+  LogIn,
+  Shield,
+  LogOut,
+  Home
+} from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import AuthModal from "./AuthModal";
-import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/routes";
+import AuthButtons from "./AuthButtons";
+import clsx from "clsx";
 
-const badgeStyle = {
-  guest: "bg-gray-100 text-gray-600 border-gray-300",
-  user: "bg-blue-50 text-blue-800 border-blue-300",
-  admin: "bg-yellow-100 text-amber-700 border-yellow-400 font-bold"
+type NavItem = {
+  icon: React.ReactNode;
+  label: string;
+  to: string;
+  show?: boolean;
 };
 
-const NavbarRoleItems = ({ role, user, t, onLogin, onSignup, onLogout }) => {
-  switch (role) {
-    case "guest":
-      return (
-        <>
-          <Button
-            onClick={onLogin}
-            className="bg-blue-600 hover:bg-blue-700 rounded-lg px-4 py-2 min-h-[44px] text-white font-semibold focus-visible:ring-2 focus-visible:ring-blue-400"
-          ><LogIn /> {t("login")}</Button>
-          <Button
-            onClick={onSignup}
-            className="bg-emerald-600 hover:bg-emerald-700 rounded-lg px-4 py-2 min-h-[44px] text-white font-semibold focus-visible:ring-2 focus-visible:ring-green-400"
-          ><User /> {t("signUp")}</Button>
-        </>
-      );
-    case "user":
-      return (
-        <>
-          <Link
-            to={ROUTES.HOME}
-            className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
-          >
-            <Home className="inline mr-1" /> {t("home")}
-          </Link>
-          <Link
-            to={ROUTES.CART}
-            className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
-          >
-            <ShoppingCart className="inline mr-1" /> {t("cart")}
-          </Link>
-          <Link
-            to={ROUTES.ORDER_SUCCESS}
-            className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-amber-400"
-          >
-            <User className="inline mr-1" /> {t("profile")}
-          </Link>
-          <Button
-            onClick={onLogout}
-            className="bg-red-500 hover:bg-red-600 rounded-lg px-4 py-2 min-h-[44px] text-white font-semibold focus-visible:ring-2 focus-visible:ring-red-400 ml-2"
-          >
-            <LogOut /> {t("logout")}
-          </Button>
-        </>
-      );
-    case "admin":
-      return (
-        <>
-          <Link
-            to={ROUTES.ADMIN_DASHBOARD}
-            className="text-base px-4 py-2 rounded-lg hover:bg-gray-100 focus-visible:ring-2 focus-visible:ring-yellow-400 font-semibold"
-          ><Shield className="inline mb-0.5" /> {t("dashboard")}</Link>
-          <Button
-            onClick={onLogout}
-            className="bg-red-500 hover:bg-red-600 rounded-lg px-4 py-2 min-h-[44px] text-white font-semibold focus-visible:ring-2 focus-visible:ring-red-400"
-          ><LogOut /> {t("logout")}</Button>
-        </>
-      );
-    default:
-      return null;
-  }
-};
-
-const Navbar = () => {
+export default function Navbar() {
   const items = useCartStore(state => state.items);
   const { user, role, signOut, loading } = useSupabaseAuth();
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
-  const cartTotal = useMemo(() => items.reduce((s, i) => s + i.price * i.quantity, 0), [items]);
+  const cartTotal = useMemo(
+    () => items.reduce((s, i) => s + i.price * i.quantity, 0),
+    [items]
+  );
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -98,69 +49,180 @@ const Navbar = () => {
     navigate(ROUTES.ROOT);
   };
 
-  return (
-    <nav className="flex justify-between items-center bg-white dark:bg-lux-black shadow w-full px-2 sm:px-8 py-2 z-50 sticky top-0 transition select-none border-b border-gray-200 dark:border-lux-gold min-h-[56px]">
-      <div className="flex items-center gap-2">
-        <button
-          className="md:hidden p-2 focus:outline-none rounded-full hover:bg-gray-50 dark:hover:bg-gray-900"
-          aria-label="Open Menu" onClick={() => setMenuOpen(v => !v)}>
-          <Menu size={24} className="text-gray-700 dark:text-lux-gold" />
-        </button>
-        <Link to={ROUTES.ROOT} className="text-2xl font-black text-primary dark:text-lux-gold tracking-wide ml-2 sm:ml-0 flex items-center gap-2">
-          {t("brand")}
-        </Link>
-      </div>
-      <div className={`fixed inset-0 z-40 bg-white/90 dark:bg-lux-black backdrop-blur-md transform ${menuOpen ? "translate-x-0" : "translate-x-full"} transition-transform duration-200 md:relative md:inset-auto md:translate-x-0 md:flex md:gap-6 flex flex-col md:flex-row items-center md:static md:bg-transparent md:backdrop-blur-none`}>
-        <button
-          className="md:hidden absolute top-3 right-6 text-lg text-gray-500 dark:text-lux-gold hover:text-red-600"
-          aria-label="Close Menu"
-          onClick={() => setMenuOpen(false)}
-        >×</button>
-        <span className={
-          "flex items-center gap-2 mb-5 md:mb-0 border font-medium px-3 py-1 rounded-full text-sm shadow-sm " +
-          (badgeStyle[role as keyof typeof badgeStyle] || badgeStyle.guest)
-        } aria-label="Role" style={{ color: "#232336", background: "#FBFBFE", border: "1.5px solid #E1E1EC" }}>
-          <User size={16} /> {loading ? "…" : role}
-        </span>
-        <div className="flex gap-2 items-center">
-          <NavbarRoleItems
-            role={role || "guest"}
-            user={user}
-            t={t}
-            onLogin={() => setAuthModal("login")}
-            onSignup={() => setAuthModal("signup")}
-            onLogout={handleLogout}
-          />
-        </div>
-        <Link
-          to={ROUTES.CART}
-          className="ml-5 relative flex items-center group focus:outline-none"
-          aria-label={t("cart")}
-          tabIndex={0}
-        >
-          <ShoppingCart size={24} />
-          <span className="sr-only">{t("cart")}</span>
-          {cartCount > 0 && (
-            <span className="absolute -top-2 left-4 bg-emerald-600 text-white rounded-full px-2 py-0.5 text-xs font-bold"
-                  style={{ minWidth: 18, minHeight: 24, borderRadius: 8, fontSize: 14 }}>
-              {cartCount}
-            </span>
-          )}
-          {cartTotal > 0 && (
-            <span className="ml-2 bg-lux-gold/10 px-2 py-0.5 rounded text-lux-gold font-bold text-xs"
-                  style={{ borderRadius: 8, minHeight: 24 }}>
-              ₹{cartTotal}
-            </span>
-          )}
-        </Link>
-        <div className="flex gap-2 ml-3 mt-6 md:mt-0 items-center">
-          <ThemeToggle />
-          <LanguageSwitcher />
-        </div>
-      </div>
-      <AuthModal open={!!authModal} mode={authModal as "login" | "signup" | null} onClose={() => setAuthModal(null)} />
-    </nav>
+  // Responsive, accessible hamburger for mobile menu
+  const menuButton = (
+    <button
+      className="md:hidden p-2 focus:outline-none rounded-full hover:bg-gray-50 dark:hover:bg-gray-900"
+      aria-label="Open Menu"
+      onClick={() => setMenuOpen(v => !v)}
+    >
+      <Menu size={28} className="text-gray-800 dark:text-lux-gold" />
+    </button>
   );
-};
 
-export default Navbar;
+  // Central navigation links (with left-aligned icon + label)
+  const navLinks: NavItem[] = [
+    {
+      icon: <Home className="mr-2" />,
+      label: t("home"),
+      to: ROUTES.HOME,
+      show: true
+    },
+    {
+      icon: <ShoppingCart className="mr-2" />,
+      label: t("cart"),
+      to: ROUTES.CART,
+      show: true
+    },
+    {
+      icon: <User className="mr-2" />,
+      label: t("profile"),
+      to: ROUTES.ORDER_SUCCESS,
+      show: !!user
+    },
+    {
+      icon: <Shield className="mr-2" />,
+      label: t("dashboard"),
+      to: ROUTES.ADMIN_DASHBOARD,
+      show: role === "admin"
+    }
+  ];
+
+  // Cart badge
+  const cartBadge = cartCount > 0 && (
+    <span className="ml-2 bg-emerald-600 text-white rounded-full px-2 py-0.5 text-xs font-bold">
+      {cartCount}
+    </span>
+  );
+  const cartTotalBadge = cartTotal > 0 && (
+    <span className="ml-2 bg-lux-gold/10 px-2 py-0.5 rounded text-lux-gold font-bold text-xs">
+      ₹{cartTotal}
+    </span>
+  );
+
+  // Large-screen navbar layout
+  return (
+    <>
+      <nav className="w-full sticky top-0 z-50 bg-white/90 dark:bg-lux-black/90 border-b border-gray-200 dark:border-lux-gold shadow backdrop-blur-md">
+        <div className="flex items-center justify-between px-4 sm:px-8 py-2 min-h-[56px]">
+          <div className="flex items-center gap-3">
+            {menuButton}
+            <Link
+              to={ROUTES.ROOT}
+              className="text-2xl font-black tracking-wide flex items-center gap-2 text-primary dark:text-lux-gold"
+            >
+              {t("brand")}
+            </Link>
+          </div>
+
+          <div className="hidden md:flex gap-5 items-center flex-1 justify-center">
+            {navLinks
+              .filter(n => n.show)
+              .map(n => (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  className="flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 transition text-base font-medium text-gray-900 dark:text-gray-100"
+                >
+                  {n.icon}
+                  {n.label}
+                  {n.to === ROUTES.CART ? (
+                    <>
+                      {cartBadge}
+                      {cartTotalBadge}
+                    </>
+                  ) : null}
+                </Link>
+              ))}
+          </div>
+
+          <div className="hidden md:flex gap-4 items-center ml-4">
+            <ThemeToggle />
+            <LanguageSwitcher />
+            <AuthButtons
+              onLogin={() => setAuthModal("login")}
+              onSignup={() => setAuthModal("signup")}
+              onLogout={handleLogout}
+            />
+          </div>
+        </div>
+
+        {/* Mobile drawer/menu */}
+        <div
+          className={clsx(
+            "fixed inset-0 z-40 bg-white dark:bg-lux-black transition-transform duration-200 px-6 pt-6 pb-32 flex flex-col md:hidden",
+            menuOpen
+              ? "translate-x-0"
+              : "translate-x-full pointer-events-none opacity-0"
+          )}
+          style={{ minHeight: "100svh" }}
+        >
+          <button
+            className="absolute top-4 right-6 text-3xl font-bold text-gray-400 hover:text-red-500"
+            aria-label="Close menu"
+            onClick={() => setMenuOpen(false)}
+            tabIndex={0}
+          >
+            ×
+          </button>
+
+          <div className="mb-8 flex">
+            <Link
+              to={ROUTES.ROOT}
+              className="text-2xl font-black tracking-wide flex items-center gap-2 text-primary dark:text-lux-gold"
+              onClick={() => setMenuOpen(false)}
+            >
+              {t("brand")}
+            </Link>
+          </div>
+          {/* Vertical menu */}
+          <div className="flex flex-col gap-2 flex-1">
+            {navLinks
+              .filter(n => n.show)
+              .map(n => (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  className="flex items-center px-4 py-3 min-h-[48px] rounded-xl text-lg font-semibold hover:bg-gray-100 dark:hover:bg-gray-900 text-gray-800 dark:text-gray-100 transition"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {n.icon}
+                  <span className="ml-1">{n.label}</span>
+                  {n.to === ROUTES.CART ? (
+                    <>
+                      {cartBadge}
+                      {cartTotalBadge}
+                    </>
+                  ) : null}
+                </Link>
+              ))}
+          </div>
+          <div className="mt-auto mb-6">
+            <LanguageSwitcher orientation="horizontal" />
+          </div>
+          <div className="sticky bottom-0 pb-2 bg-white dark:bg-lux-black">
+            <AuthButtons
+              onLogin={() => {
+                setAuthModal("login");
+                setMenuOpen(false);
+              }}
+              onSignup={() => {
+                setAuthModal("signup");
+                setMenuOpen(false);
+              }}
+              onLogout={async () => {
+                await handleLogout();
+                setMenuOpen(false);
+              }}
+              asFooter
+            />
+            <div className="flex justify-center mt-3">
+              <ThemeToggle />
+            </div>
+          </div>
+        </div>
+        <AuthModal open={!!authModal} mode={authModal as "login" | "signup" | null} onClose={() => setAuthModal(null)} />
+      </nav>
+    </>
+  );
+}

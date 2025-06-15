@@ -1,51 +1,44 @@
 
 import { useTranslation } from "react-i18next";
 import React from "react";
+import LanguageButton from "./LanguageButton";
 
-/**
- * A minimalist, accessible language switcher with live instant toggle.
- * Uses text-only buttons per requirements.
- */
+// Config: You may add more languages here if translations exist
 const LANGUAGES = [
-  { label: "English", code: "en" },
+  { label: "EN", code: "en" },
   { label: "हिंदी", code: "hi" },
-  { label: "తెలుగు", code: "te" }
+  { label: "తెలుగు", code: "te" },
 ];
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({
+  orientation = "horizontal"
+}: { orientation?: "horizontal" | "vertical" } = {}) {
   const { i18n } = useTranslation();
+  // `i18n.language` is always lowercase
   const currLang = i18n.language || localStorage.getItem("lang") || "en";
 
   const handleLang = (lng: string) => {
-    i18n.changeLanguage(lng);
-    localStorage.setItem("lang", lng);
+    if (lng !== currLang) {
+      i18n.changeLanguage(lng);
+      localStorage.setItem("lang", lng);
+    }
   };
 
   return (
     <nav
       aria-label="Site language"
-      className="flex items-center gap-1 font-semibold text-base select-none"
+      className={orientation === "vertical"
+        ? "flex flex-col gap-1 items-start mt-4"
+        : "flex gap-1 items-center"}
     >
-      {LANGUAGES.map((l, idx) => (
-        <React.Fragment key={l.code}>
-          <button
-            type="button"
-            onClick={() => handleLang(l.code)}
-            className={`transition-colors min-w-[60px] px-1 ring-offset-2 rounded-md focus-visible:ring-2 focus-visible:ring-lux-gold whitespace-nowrap
-              ${l.code === currLang
-                ? "text-green-700 dark:text-lux-gold underline underline-offset-4 decoration-2 pointer-events-none font-bold"
-                : "hover:text-lux-gold text-gray-700 dark:text-gray-100"}
-            `}
-            aria-current={l.code === currLang ? "true" : undefined}
-            disabled={l.code === currLang}
-            tabIndex={0}
-          >
-            {l.label}
-          </button>
-          {idx < LANGUAGES.length - 1 && (
-            <span className="mx-1 text-gray-400 select-none" aria-hidden="true">|</span>
-          )}
-        </React.Fragment>
+      {LANGUAGES.map(l => (
+        <LanguageButton
+          key={l.code}
+          code={l.code}
+          label={l.label}
+          active={l.code === currLang}
+          onClick={handleLang}
+        />
       ))}
     </nav>
   );
