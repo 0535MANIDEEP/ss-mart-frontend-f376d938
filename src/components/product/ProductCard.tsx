@@ -1,7 +1,9 @@
 
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import ProductImage from "./ProductImage";
+import { Plus, Minus } from "lucide-react";
+import "./ProductCard.css";
 import ProductOutOfStockLabel from "./ProductOutOfStockLabel";
 import WishlistButton from "@/components/WishlistButton";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -9,23 +11,15 @@ import { useWishlistStore } from "@/store/wishlistStore";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { cardVariants } from "./productCardVariants";
-import ProductMiniQtyControl from "./ProductMiniQtyControl";
-import AddToCartButton from "@/components/AddToCartButton";
-import { useNavigate } from "react-router-dom";
-import ProductQuickView from "@/components/ProductQuickView";
 import { Button } from "@/components/ui/button";
+import ProductQuickView from "@/components/ProductQuickView";
+import type { Product } from "./ProductCard";
+import ProductImage from "./ProductImage";
+import AddToCartButton from "@/components/AddToCartButton";
 
 export type MultiLang = { en: string; hi?: string; te?: string };
-export type Product = {
-  id: number | string;
-  name: MultiLang | string;
-  description: MultiLang | string;
-  price: number;
-  stock: number;
-  category: string;
-  image_url?: string | null;
-};
 
+// Ensures codebase-wide interface is used
 export interface ProductCardProps {
   product: Product;
   onClick?: (prod: Product) => void;
@@ -53,70 +47,59 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     useWishlistStore.getState().fetchWishlist(user);
   }, [user]);
 
+  // Reset quantity if product/stock changes or out of stock
   React.useEffect(() => {
-    // Reset quantity if product/stock changes or out of stock
-    if (!product || product.stock <= 0) {
-      setQty(0);
-    } else if (qty > product.stock) {
-      setQty(product.stock);
-    }
+    if (!product || product.stock <= 0) setQty(0);
+    else if (qty > product.stock) setQty(product.stock);
   }, [product.stock, product.id]);
 
-  if (!product || (typeof product.id !== "number" && typeof product.id !== "string")) {
-    return (
-      <div className="text-red-500 text-center p-2 border-2 border-red-600 bg-red-100">
-        {t("productNotFound") || "PRODUCT NOT FOUND"}
-      </div>
-    );
-  }
   const lang = i18n.language || "en";
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
-  // Ensure quantity never < 0 or > stock
+  // Never negative or above stock:
   React.useEffect(() => {
-    if (isOutOfStock) setQty(0);
+    if (isOutOfStock && qty !== 0) setQty(0);
     else if (qty > product.stock) setQty(product.stock);
     else if (qty < 0) setQty(0);
-  }, [product.stock, isOutOfStock]);
+  }, [product.stock, isOutOfStock, qty]);
 
-  // Open modal for full details
+  // View full details in modal (or delegate to parent)
   const handleCardClick = () => {
     setOpen(true);
     if (onClick) onClick(product);
   };
 
-  // Toast guidance for card
-  const showGuidance = (e: React.MouseEvent | React.KeyboardEvent) => {
+  // Keyboard: enter = open modal; ? = show UX hint
+  const showGuidance = (e: React.KeyboardEvent | React.MouseEvent) => {
     e.stopPropagation();
     toast({
-      title: t("productInteractionHint") || "How to add to cart",
+      title: t("productInteractionHint"),
       description: t(
-        "Click on product for full details. Adjust quantity and tap ‘Add to Cart’ below."
+        "Click product image/name for full details. Adjust quantity, then tap 'Add to Cart'."
       ),
     });
   };
 
-  // “Add to Cart” behavior: show toast, don't redirect
+  // Add to cart feedback
   const handleAddToCart = () => {
     toast({
-      duration: 1200,
-      title: t("addedToCart") || "Added to Cart",
-      description:
-        name && (
-          <div className="flex gap-2 items-center">
-            <span className="animate-pulse">✅</span>
-            <span className="font-semibold whitespace-nowrap">{name}</span>
-          </div>
-        ),
-      variant: "default"
+      duration: 1400,
+      title: t("addedToCart"),
+      description: (
+        <div className="flex items-center gap-2">
+          <span className="animate-pulse">✅</span>
+          <span className="font-semibold">{name}</span>
+        </div>
+      ),
+      variant: "default",
     });
-    setQty(0); // Reset mini qty to hide minus/ATC after add
+    setQty(0);
   };
 
-  // Card nav: View product
-  const handleViewProduct = (e: React.MouseEvent) => {
+  // Always route to `/products/:id`
+  const goToProductPage = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     navigate(`/products/${product.id}`);
   };
@@ -124,11 +107,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <>
       <motion.div
-        className={`
-          bg-white dark:bg-lux-black rounded-xl shadow-md hover:shadow-lg transition-all duration-200 overflow-visible flex flex-col justify-between min-h-[420px] w-full p-0
-          border border-yellow-200 dark:border-lux-gold/40 group relative
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
-        `}
+        className="product-card-root group"
         style={{ minHeight: 420 }}
         initial="rest"
         whileHover="hover"
@@ -136,7 +115,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         animate="rest"
         variants={cardVariants}
         tabIndex={0}
-        aria-label={onClick ? undefined : t("viewDetails")}
+        aria-label={t("viewDetails")}
         role="article"
         onClick={handleCardClick}
         onKeyDown={e => {
@@ -145,22 +124,31 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         }}
         data-testid="product-card"
       >
-        {/* Out of Stock & Wishlist always above, no overlap */}
-        <div className="absolute top-3 right-3 z-30 flex flex-col gap-2 items-end pointer-events-none">
-          <div className="pointer-events-auto">
-            <ProductOutOfStockLabel stock={product.stock} />
-            <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
-          </div>
+        {/* Top edge overlays: out of stock, wishlist */}
+        <div className="product-card-top-edges">
+          <ProductOutOfStockLabel stock={product.stock} />
+          <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
         </div>
 
-        <div className="w-full h-48 md:h-44 relative z-10">
+        {/* Main image */}
+        <div
+          className="product-card-image"
+          tabIndex={0}
+          aria-label={name}
+          role="button"
+          title={name}
+          onClick={goToProductPage}
+          onKeyDown={e => {
+            if (e.key === "Enter") goToProductPage(e);
+          }}
+        >
           <ProductImage product={product} name={name} />
         </div>
 
-        {/* Info block: white bg for contrast */}
-        <div className="p-4 flex flex-col flex-1 gap-2 pb-3 bg-white dark:bg-lux-black z-20 relative">
+        {/* Card info */}
+        <div className="product-card-info">
           <h3
-            className="text-lg font-semibold text-gray-900 dark:text-lux-gold truncate cursor-pointer focus:underline focus:outline-none"
+            className="font-bold truncate text-lg card-title focus:underline cursor-pointer"
             title={name}
             tabIndex={0}
             aria-label={name}
@@ -172,11 +160,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           >
             {name || <span className="text-red-600">No name</span>}
           </h3>
-          <p className="text-sm text-gray-500 dark:text-gray-300 line-clamp-2 mb-1" title={desc}>
+          <p className="product-card-desc" title={desc}>
             {desc || <span className="text-red-600">No desc</span>}
           </p>
-          <div className="flex items-center justify-between mt-1">
-            <span className="text-green-700 dark:text-lux-gold font-bold text-lg">₹{product.price}</span>
+          <div className="flex items-center justify-between mt-1 gap-2">
+            <span className="text-green-700 font-bold text-lg">₹{product.price}</span>
             <span
               className={`
                 text-xs px-2 py-1 rounded-full font-medium
@@ -184,69 +172,76 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                   ? "bg-red-100 text-red-700 border border-red-200"
                   : "bg-green-50 text-green-700 border border-green-200"}
               `}
+              style={{ minWidth: 85, textAlign: "center" }}
             >
               {isOutOfStock ? t("outOfStock") || "Out of Stock" : t("inStock") || "In Stock"}
             </span>
           </div>
 
-          {/* === Quantity/ATC Controls: Visibility & Logic === */}
-          <div className="mt-3 flex gap-2 flex-wrap items-center bg-white/85 dark:bg-lux-black/60 rounded-lg border border-yellow-100 dark:border-lux-gold/10 p-2 shadow-sm relative z-40 min-h-[54px]">
-            {/* Only show controls if not out of stock */}
-            {!isOutOfStock && (
-              <div
-                onClick={e => e.stopPropagation()}
-                className="flex items-center gap-4 w-full"
-              >
-                {/* Only show − and count when qty >= 1; + is always visible (unless maxed out) */}
-                <ProductMiniQtyControl
-                  quantity={qty}
-                  stock={product.stock}
-                  onInc={() => setQty(q => Math.min(q + 1, product.stock))}
-                  onDec={() => setQty(q => Math.max(q - 1, 1))}
-                  incDisabled={isOutOfStock || qty >= product.stock}
-                  decDisabled={isOutOfStock || qty <= 1}
-                />
-                {/* ATC: Only if qty > 0 */}
+          {/* Qty & Add to Cart */}
+          <div className="product-card-controls">
+            {!isOutOfStock ? (
+              <div className="qty-atc-row" onClick={e => e.stopPropagation()}>
+                <button
+                  aria-label={t("subtract") || "Minus"}
+                  className="qty-btn"
+                  type="button"
+                  disabled={qty <= 0}
+                  tabIndex={0}
+                  onClick={() => setQty(q => Math.max(0, q - 1))}
+                >
+                  <Minus size={20} />
+                </button>
+                <span className="qty-count" aria-live="polite" tabIndex={0}>
+                  {qty}
+                </span>
+                <button
+                  aria-label={t("add") || "Plus"}
+                  className="qty-btn"
+                  type="button"
+                  disabled={qty >= product.stock}
+                  tabIndex={0}
+                  onClick={() => setQty(q => Math.min(q + 1, product.stock))}
+                >
+                  <Plus size={20} />
+                </button>
+                {/* Add to Cart: appears only when qty > 0 */}
                 {qty > 0 && (
                   <AddToCartButton
                     product={{
                       id: product.id,
-                      name: name,
+                      name,
                       price: product.price,
                       stock: product.stock,
-                      image: product.image_url
+                      image: product.image_url,
                     }}
                     quantity={qty}
                     disabled={isOutOfStock || product.stock < 1}
                     onCartChange={handleAddToCart}
                   />
                 )}
-                {/* ---- BUY NOW REMOVED PER INSTRUCTION (no direct buy in card) ---- */}
               </div>
-            )}
-            {/* Out of Stock fallback */}
-            {isOutOfStock && (
-              <div className="flex items-center justify-center text-red-500 font-semibold text-sm z-40 w-full px-2">
+            ) : (
+              <div className="out-of-stock-text">
                 {t("outOfStock") || "Out of Stock"}
               </div>
             )}
           </div>
-          {/* View Product Button/Link */}
+
+          {/* View Product button */}
           <Button
             variant="ghost"
             size="sm"
-            className="mt-3 w-full flex items-center justify-center rounded shadow-sm border border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900 text-sm font-bold py-2"
-            onClick={handleViewProduct}
-            aria-label={t("viewDetails") || "View Product"}
+            className="view-product-btn"
+            onClick={goToProductPage}
+            aria-label={t("viewDetails")}
             tabIndex={0}
-            style={{ borderRadius: 8 }}
             type="button"
           >
             {t("viewDetails") || "View Product"}
           </Button>
         </div>
       </motion.div>
-      {/* Modal/QuickView for full details */}
       {open && (
         <ProductQuickView
           product={product}

@@ -1,0 +1,184 @@
+
+/* ProductCard specific styles
+   (All responsive, respecting Tailwind colors & dark mode, only doing what's hard to get with Tailwind utility classes) */
+
+.product-card-root {
+  background: #fff;
+  border-radius: 1.1rem;
+  box-shadow: 0 4px 32px #ffd7001e, 0 1.5px 8px #282ffb0a;
+  transition: box-shadow 0.19s, border 0.19s;
+  overflow: visible;
+  border: 1.5px solid #f6e6ac;
+  min-height: 420px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  position: relative;
+  outline: none;
+}
+.product-card-root:focus-within,
+.product-card-root:focus-visible {
+  outline: 2px solid #FFD70055;
+  border-color: #FFD700;
+}
+.product-card-top-edges {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.product-card-top-edges > * { pointer-events: auto; }
+
+.product-card-image {
+  width: 100%;
+  height: 170px;
+  margin-bottom: 0;
+  border-radius: 1.1rem 1.1rem 0 0;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  background: linear-gradient(to bottom, #fffbe2 60%, #ffd70018 110%);
+  border-bottom: 1.5px solid #eee1ba;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (max-width: 640px) {
+  .product-card-image { height: 140px; }
+}
+
+.product-card-info {
+  padding: 1.1rem 1rem 0.9rem 1rem;
+  background: #fff;
+  border-radius: 0 0 1.1rem 1.1rem;
+  z-index: 5;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.33rem;
+  position: relative;
+}
+.card-title {
+  color: #171742;
+}
+.product-card-info .product-card-desc {
+  font-size: 0.98rem;
+  color: #889;
+  margin-bottom: 3px;
+  margin-top: 0;
+  line-height: 1.3;
+  min-height: 30px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.product-card-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-height: 56px;
+  margin-top: 0.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.qty-atc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  width: 100%;
+}
+
+.qty-btn {
+  color: #232336;
+  background: #fff893;
+  border: 1.5px solid #ffe26d;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.38rem;
+  font-weight: 700;
+  transition: background 0.17s, color 0.14s, box-shadow 0.13s;
+  cursor: pointer;
+  box-shadow: 0 2px 12px #ffd70026;
+  outline: none;
+}
+.qty-btn:focus,
+.qty-btn:focus-visible {
+  outline: 2px solid #FFD70077;
+  border-color: #ffd700;
+  z-index: 1;
+}
+.qty-btn:hover:not(:disabled),
+.qty-btn:active:not(:disabled) {
+  background: #ffe93a;
+  box-shadow: 0 3px 18px #ffd70033;
+  color: #2a2139;
+  border-color: #FFD700;
+  transform: scale(1.06);
+}
+.qty-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #faf9e2;
+  color: #b2aea1;
+}
+.qty-count {
+  padding: 0 12px;
+  min-width: 25px;
+  text-align: center;
+  font-size: 1.18rem;
+  font-weight: 500;
+  color: #40505d;
+  letter-spacing: 0.01em;
+}
+
+.out-of-stock-text {
+  text-align: center;
+  color: #c0392b;
+  font-weight: bold;
+  padding: 8px 0 7px;
+  font-size: 1rem;
+}
+
+.view-product-btn {
+  margin-top: 0.9rem;
+  width: 100%;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.75em !important;
+  border: 1.5px solid #ececf2;
+  box-shadow: 0 1.5px 8px #ffd70022;
+  background: #faf9ef !important;
+  color: #232336 !important;
+  font-weight: bold !important;
+  font-size: 0.99rem !important;
+  padding: 0.86em 0 !important;
+  transition: all 0.13s;
+}
+.view-product-btn:hover, .view-product-btn:focus {
+  background: linear-gradient(90deg, #fff6dc 70%, #ffd70017 120%) !important;
+  color: #c18500 !important;
+  border-color: #ffd700;
+  box-shadow: 0 4px 22px #ffd70026;
+}
+
+@media (max-width: 520px) {
+  .product-card-info {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  .view-product-btn {
+    font-size: 0.91rem !important;
+    padding: 0.8em 0 !important;
+  }
+}
