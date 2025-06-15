@@ -5,7 +5,6 @@ import ProductImage from "./ProductImage";
 import ProductInfo from "./ProductInfo";
 import ProductControls from "./ProductControls";
 import ProductOutOfStockLabel from "./ProductOutOfStockLabel";
-import ProductRatings from "./ProductRatings";
 import { useTranslation } from "react-i18next";
 import { cardVariants } from "./productCardVariants";
 
@@ -19,7 +18,6 @@ export type Product = {
   stock: number;
   category: string;
   image_url?: string | null;
-  // Optionally: badges?: string[]
 };
 
 export interface ProductCardProps {
@@ -39,33 +37,26 @@ function getProductField(
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
-  // Debug: log the product each render!
-  console.log("ProductCard rendering:", product);
 
   if (!product || (typeof product.id !== "number" && typeof product.id !== "string")) {
-    return <div className="text-red-500 text-center p-2 border-2 border-red-600 bg-red-100">
-      {t("productNotFound") || "PRODUCT NOT FOUND"}
-    </div>;
+    return (
+      <div className="text-red-500 text-center p-2 border-2 border-red-600 bg-red-100">
+        {t("productNotFound") || "PRODUCT NOT FOUND"}
+      </div>
+    );
   }
   const lang = i18n.language || "en";
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
+  const isOutOfStock = product.stock <= 0;
 
-  const showBadge = product.stock <= 5
-    ? { text: t("stock"), color: "bg-red-100 text-red-700 border border-red-300" }
-    : null;
-  // Out of stock
-  const outOfStock = product.stock <= 0;
-
-  // MAIN DEBUG WRAP
+  // Refined card visuals
   return (
     <motion.div
       className={`
-        relative group h-full w-full max-w-xs mx-auto
-        p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
-        flex flex-col rounded-2xl border-8 border-red-700 
-        shadow-2xl bg-blue-300/60 !min-h-[420px] 
-        items-center justify-center z-40
+        bg-white dark:bg-lux-black rounded-xl shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden flex flex-col justify-between min-h-[420px] w-full p-0
+        border border-yellow-200 dark:border-lux-gold/40 group relative
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
       `}
       style={{ minHeight: 420 }}
       initial="rest"
@@ -79,52 +70,56 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={onClick ? () => onClick(product) : undefined}
       data-testid="product-card"
     >
-      {/* *** MASSIVE DEBUG BANNER *** */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
-        <span className="text-5xl font-extrabold text-red-700 bg-yellow-300/80 px-6 py-5 rounded-lg border-4 border-red-800 shadow-2xl">
-          PRODUCT #{product.id}
-        </span>
-      </div>
-      {/* --- Everything else is behind debug banner --- */}
-      <div className="relative flex flex-col items-center w-full overflow-hidden justify-center mb-0 rounded-t-xl border border-yellow-800 bg-yellow-300/40 min-h-[150px]">
-        <ProductImage
-          product={product}
-          name={name}
-        />
+      {/* Out of Stock Label, visually prominent in a modern way */}
+      <div className="absolute top-3 right-3 z-20">
+        <ProductOutOfStockLabel stock={product.stock} />
       </div>
 
-      <div className="flex flex-col gap-1 px-4 pt-4 pb-2 min-h-[110px] bg-pink-100 border border-pink-400 w-full">
+      <div className="w-full h-48 md:h-44 relative">
+        <ProductImage product={product} name={name} />
+      </div>
+
+      <div className="p-4 flex flex-col flex-1 gap-2 pb-3">
         <h3
-          className="text-base font-semibold text-lux-black dark:text-lux-gold line-clamp-2 mb-0 cursor-pointer group-hover:underline focus:underline"
+          className="text-lg font-semibold text-gray-900 dark:text-lux-gold truncate"
           title={name}
           tabIndex={0}
-          aria-label="name"
-          style={{ minHeight: 32 }}
+          aria-label={name}
           onClick={e => {
             e.stopPropagation();
             if (onClick) onClick(product);
           }}
+          style={{ minHeight: 32 }}
         >
           {name || <span className="text-red-600">No name</span>}
         </h3>
-        <p
-          className="text-xs text-gray-600 dark:text-gray-300 mt-0 mb-1 line-clamp-2"
-          title={desc}
-        >
+        <p className="text-sm text-gray-500 dark:text-gray-300 line-clamp-2 mb-1" title={desc}>
           {desc || <span className="text-red-600">No desc</span>}
         </p>
-      </div>
+        <div className="flex items-center justify-between mt-1">
+          <span className="text-green-700 dark:text-lux-gold font-bold text-lg">₹{product.price}</span>
+          <span
+            className={`
+              text-xs px-2 py-1 rounded-full font-medium
+              ${isOutOfStock
+                ? "bg-red-100 text-red-700 border border-red-200"
+                : "bg-green-50 text-green-700 border border-green-200"}
+            `}
+          >
+            {isOutOfStock ? t("outOfStock") || "Out of Stock" : t("inStock") || "In Stock"}
+          </span>
+        </div>
 
-      <div className="flex flex-col gap-2 px-4 pb-4 mt-auto w-full bg-yellow-50 border-t-2 border-yellow-700">
-        <div>DEBUG: Controls</div>
-        <ProductControls
-          product={product}
-          name={name}
-        />
+        {/* Controls */}
+        <div className="mt-4 flex gap-2">
+          {/* Add to Cart and Buy Now (from ProductControls preserves all integrations) */}
+          <div className="flex-1">
+            <ProductControls product={product} name={name} />
+          </div>
+        </div>
       </div>
     </motion.div>
   );
 };
 
 export default ProductCard;
-
