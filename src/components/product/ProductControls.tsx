@@ -1,11 +1,10 @@
 
 import React from "react";
-import QuantitySelector from "@/components/QuantitySelector";
-import type { Product } from "./ProductCard";
+import type { ProductCardProps } from "./ProductCard";
 
 /** Props for ProductControls */
 export interface ProductControlsProps {
-  product: Product;
+  product: ProductCardProps['product'];
   name: string;
 }
 
@@ -14,8 +13,7 @@ export interface ProductControlsProps {
  * Main add-to-cart logic is now only in the ProductQuickView modal.
  */
 const ProductControls: React.FC<ProductControlsProps> = ({ product }) => {
-  // Card does not allow cart action, only quantity visual (optionally could remove this for MVP)
-  // For strict flow, render nothing
+  // Card does not allow cart action, only quantity visual
   return <></>;
 };
 

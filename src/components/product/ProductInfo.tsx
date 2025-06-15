@@ -2,12 +2,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/routes";
-import type { Product } from "./ProductCard";
+import type { ProductCardProps } from "./ProductCard";
 import { useTranslation } from "react-i18next";
 
 /** Props for ProductInfo subcomponent */
 export interface ProductInfoProps {
-  product: Product;
+  product: ProductCardProps['product'];
   name: string;
   desc: string;
 }

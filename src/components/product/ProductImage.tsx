@@ -3,11 +3,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ROUTES } from "@/routes";
-import type { Product } from "./ProductCard";
+import type { ProductCardProps } from "./ProductCard";
 
 /** Props for ProductImage subcomponent */
 export interface ProductImageProps {
-  product: Product;
+  product: ProductCardProps['product'];
   name: string;
 }
 const fallback = "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&q=70";

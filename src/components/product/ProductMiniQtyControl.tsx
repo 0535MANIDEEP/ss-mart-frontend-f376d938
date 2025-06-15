@@ -26,7 +26,7 @@ export default function ProductMiniQtyControl({
         <button
           type="button"
           onClick={onDec}
-          disabled={decDisabled || quantity <= 1}
+          disabled={decDisabled || quantity <= 0}
           className={`
             bg-white text-black border border-gray-300 shadow rounded-full w-8 h-8 flex items-center justify-center
             text-xl font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400
