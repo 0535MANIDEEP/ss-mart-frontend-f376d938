@@ -9,12 +9,13 @@ import { useWishlistStore } from "@/store/wishlistStore";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { cardVariants } from "./productCardVariants";
-import QuantitySelector from "@/components/QuantitySelector";
+import ProductMiniQtyControl from "./ProductMiniQtyControl";
 import AddToCartButton from "@/components/AddToCartButton";
+import { useNavigate } from "react-router-dom";
 import ProductQuickView from "@/components/ProductQuickView";
+import { Button } from "@/components/ui/button";
 
 export type MultiLang = { en: string; hi?: string; te?: string };
-
 export type Product = {
   id: number | string;
   name: MultiLang | string;
@@ -43,13 +44,23 @@ function getProductField(
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
   const { user } = useSupabaseAuth();
+  const navigate = useNavigate();
 
-  const [qty, setQty] = React.useState(1);
+  const [qty, setQty] = React.useState(0);
   const [open, setOpen] = React.useState(false);
 
   React.useEffect(() => {
     useWishlistStore.getState().fetchWishlist(user);
   }, [user]);
+
+  React.useEffect(() => {
+    // Reset quantity if product/stock changes or out of stock
+    if (!product || product.stock <= 0) {
+      setQty(0);
+    } else if (qty > product.stock) {
+      setQty(product.stock);
+    }
+  }, [product.stock, product.id]);
 
   if (!product || (typeof product.id !== "number" && typeof product.id !== "string")) {
     return (
@@ -63,19 +74,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
-  // Ensure valid quantity state
+  // Ensure quantity never < 0 or > stock
   React.useEffect(() => {
-    if (isOutOfStock) setQty(1);
+    if (isOutOfStock) setQty(0);
     else if (qty > product.stock) setQty(product.stock);
-    else if (qty < 1) setQty(1);
+    else if (qty < 0) setQty(0);
   }, [product.stock, isOutOfStock]);
 
-  // Modal for details
+  // Open modal for full details
   const handleCardClick = () => {
     setOpen(true);
     if (onClick) onClick(product);
   };
 
+  // Toast guidance for card
   const showGuidance = (e: React.MouseEvent | React.KeyboardEvent) => {
     e.stopPropagation();
     toast({
@@ -84,6 +96,45 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         "Click on product for full details. Adjust quantity and tap ‘Add to Cart’ below."
       ),
     });
+  };
+
+  // “Add to Cart” behavior: show toast, don't redirect
+  const handleAddToCart = () => {
+    toast({
+      duration: 1200,
+      title: t("addedToCart") || "Added to Cart",
+      description:
+        name && (
+          <div className="flex gap-2 items-center">
+            <span className="animate-pulse">✅</span>
+            <span className="font-semibold whitespace-nowrap">{name}</span>
+          </div>
+        ),
+      variant: "default"
+    });
+    setQty(0); // Reset mini qty to hide minus/ATC after add (can tweak if you want persistent)
+  };
+
+  // “Buy Now” disables for guest, toast feedback
+  const handleBuyNow = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      toast({
+        duration: 1600,
+        title: t("loginRequired") || "Login Required",
+        description: t("pleaseLoginToBuyNow") || "Please log in to place instant orders.",
+        variant: "destructive"
+      });
+      return;
+    }
+    // Go to checkout with *just* this product, one quantity (in route state).
+    navigate("/checkout", { state: { buyNow: { ...product, quantity: Math.max(1, qty || 1), name, image: product.image_url } } });
+  };
+
+  // Card nav: View product
+  const handleViewProduct = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/products/${product.id}`);
   };
 
   return (
@@ -122,7 +173,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <ProductImage product={product} name={name} />
         </div>
 
-        {/* Info block stays on white background, max width */}
+        {/* Info block: white bg for contrast */}
         <div className="p-4 flex flex-col flex-1 gap-2 pb-3 bg-white dark:bg-lux-black z-20 relative">
           <h3
             className="text-lg font-semibold text-gray-900 dark:text-lux-gold truncate cursor-pointer focus:underline focus:outline-none"
@@ -154,42 +205,75 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
             </span>
           </div>
 
-          {/* === Add to Cart & Quantity Controls: Always visible, never overlapped === */}
-          {!isOutOfStock && (
-            <div
-              className="mt-3 flex gap-3 flex-wrap items-center bg-white/85 dark:bg-lux-black/60 rounded-lg border border-yellow-100 dark:border-lux-gold/10 p-2 shadow-sm relative z-40"
-              onClick={e => e.stopPropagation()}
-              style={{
-                minHeight: 54,
-                // For debug, comment if not needed:
-                // background: "rgba(255,0,0,0.10)"
-              }}
-            >
-              <QuantitySelector
-                quantity={qty}
-                stock={product.stock}
-                onInc={() => setQty(q => Math.min(q + 1, product.stock))}
-                onDec={() => setQty(q => Math.max(q - 1, 1))}
-                disabled={isOutOfStock}
-              />
-              <AddToCartButton product={{
-                id: product.id,
-                name: name,
-                price: product.price,
-                stock: product.stock,
-                image: product.image_url
-              }} quantity={qty} disabled={isOutOfStock || product.stock < 1} />
-            </div>
-          )}
-
-          {isOutOfStock && (
-            <div className="mt-4 flex items-center justify-center text-red-500 font-semibold text-sm z-40">
-              {t("outOfStock") || "Out of Stock"}
-            </div>
-          )}
+          {/* === Quantity/ATC Controls: Visibility & Logic === */}
+          <div className="mt-3 flex gap-2 flex-wrap items-center bg-white/85 dark:bg-lux-black/60 rounded-lg border border-yellow-100 dark:border-lux-gold/10 p-2 shadow-sm relative z-40 min-h-[54px]">
+            {/* Show only + if qty = 0, else show −, qty, ATC */}
+            {!isOutOfStock && (
+              <div
+                onClick={e => e.stopPropagation()}
+                className="flex items-center gap-4 w-full"
+              >
+                <ProductMiniQtyControl
+                  quantity={qty}
+                  stock={product.stock}
+                  onInc={() => setQty(q => Math.min(q + 1, product.stock))}
+                  onDec={() => setQty(q => Math.max(q - 1, 1))}
+                  incDisabled={isOutOfStock}
+                  decDisabled={isOutOfStock || qty <= 1}
+                />
+                {/* ATC: Only if qty > 0 */}
+                {qty > 0 && (
+                  <AddToCartButton
+                    product={{
+                      id: product.id,
+                      name: name,
+                      price: product.price,
+                      stock: product.stock,
+                      image: product.image_url
+                    }}
+                    quantity={qty}
+                    disabled={isOutOfStock || product.stock < 1}
+                    onCartChange={handleAddToCart}
+                  />
+                )}
+                {/* Buy Now */}
+                <Button
+                  className="ml-auto bg-white dark:bg-neutral-800 border border-gray-300 dark:border-gray-600 hover:bg-amber-100/80 dark:hover:bg-yellow-950 shadow transition-all min-h-[44px] rounded-[8px] text-primary dark:text-lux-gold font-semibold text-base"
+                  size="sm"
+                  variant="secondary"
+                  onClick={handleBuyNow}
+                  aria-label={t("buyNow")}
+                  type="button"
+                  tabIndex={0}
+                  disabled={isOutOfStock}
+                  style={{ minHeight: 44, borderRadius: 8 }}
+                >
+                  {t("buyNow")}
+                </Button>
+              </div>
+            )}
+            {/* Out of Stock fallback */}
+            {isOutOfStock && (
+              <div className="flex items-center justify-center text-red-500 font-semibold text-sm z-40 w-full px-2">
+                {t("outOfStock") || "Out of Stock"}
+              </div>
+            )}
+          </div>
+          {/* View Product Button/Link */}
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mt-3 w-full flex items-center justify-center rounded shadow-sm border border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-900 text-sm font-bold py-2"
+            onClick={handleViewProduct}
+            aria-label={t("viewDetails") || "View Product"}
+            tabIndex={0}
+            style={{ borderRadius: 8 }}
+            type="button"
+          >
+            {t("viewDetails") || "View Product"}
+          </Button>
         </div>
       </motion.div>
-
       {/* Modal/QuickView for full details */}
       {open && (
         <ProductQuickView
