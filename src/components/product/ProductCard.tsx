@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -14,6 +15,8 @@ import { Button } from "@/components/ui/button";
 import ProductQuickView from "@/components/ProductQuickView";
 import ProductImage from "./ProductImage";
 import AddToCartButton from "@/components/AddToCartButton";
+import { useCartStore } from "@/store/cartStore";
+import QuantitySelector from "@/components/QuantitySelector"; // can use if you like
 
 export type MultiLang = { en: string; hi?: string; te?: string };
 
@@ -37,36 +40,71 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
   const { user } = useSupabaseAuth();
   const navigate = useNavigate();
+  const { items: cartItems, addToCart } = useCartStore();
 
-  const [qty, setQty] = React.useState(0);
   const [open, setOpen] = React.useState(false);
+
+  // Find if this item is already in the cart
+  const cartItem = cartItems.find(
+    (item: any) => item._id === product.id?.toString()
+  );
+
+  // If cart has this, init local quantity to what's in the cart, else 0
+  const [qty, setQty] = React.useState(cartItem ? cartItem.quantity : 0);
+
+  // Sync local quantity to reflect cart if ever changed elsewhere
+  React.useEffect(() => {
+    if (cartItem && cartItem.quantity !== qty) setQty(cartItem.quantity);
+    // If product is out of stock, force to 0
+    if (!product || product.stock <= 0) setQty(0);
+    else if (qty > product.stock) setQty(product.stock);
+    // eslint-disable-next-line
+  }, [cartItem?.quantity, product.stock, product.id]);
 
   React.useEffect(() => {
     useWishlistStore.getState().fetchWishlist(user);
   }, [user]);
-
-  // Reset quantity if product stock changes or is out of stock
-  React.useEffect(() => {
-    if (!product || product.stock <= 0) setQty(0);
-    else if (qty > product.stock) setQty(product.stock);
-  }, [product.stock, product.id]);
 
   const lang = i18n.language || "en";
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
-  React.useEffect(() => {
-    if (isOutOfStock && qty !== 0) setQty(0);
-    else if (qty > product.stock) setQty(product.stock);
-    else if (qty < 0) setQty(0);
-  }, [product.stock, isOutOfStock, qty]);
+  // Universal: feedback (never reset local qty after add)
+  const handleAddToCart = () => {
+    if (qty > 0) {
+      // Do add
+      addToCart({
+        _id: product.id.toString(),
+        name,
+        price: product.price,
+        quantity: qty,
+        stock: product.stock,
+        image: product.image_url,
+      }, qty);
 
-  const handleCardClick = () => {
-    setOpen(true);
-    if (onClick) onClick(product);
+      toast({
+        duration: 1400,
+        title: t("addedToCart"),
+        description: (
+          <div className="flex items-center gap-2">
+            <span className="animate-pulse">✅</span>
+            <span className="font-semibold">{name} ({qty})</span>
+          </div>
+        ),
+        variant: "default",
+      });
+      // ❌ Don't reset qty state here!
+      // Optionally: you can disable inputs or show "already in cart" after add
+    }
   };
 
+  const goToProductPage = (e: React.MouseEvent | React.KeyboardEvent) => {
+    e.stopPropagation();
+    navigate(`/products/${product.id}`);
+  };
+
+  // Guidance toast
   const showGuidance = (e: React.KeyboardEvent | React.MouseEvent) => {
     e.stopPropagation();
     toast({
@@ -75,28 +113,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         "Click product image/name for full details. Adjust quantity, then tap 'Add to Cart'."
       ),
     });
-  };
-
-  // Universal: feedback and call (optionally) reset qty after toast
-  const handleAddToCart = (addedQty: number) => {
-    toast({
-      duration: 1400,
-      title: t("addedToCart"),
-      description: (
-        <div className="flex items-center gap-2">
-          <span className="animate-pulse">✅</span>
-          <span className="font-semibold">{name} ({addedQty})</span>
-        </div>
-      ),
-      variant: "default",
-    });
-    // Optionally, reset counter—comment out this line to keep qty
-    setQty(0);
-  };
-
-  const goToProductPage = (e: React.MouseEvent | React.KeyboardEvent) => {
-    e.stopPropagation();
-    navigate(`/products/${product.id}`);
   };
 
   return (
@@ -112,9 +128,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         tabIndex={0}
         aria-label={t("viewDetails")}
         role="article"
-        onClick={handleCardClick}
+        onClick={() => { setOpen(true); if (onClick) onClick(product); }}
         onKeyDown={e => {
-          if (e.key === "Enter") handleCardClick();
+          if (e.key === "Enter") { setOpen(true); if (onClick) onClick(product);}
           else if (e.key === "?") showGuidance(e);
         }}
         data-testid="product-card"
@@ -171,13 +187,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <div className="product-card-controls">
             {!isOutOfStock ? (
               <div className="qty-atc-row" onClick={e => e.stopPropagation()}>
+                {/* You can use your custom reusable QuantitySelector here:
+                  <QuantitySelector
+                    quantity={qty}
+                    stock={product.stock}
+                    onInc={() => setQty(q => Math.min(product.stock, q + 1))}
+                    onDec={() => setQty(q => Math.max(1, q - 1))}
+                  />
+                */}
                 <button
                   aria-label={t("subtract") || "Minus"}
                   className="qty-btn"
                   type="button"
-                  disabled={qty <= 0}
+                  disabled={qty <= 1}
                   tabIndex={0}
-                  onClick={() => setQty(q => Math.max(0, q - 1))}
+                  onClick={() => setQty(q => Math.max(1, q - 1))}
                 >
                   <Minus size={20} />
                 </button>
@@ -196,18 +220,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 </button>
                 {/* AddToCart appears only when qty > 0 */}
                 {qty > 0 && (
-                  <AddToCartButton
-                    product={{
-                      id: product.id,
-                      name,
-                      price: product.price,
-                      stock: product.stock,
-                      image: product.image_url,
-                    }}
-                    quantity={qty}
+                  <Button
+                    size="default"
+                    className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in"
+                    aria-label={t("addToCart")}
+                    onClick={handleAddToCart}
+                    type="button"
                     disabled={isOutOfStock || product.stock < 1}
-                    onCartChange={handleAddToCart}
-                  />
+                    tabIndex={0}
+                    style={{ minHeight: 44, borderRadius: 8 }}
+                  >
+                    <span className="mr-1"><Plus size={18} /></span> {t("addToCart")}
+                  </Button>
                 )}
               </div>
             ) : (
@@ -241,3 +265,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
+
