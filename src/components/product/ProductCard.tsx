@@ -1,6 +1,6 @@
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import ProductImage from "./ProductImage";
 import ProductInfo from "./ProductInfo";
 import ProductControls from "./ProductControls";
@@ -33,10 +33,19 @@ function getProductField(
   return data[lang as keyof MultiLang] || data.en || fallback;
 }
 
-const cardVariants = {
+// Fix: set type of cardVariants and use the correct transition 'type'
+const cardVariants: Variants = {
   rest: { scale: 1, boxShadow: "0 2px 20px 0 rgba(255,215,0,0.10)" },
-  hover: { scale: 1.044, boxShadow: "0 8px 35px 2px #FFD7002E", transition: { type: "spring", stiffness: 410, damping: 30 } },
-  tap: { scale: 0.98, boxShadow: "0 2px 18px 0 #FFD70024", transition: { type: "spring", stiffness: 310 } },
+  hover: {
+    scale: 1.044,
+    boxShadow: "0 8px 35px 2px #FFD7002E",
+    transition: { type: "spring" as const, stiffness: 410, damping: 30 },
+  },
+  tap: {
+    scale: 0.98,
+    boxShadow: "0 2px 18px 0 #FFD70024",
+    transition: { type: "spring" as const, stiffness: 310 },
+  },
 };
 
 const ProductCard: React.FC<Props> = ({ product, onClick }) => {
@@ -72,3 +81,4 @@ const ProductCard: React.FC<Props> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
+

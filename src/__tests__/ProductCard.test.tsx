@@ -1,6 +1,6 @@
 
 import { render, screen, fireEvent } from "@testing-library/react";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/product/ProductCard";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../i18n";
 import { useCartStore } from "../store/cartStore";
