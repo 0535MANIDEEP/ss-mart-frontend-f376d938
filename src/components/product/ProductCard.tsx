@@ -51,7 +51,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
 
-  // Example: dynamic badges (add logic later for real conditions)
   const showBadge = product.stock <= 5
     ? { text: t("stock"), color: "bg-red-100 text-red-700 border border-red-300" }
     : null;
@@ -62,12 +61,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <motion.div
       className={`
-        rounded-xl shadow-md hover:shadow-lg transition-shadow bg-white dark:bg-[#181929]
-        flex flex-col border-4 border-pink-600 !bg-yellow-100 dark:!bg-pink-900
-        relative group h-full w-full max-w-xs mx-auto p-0
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
+        relative group h-full w-full max-w-xs mx-auto
+        p-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary
+        flex flex-col rounded-2xl border-8 border-red-700 
+        shadow-2xl bg-blue-300/60 !min-h-[420px] 
+        items-center justify-center z-40
       `}
-      style={{ minHeight: 380 }}
+      style={{ minHeight: 420 }}
       initial="rest"
       whileHover="hover"
       whileTap="tap"
@@ -79,90 +79,44 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       onClick={onClick ? () => onClick(product) : undefined}
       data-testid="product-card"
     >
-      {/* Debug header! */}
-      <div className="bg-fuchsia-300 text-lg font-bold px-2 py-1 rounded-t-xl">
-        DEBUG: Card
+      {/* *** MASSIVE DEBUG BANNER *** */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-50">
+        <span className="text-5xl font-extrabold text-red-700 bg-yellow-300/80 px-6 py-5 rounded-lg border-4 border-red-800 shadow-2xl">
+          PRODUCT #{product.id}
+        </span>
       </div>
-
-      {/* Optional badge, like "Low Stock", "New", etc */}
-      {showBadge && (
-        <div
-          className={`absolute top-3 left-3 px-2 py-0.5 rounded-full text-xs font-semibold z-30 bg-green-200 text-green-900 border-2 border-green-600`}
-          aria-label="stock-badge"
-        >
-          {outOfStock ? t("removedFromCart") : t("stock", { count: product.stock })}
-        </div>
-      )}
-
-      {/* Out of stock label always appears above image */}
-      <ProductOutOfStockLabel stock={product.stock} />
-
-      {/* Card layout: Image at top, then info, then controls */}
-      <div className="relative flex flex-col items-center aspect-[1/1] w-full overflow-hidden justify-center mb-0 rounded-t-xl border border-yellow-800 bg-yellow-300/40">
-        {/* Product image: full, 1/1 ratio, zoom on hover */}
-        <div className="w-full h-full bg-white border border-gray-400 flex items-center justify-center">
-          <span className="block text-xs text-black absolute top-1 left-1 z-10">Image:</span>
-          {/* Make image never null */}
-          {product.image_url || name ? (
-            <ProductImage
-              product={product}
-              name={name}
-            />
-          ) : (
-            <span className="text-red-500">No image/name</span>
-          )}
-        </div>
-        <div
-          className="absolute inset-0 pointer-events-none rounded-t-xl border-2 border-blue-600"
-          aria-hidden="true"
+      {/* --- Everything else is behind debug banner --- */}
+      <div className="relative flex flex-col items-center w-full overflow-hidden justify-center mb-0 rounded-t-xl border border-yellow-800 bg-yellow-300/40 min-h-[150px]">
+        <ProductImage
+          product={product}
+          name={name}
         />
       </div>
 
-      {/* Info block: name, desc, ratings, price, stock */}
-      <div className="flex flex-col gap-1 px-4 pt-4 pb-2 min-h-[110px] bg-pink-100 border border-pink-400">
+      <div className="flex flex-col gap-1 px-4 pt-4 pb-2 min-h-[110px] bg-pink-100 border border-pink-400 w-full">
         <h3
           className="text-base font-semibold text-lux-black dark:text-lux-gold line-clamp-2 mb-0 cursor-pointer group-hover:underline focus:underline"
           title={name}
           tabIndex={0}
           aria-label="name"
-          style={{ minHeight: 48 }}
+          style={{ minHeight: 32 }}
           onClick={e => {
             e.stopPropagation();
             if (onClick) onClick(product);
           }}
         >
-          {/* Show name, or debug if missing */}
           {name || <span className="text-red-600">No name</span>}
         </h3>
-
         <p
           className="text-xs text-gray-600 dark:text-gray-300 mt-0 mb-1 line-clamp-2"
           title={desc}
         >
           {desc || <span className="text-red-600">No desc</span>}
         </p>
-
-        {/* Ratings placeholder */}
-        <div className="text-sm text-blue-700">RATINGS PLACEHOLDER</div>
-        <div className="flex items-center gap-2">
-          <span className="text-primary text-xl font-bold">
-            ₹{product.price}
-          </span>
-          <span className={`ml-auto text-[13px] px-2 rounded 
-            ${outOfStock ? "bg-red-100 text-red-600" : "bg-emerald-50 text-emerald-800"}
-            border border-black font-bold`
-          }>
-            {outOfStock
-              ? t("removedFromCart") || "Out of stock"
-              : t("stock", { count: product.stock }) || `Stock: ${product.stock}`
-            }
-          </span>
-        </div>
       </div>
 
-      {/* Actions: QuantitySelector, Add to Cart, Buy Now */}
       <div className="flex flex-col gap-2 px-4 pb-4 mt-auto w-full bg-yellow-50 border-t-2 border-yellow-700">
-        <div>DEBUG: Controls go here ↓</div>
+        <div>DEBUG: Controls</div>
         <ProductControls
           product={product}
           name={name}
@@ -173,3 +127,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
+
