@@ -16,7 +16,7 @@ type AddToCartButtonProps = {
   };
   onCartChange?: (quantity: number) => void;
   disabled?: boolean;
-  quantity?: number; // Optional: explicit quantity, only show if ≥ 1
+  quantity?: number;
 };
 
 export default function AddToCartButton({ product, onCartChange, disabled, quantity }: AddToCartButtonProps) {
@@ -39,7 +39,6 @@ export default function AddToCartButton({ product, onCartChange, disabled, quant
       return;
     }
 
-    // Add to cart using product info; pass correct id
     addToCart({
       _id: product.id.toString(),
       name: product.name,
@@ -63,14 +62,13 @@ export default function AddToCartButton({ product, onCartChange, disabled, quant
       variant: "default"
     });
 
-    // Only reset via prop feedback if caller wants it
     if (onCartChange) onCartChange(qty);
   };
 
   return (
     <Button
       size="default"
-      className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in"
+      className="lux-btn text-base gap-1 overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in dark:bg-[#FFD70022] dark:text-[#FFD700] dark:border-[#FFD70099]"
       aria-label={t("addToCart")}
       onClick={handleClick}
       type="button"
