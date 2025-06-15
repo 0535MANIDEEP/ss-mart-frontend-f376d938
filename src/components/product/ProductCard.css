@@ -1,10 +1,13 @@
+
 /* ProductCard specific styles
    (All responsive, respecting Tailwind colors & dark mode, only doing what's hard to get with Tailwind utility classes) */
 
 .product-card-root {
   background: #fff;
   border-radius: 1.1rem;
-  box-shadow: 0 4px 32px #ffd7001e, 0 1.5px 8px #282ffb0a;
+  /* Removed extra shadow; use subtler border only.
+     Old: box-shadow: 0 4px 32px #ffd7001e, 0 1.5px 8px #282ffb0a; */
+  box-shadow: none;
   transition: box-shadow 0.19s, border 0.19s;
   overflow: visible;
   border: 1.5px solid #f6e6ac;
@@ -23,7 +26,8 @@
 .dark .product-card-root {
   background: linear-gradient(100deg, #232336 80%, #21213c 135%);
   border: 1.5px solid #FFD70077;
-  box-shadow: 0 6px 32px #FFD70044, 0 2.5px 18px #19152955;
+  /* Removed shadow for dark mode card too */
+  box-shadow: none;
 }
 .product-card-top-edges {
   position: absolute;
@@ -78,10 +82,11 @@
 
 .card-title {
   color: #171742;
+  /* Removed text-shadow! */
 }
 .dark .card-title {
   color: #FFD700;
-  text-shadow: 0 0 8px #ffd70088, 0 2px 14px #18182477;
+  /* Removed text-shadow from product names in dark mode */
 }
 
 .product-card-info .product-card-desc {
@@ -219,3 +224,4 @@
   background: #FFD70055 !important;
   color: #232336 !important;
 }
+

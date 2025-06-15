@@ -119,7 +119,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     <>
       <motion.div
         className="product-card-root group hover:scale-[1.025] focus-within:scale-[1.025] transition-transform outline-none bg-white dark:bg-[#232336] border border-yellow-100 dark:border-[#FFD70033] rounded-xl"
-        style={{ minHeight: 420 }}
+        style={{ minHeight: 420, boxShadow: "none" }}
         initial="rest"
         whileHover="hover"
         whileTap="tap"
@@ -172,7 +172,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
               e.stopPropagation();
               setOpen(true);
             }}
-            style={{ minHeight: 32 }}
+            style={{
+              minHeight: 32,
+              textShadow: "none"
+            }}
           >
             {name || <span className="text-red-600">{t("noDescription")}</span>}
           </h3>
