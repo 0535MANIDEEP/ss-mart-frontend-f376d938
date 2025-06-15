@@ -72,9 +72,11 @@ const DownloadOrderPDF: React.FC<Props> = ({ order }) => {
   return (
     <button
       type="button"
-      className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded flex items-center gap-2 mt-4"
+      className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded flex items-center gap-2 mt-4 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none transition-colors dark:bg-[#FFD700bb] dark:text-[#232336] dark:hover:bg-lux-gold"
       style={{ borderRadius: 8 }}
       onClick={handleDownload}
+      tabIndex={0}
+      aria-label="Download Invoice PDF"
     >
       <span aria-hidden>📄</span>
       Download Invoice
@@ -83,4 +85,3 @@ const DownloadOrderPDF: React.FC<Props> = ({ order }) => {
 };
 
 export default DownloadOrderPDF;
-

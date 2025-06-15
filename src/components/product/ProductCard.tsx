@@ -1,7 +1,8 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, ShoppingCart } from "lucide-react";
 import "./ProductCard.css";
 import ProductOutOfStockLabel from "./ProductOutOfStockLabel";
 import WishlistButton from "@/components/WishlistButton";
@@ -15,7 +16,6 @@ import ProductQuickView from "@/components/ProductQuickView";
 import ProductImage from "./ProductImage";
 import AddToCartButton from "@/components/AddToCartButton";
 import { useCartStore } from "@/store/cartStore";
-import QuantitySelector from "@/components/QuantitySelector"; // can use if you like
 
 export type MultiLang = { en: string; hi?: string; te?: string };
 
@@ -25,6 +25,7 @@ export interface ProductCardProps {
   onClick?: (prod: any) => void;
 }
 
+// Helper: gets field per locale, fallback safe
 function getProductField(
   data: MultiLang | string | undefined,
   lang: string,
@@ -35,23 +36,26 @@ function getProductField(
   return data[lang as keyof MultiLang] || data.en || fallback;
 }
 
+// Fallback placeholder if image is missing/invalid URL
+function getPlaceholderImage() {
+  return "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=400&q=80";
+}
+
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
   const { user } = useSupabaseAuth();
   const navigate = useNavigate();
   const { items: cartItems, addToCart } = useCartStore();
-
   const [open, setOpen] = React.useState(false);
 
   // Cart item, reused everywhere
   const cartItem = cartItems.find(
     (item: any) => item._id === product.id?.toString()
   );
-
-  // UX update: quantity is always 0 at first
+  // Show zero as min at first, but not less
   const [qty, setQty] = React.useState(0);
 
-  // Reset qty to 0 after a successful add, or when cartItems updates (only if this product is in the cart)
+  // Reset qty to 0 when added OR when cartItem changes (for this product)
   React.useEffect(() => {
     if (cartItem) setQty(0);
   }, [cartItem?.quantity, product.id]);
@@ -74,7 +78,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         price: product.price,
         quantity: qty,
         stock: product.stock,
-        image: product.image_url,
+        image: product.image_url || getPlaceholderImage(),
       }, qty);
 
       toast({
@@ -89,7 +93,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         variant: "default",
       });
 
-      setQty(0); // Reset visual qty after add
+      setQty(0);
     }
   };
 
@@ -108,10 +112,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     });
   };
 
+  // Use fallback image if image_url is empty
+  const productImage = product.image_url || getPlaceholderImage();
+
   return (
     <>
       <motion.div
-        className="product-card-root group"
+        className="product-card-root group hover:scale-[1.025] hover:shadow-lg focus-within:scale-[1.025] transition-transform outline-none"
         style={{ minHeight: 420 }}
         initial="rest"
         whileHover="hover"
@@ -134,7 +141,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
         </div>
         <div
-          className="product-card-image"
+          className="product-card-image hover:scale-[1.01] group-hover:shadow-xl group-focus-within:scale-[1.01] transition-all"
           tabIndex={0}
           aria-label={name}
           role="button"
@@ -144,12 +151,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
             if (e.key === "Enter") goToProductPage(e);
           }}
         >
-          <ProductImage product={product} name={name} />
+          {/* Product image with fallback */}
+          <img
+            src={productImage}
+            onError={e => (e.currentTarget.src = getPlaceholderImage())}
+            alt={name}
+            className="object-cover w-full h-full"
+            style={{ height: "100%", width: "100%", borderRadius: "1.1rem 1.1rem 0 0" }}
+            draggable={false}
+            loading="lazy"
+          />
         </div>
         <div className="product-card-info">
           <h3
-            className="font-bold truncate text-lg card-title focus:underline cursor-pointer 
-              text-gray-800 dark:text-[#FFD700] dark:drop-shadow-lg"
+            className="font-bold truncate text-lg card-title focus:underline cursor-pointer text-gray-800 dark:text-[#FFD700] dark:drop-shadow-lg"
             title={name}
             tabIndex={0}
             aria-label={name}
@@ -181,13 +196,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <div className="product-card-controls">
             {!isOutOfStock ? (
               <div className="qty-atc-row" onClick={e => e.stopPropagation()}>
-                {/* Updated: Allow zero as minimum, hide minus at zero */}
                 <button
                   aria-label={t("subtract") || "Minus"}
-                  className="qty-btn"
+                  className="qty-btn hover:scale-110 transition-transform"
                   type="button"
                   disabled={qty === 0}
                   tabIndex={0}
+                  style={{
+                    background: "#fff",
+                    color: "#232336",
+                    border: "1.5px solid #feea9d",
+                  }}
                   onClick={() => setQty(q => (q > 0 ? q - 1 : 0))}
                 >
                   <Minus size={20} />
@@ -197,10 +216,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 </span>
                 <button
                   aria-label={t("add") || "Plus"}
-                  className="qty-btn"
+                  className="qty-btn hover:scale-110 transition-transform"
                   type="button"
                   disabled={qty >= product.stock}
                   tabIndex={0}
+                  style={{
+                    background: "#232336",
+                    color: "#FFD700",
+                    border: "1.5px solid #feea9d",
+                  }}
                   onClick={() => setQty(q => Math.min(q + 1, product.stock))}
                 >
                   <Plus size={20} />
@@ -209,18 +233,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 {qty > 0 && (
                   <Button
                     size="default"
-                    className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in
-                      dark:bg-[#FFD70022] dark:text-[#FFD700] dark:border-[#FFD70099] 
-                      dark:hover:bg-[#FFD700aa] dark:hover:text-[#232336]
-                      dark:shadow-xl"
+                    className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in dark:bg-[#FFD70022] dark:text-[#FFD700] dark:border-[#FFD70099] dark:hover:bg-[#FFD700aa] dark:hover:text-[#232336] dark:shadow-xl"
                     aria-label={t("addToCart")}
                     onClick={handleAddToCart}
                     type="button"
                     disabled={isOutOfStock || product.stock < 1}
                     tabIndex={0}
-                    style={{ minHeight: 44, borderRadius: 8 }}
+                    style={{ minHeight: 44, borderRadius: 8, marginLeft: 8 }}
                   >
-                    <span className="mr-1"><Plus size={18} /></span> {t("addToCart")}
+                    <ShoppingCart size={18} className="mr-1" /> {t("addToCart")}
                   </Button>
                 )}
               </div>
@@ -255,3 +276,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
+

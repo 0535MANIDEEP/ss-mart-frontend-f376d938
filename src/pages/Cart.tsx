@@ -1,4 +1,3 @@
-
 import { useCartStore } from "@/store/cartStore";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -47,12 +46,22 @@ const Cart = () => {
     }
   };
 
+  // Download cart as JSON for quick backup (bonus user-friendly utility)
+  const handleDownloadJSON = () => {
+    const blob = new Blob([JSON.stringify(items, null, 2)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "ssmart-cart.json";
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1500);
+  };
+
   return (
-    <div className="container max-w-3xl mx-auto mt-6 animate-fade-in">
-      <h2 className="text-2xl font-bold mb-4">{t("yourCart")}</h2>
+    <div className="container max-w-3xl mx-auto mt-6 animate-fade-in bg-white dark:bg-[#222230] p-4 rounded-xl shadow-lg">
+      <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-lux-gold">{t("yourCart")}</h2>
       <table className="w-full text-left overflow-x-auto">
         <thead>
-          <tr className="border-b border-gray-300">
+          <tr className="border-b border-gray-300 dark:border-[#FFD70033]">
             <th>{t("product")}</th>
             <th>{t("quantity")}</th>
             <th>{t("price")}</th>
@@ -61,10 +70,16 @@ const Cart = () => {
         </thead>
         <tbody>
           {items.map(item => (
-            <tr key={item._id} className="border-b border-gray-100">
+            <tr key={item._id} className="border-b border-gray-100 dark:border-[#FFD70022]">
               <td className="py-2 flex items-center gap-3 min-w-[120px]">
-                <img src={item.image || "https://placehold.co/40x40"} alt={item.name} className="w-12 h-12 object-cover rounded-md" style={{ borderRadius: 8 }} />
-                <span className="break-all">{item.name}</span>
+                <img 
+                  src={item.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80"} 
+                  alt={item.name} 
+                  className="w-12 h-12 object-cover rounded-md bg-gray-100 dark:bg-[#292848]" 
+                  style={{ borderRadius: 8 }}
+                  onError={e => (e.currentTarget.src = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80")}
+                />
+                <span className="break-all dark:text-lux-gold">{item.name}</span>
               </td>
               <td>
                 <div className="flex gap-2 items-center">
@@ -81,8 +96,10 @@ const Cart = () => {
               <td>
                 <button
                   onClick={() => remove(item._id)}
-                  className="text-red-600 hover:underline"
+                  className="text-red-600 hover:underline dark:text-red-400"
                   style={{ minHeight: 44 }}
+                  tabIndex={0}
+                  aria-label={t("remove")}
                 >{t("remove")}</button>
               </td>
             </tr>
@@ -90,19 +107,36 @@ const Cart = () => {
         </tbody>
       </table>
       <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <strong className="text-xl">{t("subtotal")}: ₹{subtotal}</strong>
-        <strong className="text-xl">{t("total")}: ₹{total}</strong>
+        <strong className="text-xl dark:text-lux-gold">{t("subtotal")}: ₹{subtotal}</strong>
+        <strong className="text-xl dark:text-lux-gold">{t("total")}: ₹{total}</strong>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={clear}
-            className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap"
+            className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap dark:bg-[#FFD70021] dark:text-lux-gold dark:hover:bg-[#FFD70066]"
             style={{ minHeight: 44, borderRadius: 8 }}
-          >{t("clearCart")}</button>
+            tabIndex={0}
+          >
+            {t("clearCart")}
+          </button>
           <button
             onClick={() => navigate("/checkout")}
-            className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 shadow whitespace-nowrap"
+            className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 shadow whitespace-nowrap dark:bg-[#FFD700bb] dark:text-[#232336] dark:hover:bg-lux-gold"
             style={{ minHeight: 44, borderRadius: 8 }}
-          >{t("checkout")}</button>
+            tabIndex={0}
+          >
+            {t("checkout")}
+          </button>
+          {/* Download PDF / JSON invoice (see DownloadOrderPDF file also) */}
+          <button
+            onClick={handleDownloadJSON}
+            className="bg-[#FFD70033] text-[#232336] border border-[#FFD70088] font-semibold px-4 py-2 rounded flex items-center gap-2 hover:bg-[#FFD70055] dark:bg-[#FFD70033] dark:text-[#FFD700] dark:border-[#FFD700aa]"
+            style={{ borderRadius: 8 }}
+            type="button"
+            tabIndex={0}
+            aria-label="Download Cart JSON"
+          >
+            🗄️ {t("downloadJSON") || "Download Cart JSON"}
+          </button>
         </div>
       </div>
     </div>

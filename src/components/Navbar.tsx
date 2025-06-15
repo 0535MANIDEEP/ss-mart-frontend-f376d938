@@ -1,4 +1,3 @@
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCartStore } from "@/store/cartStore";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
@@ -31,7 +30,7 @@ export default function Navbar() {
   const items = useCartStore(state => state.items);
   const { user, role, signOut, loading } = useSupabaseAuth();
   const cartCount = items.reduce((s, i) => s + i.quantity, 0);
-  const cartTotal = useMemo(
+  const cartTotal = React.useMemo(
     () => items.reduce((s, i) => s + i.price * i.quantity, 0),
     [items]
   );
@@ -52,7 +51,7 @@ export default function Navbar() {
   // Responsive, accessible hamburger for mobile menu
   const menuButton = (
     <button
-      className="md:hidden p-2 focus:outline-none rounded-full hover:bg-gray-50 dark:hover:bg-gray-900"
+      className="md:hidden p-2 focus:outline-none rounded-full hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors"
       aria-label="Open Menu"
       onClick={() => setMenuOpen(v => !v)}
     >
@@ -100,11 +99,10 @@ export default function Navbar() {
     </span>
   );
 
-  // Large-screen navbar layout
   return (
     <>
       <nav className="w-full sticky top-0 z-50 bg-white/90 dark:bg-lux-black/90 border-b border-gray-200 dark:border-lux-gold shadow backdrop-blur-md">
-        <div className="flex items-center justify-between px-4 sm:px-8 py-2 min-h-[56px]">
+        <div className="flex items-center justify-between px-4 sm:px-8 py-2 min-h-[56px] gap-2">
           <div className="flex items-center gap-3">
             {menuButton}
             <Link
@@ -114,7 +112,6 @@ export default function Navbar() {
               {t("brand")}
             </Link>
           </div>
-
           <div className="hidden md:flex gap-5 items-center flex-1 justify-center">
             {navLinks
               .filter(n => n.show)
@@ -123,6 +120,7 @@ export default function Navbar() {
                   key={n.to}
                   to={n.to}
                   className="flex items-center gap-2 px-4 py-2 min-h-[44px] rounded-lg hover:bg-gray-100 dark:hover:bg-gray-900 transition text-base font-medium text-gray-900 dark:text-gray-100"
+                  tabIndex={0}
                 >
                   {n.icon}
                   {n.label}
@@ -135,7 +133,6 @@ export default function Navbar() {
                 </Link>
               ))}
           </div>
-
           <div className="hidden md:flex gap-4 items-center ml-4">
             <ThemeToggle />
             <LanguageSwitcher />
@@ -146,7 +143,6 @@ export default function Navbar() {
             />
           </div>
         </div>
-
         {/* Mobile drawer/menu */}
         <div
           className={clsx(
@@ -175,7 +171,6 @@ export default function Navbar() {
               {t("brand")}
             </Link>
           </div>
-          {/* Vertical menu */}
           <div className="flex flex-col gap-2 flex-1">
             {navLinks
               .filter(n => n.show)
@@ -185,6 +180,7 @@ export default function Navbar() {
                   to={n.to}
                   className="flex items-center px-4 py-3 min-h-[48px] rounded-xl text-lg font-semibold hover:bg-gray-100 dark:hover:bg-gray-900 text-gray-800 dark:text-gray-100 transition"
                   onClick={() => setMenuOpen(false)}
+                  tabIndex={0}
                 >
                   {n.icon}
                   <span className="ml-1">{n.label}</span>
