@@ -40,6 +40,7 @@ function getProductField(
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
+  const { user } = useSupabaseAuth(); // FIX: Move hook call here
 
   if (!product || (typeof product.id !== "number" && typeof product.id !== "string")) {
     return (
@@ -55,11 +56,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
   // --- Fetch wishlist on mount for MVP (ideally, move to AppShell/Provider)
   React.useEffect(() => {
-    const { user } = useSupabaseAuth();
     useWishlistStore.getState().fetchWishlist(user);
     // No need to cleanup; store manages its own state.
     // eslint-disable-next-line
-  }, []);
+  }, [user]);
 
   // Refined card visuals
   return (
@@ -135,4 +135,3 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
-
