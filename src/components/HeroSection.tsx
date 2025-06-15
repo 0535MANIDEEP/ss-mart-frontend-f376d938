@@ -24,24 +24,24 @@ const HeroSection: React.FC = () => {
       aria-label="SS MART Introduction"
     >
       <motion.div
-        className="bg-white/90 dark:bg-[#191929] border border-yellow-200 dark:border-[#FFD70033] rounded-2xl shadow-frost py-7 px-3 xs:px-7 flex flex-col items-center animate-fade-in"
+        className="bg-ssblue-card/90 dark:bg-[#162044] border border-ssblue-secondary dark:border-ssblue-accent rounded-2xl shadow-ssblue py-7 px-3 xs:px-7 flex flex-col items-center animate-fade-in"
         variants={heroVariants}
         style={{
-          boxShadow: "0 4px 20px 0 #FFD70011, 0 0.5px 12px #FFD70011"
+          boxShadow: "0 4px 20px 0 #60A5FA22, 0 .5px 12px #60A5FA33"
         }}
       >
         <motion.h1
           className="text-3xl xs:text-4xl font-bold mb-1 text-center font-sans tracking-wide"
           style={{
-            color: "#FFD700",
-            textShadow: "0 4px 16px #FFD70022"
+            color: "#1E3A8A",
+            textShadow: "0 4px 18px #3B82F680"
           }}
           variants={heroVariants}
         >
           SS MART
         </motion.h1>
         <motion.p
-          className="text-base xs:text-lg mb-2 mt-2 leading-snug sm:leading-relaxed text-gray-800 dark:text-lux-gold font-medium text-center"
+          className="text-base xs:text-lg mb-2 mt-2 leading-snug sm:leading-relaxed text-gray-800 dark:text-ssblue-onblue font-medium text-center"
           style={{ fontWeight: 500 }}
           variants={subVariants}
         >
@@ -50,9 +50,9 @@ const HeroSection: React.FC = () => {
 
         {/* Delivery warning */}
         <motion.div
-          className="my-3 xs:my-3 bg-yellow-50 border border-yellow-300 dark:bg-[#E8C40033] dark:border-[#FFD70055] text-yellow-900 dark:text-lux-gold w-full rounded-lg px-3 py-2 font-semibold shadow text-sm flex items-center justify-center text-center"
+          className="my-3 xs:my-3 bg-ssblue-card border border-ssblue-accent/50 dark:bg-[#1E2544dd] dark:border-[#60A5FA88] text-ssblue-primary dark:text-ssblue-accent w-full rounded-lg px-3 py-2 font-semibold shadow text-sm flex items-center justify-center text-center"
           variants={subVariants}
-          style={{ maxWidth: 410 }}
+          style={{ maxWidth: 410, boxShadow: "0 2px 14px #3B82F644" }}
         >
           <span className="flex gap-1.5 items-center justify-center text-md">
             <span aria-hidden="true">⚠️</span>
@@ -67,9 +67,9 @@ const HeroSection: React.FC = () => {
           <Button
             className="lux-cta w-full max-w-xs text-center text-lg"
             style={{
-              background: "linear-gradient(96deg,#FFD700 70%,#282FFB 130%)",
-              color: "#1B202A",
-              boxShadow: "0 8px 36px #FFD700EE, 0 3px 18px #FFD70055"
+              background: "linear-gradient(96deg, #3B82F6 70%, #1E3A8A 130%)",
+              color: "#F9FAFB",
+              boxShadow: "0 8px 36px #60A5FA7a, 0 4px 14px #60A5FA33"
             }}
           >
             {t("browseReserveNow") || "Browse & Reserve In-Store"}
@@ -77,19 +77,19 @@ const HeroSection: React.FC = () => {
         </motion.div>
 
         <motion.div
-          className="flex flex-col xs:flex-row xs:items-center gap-y-1 xs:gap-x-2 text-sm text-lux-gold/95 font-medium mt-2 text-center xs:text-start justify-center"
+          className="flex flex-col xs:flex-row xs:items-center gap-y-1 xs:gap-x-2 text-sm text-ssblue-primary/95 font-medium mt-2 text-center xs:text-start justify-center"
           variants={subVariants}
         >
           <span className="flex items-center gap-1">
             <svg className="inline" width={18} height={18} fill="none" stroke="currentColor" strokeWidth={2}>
-              <circle cx="9" cy="9" r="7.8" stroke="#FFD700"/><path d="M9 10v3l2 2" stroke="#FFD700"/><path d="M9 6a4 4 0 1 1-2.6 1.2" stroke="#FFD700"/>
+              <circle cx="9" cy="9" r="7.8" stroke="#3B82F6"/><path d="M9 10v3l2 2" stroke="#3B82F6"/><path d="M9 6a4 4 0 1 1-2.6 1.2" stroke="#3B82F6"/>
             </svg>
             <span className="ml-0.5">{t("shankarpally")},{" Telangana"}</span>
           </span>
           <span className="hidden xs:inline">•</span>
           <a
             href="https://g.co/kgs/v1e9RSN"
-            className="underline hover:text-lux-blue font-medium ml-0.5"
+            className="underline hover:text-ssblue-accent font-medium ml-0.5"
             style={{ textDecorationThickness: 2 }}
             target="_blank"
             rel="noopener"

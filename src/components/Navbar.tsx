@@ -61,12 +61,12 @@ export default function Navbar() {
 
   const menuButton = (
     <button
-      className="md:hidden p-2 rounded-full border border-gray-200 dark:border-lux-gold bg-white/70 dark:bg-lux-black/70 shadow focus:outline-none hover:shadow-lg transition duration-150"
+      className="md:hidden p-2 rounded-full border border-ssblue-secondary bg-white/80 dark:bg-[#22326c] shadow focus:outline-none hover:shadow-lg transition duration-150"
       aria-label="Open Menu"
       onClick={() => setMenuOpen(v => !v)}
       tabIndex={0}
     >
-      <Menu size={26} className="text-gray-800 dark:text-lux-gold" />
+      <Menu size={26} className="text-ssblue-primary dark:text-ssblue-accent" />
     </button>
   );
 
@@ -111,7 +111,7 @@ export default function Navbar() {
   return (
     <>
       {/* Nav Container */}
-      <nav className="w-full sticky top-0 z-50 bg-white/95 dark:bg-lux-black/90 border-b border-gray-200 dark:border-lux-gold shadow-md backdrop-blur-xl transition-all">
+      <nav className="navbar w-full sticky top-0 z-50 shadow-md backdrop-blur-xl transition-all">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between gap-2 px-1.5 sm:px-4 py-2 min-h-[60px]">
             {/* Left: Brand & Menu */}
@@ -119,7 +119,7 @@ export default function Navbar() {
               {menuButton}
               <Link
                 to={ROUTES.ROOT}
-                className="text-xl sm:text-2xl font-black tracking-wide flex items-center gap-1 sm:gap-2 text-primary dark:text-lux-gold pr-2 pl-0.5 md:pl-0"
+                className="text-xl sm:text-2xl font-black tracking-wide flex items-center gap-1 sm:gap-2 text-ssblue-onblue pr-2 pl-0.5 md:pl-0"
                 style={{ letterSpacing: "0.01em" }}
               >
                 {t("brand")}
@@ -134,11 +134,12 @@ export default function Navbar() {
                     key={n.to}
                     to={n.to}
                     className={clsx(
+                      "nav-link",
                       "flex items-center gap-2 rounded-xl px-4 py-2 min-h-[42px] text-base font-semibold transition-colors duration-150",
-                      "hover:bg-lux-gold/30 dark:hover:bg-lux-gold/10",
-                      "focus:bg-lux-gold/40 dark:focus:bg-lux-gold/20",
-                      "active:ring-2 active:ring-lux-gold/60 active:scale-[.97]",
-                      "text-gray-900 dark:text-gray-100"
+                      "hover:bg-ssblue-accent/20 dark:hover:bg-ssblue-accent/10",
+                      "focus:bg-ssblue-secondary/20 dark:focus:bg-ssblue-secondary/20",
+                      "active:ring-2 active:ring-ssblue-accent/60 active:scale-[.97]",
+                      "text-ssblue-onblue dark:text-ssblue-onblue"
                     )}
                     tabIndex={0}
                   >
@@ -152,7 +153,7 @@ export default function Navbar() {
                     )}
                   </Link>
                 ))}
-              {/* "Find SS MART" button - hide text in xs for less crowding */}
+              {/* "Find SS MART" button */}
               <a
                 href="https://g.co/kgs/v1e9RSN"
                 target="_blank"
@@ -161,7 +162,7 @@ export default function Navbar() {
               >
                 <Button
                   variant="outline"
-                  className="text-xs sm:text-sm border-lux-gold/30 hover:border-lux-gold/65 transition-shadow"
+                  className="text-xs sm:text-sm border-ssblue-secondary hover:border-ssblue-primary transition-shadow"
                   style={{
                     fontWeight: 600,
                     letterSpacing: "0.01em",
@@ -188,7 +189,7 @@ export default function Navbar() {
         {/* Mobile drawer */}
         <div
           className={clsx(
-            "fixed inset-0 z-[60] bg-white dark:bg-lux-black transition-transform duration-200 px-2 pt-4 pb-24 flex flex-col md:hidden shadow-2xl border-l border-lux-gold/20",
+            "fixed inset-0 z-[60] bg-ssblue-card dark:bg-[#152044] transition-transform duration-200 px-2 pt-4 pb-24 flex flex-col md:hidden shadow-2xl border-l border-ssblue-secondary/40",
             menuOpen
               ? "translate-x-0"
               : "translate-x-full pointer-events-none opacity-0"
@@ -197,7 +198,7 @@ export default function Navbar() {
         >
           {/* Close Button */}
           <button
-            className="absolute top-3 right-4 text-3xl font-bold text-gray-400 hover:text-red-500 focus:outline focus:ring-2 focus:ring-red-400"
+            className="absolute top-3 right-4 text-3xl font-bold text-ssblue-secondary hover:text-red-500 focus:outline focus:ring-2 focus:ring-red-400"
             aria-label="Close menu"
             onClick={() => setMenuOpen(false)}
             tabIndex={0}
@@ -208,7 +209,7 @@ export default function Navbar() {
           <div className="mb-3 flex">
             <Link
               to={ROUTES.ROOT}
-              className="text-xl font-black tracking-wide flex items-center gap-2 text-primary dark:text-lux-gold pl-1"
+              className="text-xl font-black tracking-wide flex items-center gap-2 text-ssblue-primary pl-1"
               onClick={() => setMenuOpen(false)}
             >
               {t("brand")}
@@ -223,11 +224,12 @@ export default function Navbar() {
                   key={n.to}
                   to={n.to}
                   className={clsx(
+                    "nav-link",
                     "flex items-center px-3 py-2 min-h-[44px] rounded-xl text-base font-semibold transition-colors",
-                    "hover:bg-lux-gold/25 dark:hover:bg-lux-gold/10",
-                    "focus:bg-lux-gold/35 dark:focus:bg-lux-gold/20",
-                    "active:ring-2 active:ring-lux-gold/50",
-                    "text-gray-800 dark:text-gray-100"
+                    "hover:bg-ssblue-accent/25 dark:hover:bg-ssblue-accent/10",
+                    "focus:bg-ssblue-accent/25 dark:focus:bg-ssblue-accent/20",
+                    "active:ring-2 active:ring-ssblue-accent/50",
+                    "text-ssblue-primary dark:text-ssblue-accent"
                   )}
                   onClick={() => setMenuOpen(false)}
                   tabIndex={0}
@@ -251,7 +253,7 @@ export default function Navbar() {
             >
               <Button
                 variant="outline"
-                className="text-xs w-full border-lux-gold/30 hover:border-lux-gold/65"
+                className="text-xs w-full border-ssblue-secondary hover:border-ssblue-primary"
                 style={{
                   fontWeight: 600,
                   letterSpacing: "0.01em",
@@ -266,7 +268,7 @@ export default function Navbar() {
             <LanguageSwitcher orientation="horizontal" />
           </div>
           {/* Mobile Auth + Theme toggle */}
-          <div className="sticky bottom-0 pb-1 bg-white dark:bg-lux-black border-t border-gray-200/60 dark:border-lux-gold/40">
+          <div className="sticky bottom-0 pb-1 bg-ssblue-card dark:bg-[#192049] border-t border-ssblue-secondary/30">
             <AuthButtons
               onLogin={() => {
                 setAuthModal("login");
