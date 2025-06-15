@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -6,7 +7,18 @@ import ProductGrid from "@/components/ProductGrid";
 import ProductModalManager from "@/components/ProductModalManager";
 import FloatingActions from "@/components/FloatingActions";
 
-/** --- Modular components for page structure --- */
+// Reusable debug helper
+function DebugBox({ children }: { children: React.ReactNode }) {
+  return (
+    <div
+      className="bg-yellow-100 border border-yellow-600 rounded-xl p-4 my-6 shadow-md"
+      style={{ zIndex: 1000 }}
+    >
+      {children}
+    </div>
+  );
+}
+
 function HeroSection() {
   const { t } = useTranslation();
   const heroVariants: Variants = {
@@ -60,7 +72,6 @@ function HeroSection() {
   );
 }
 
-/** --- Category button/filter grid --- */
 function CategoryFilter({ category, setCategory }: { category: string; setCategory: (c: string) => void }) {
   const { t } = useTranslation();
   const categoryList = [
@@ -116,6 +127,7 @@ type Product = {
 };
 
 const API_URL = "https://ss-mart-backend.onrender.com/api/products";
+// const API_URL = "/api/products"; // If using mock or local
 
 const Home = () => {
   const { t, i18n } = useTranslation();
@@ -123,54 +135,99 @@ const Home = () => {
   const [filtered, setFiltered] = useState<Product[]>([]);
   const [category, setCategory] = useState<string>("All");
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Load products once
+  // Debug: record API responses and errors
   useEffect(() => {
     setLoading(true);
-    setError(false);
+    setError(null);
     fetch(API_URL)
-      .then(res => res.json())
-      .then((data) => {
-        const items: Product[] = Array.isArray(data?.data) ? data.data : [];
+      .then(async res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        // Defensive: try both .data and whole array
+        const items: Product[] = Array.isArray(data?.data)
+          ? data.data
+          : Array.isArray(data)
+            ? data
+            : [];
+        console.log("Fetched Products:", items);
         setProducts(items);
+        if (items.length === 0) {
+          setError("No products found from API.");
+        }
       })
-      .catch(() => setError(true))
+      .catch((err) => {
+        console.error("Fetch Products Error:", err);
+        setError(
+          [
+            "Failed to fetch products.",
+            "Are you sure the API endpoint is correct and functioning?",
+            "Check CORS/network errors and RLS in Supabase if using direct DB.",
+            "If using Supabase, ensure a SELECT policy is enabled like: FOR SELECT USING (true);"
+          ].join(" ")
+        );
+        setProducts([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
-  // Update products view when category or language changes
   useEffect(() => {
     if (category === "All") setFiltered(products);
     else {
-      // filter with plural/singular match
       const catOptions = CATEGORY_MAP[category] || [category];
       setFiltered(products.filter((p) => catOptions.includes(p.category)));
     }
   }, [products, category, i18n.language]);
 
   return (
-    <div className="container mx-auto px-2 pt-4 min-h-svh">
+    <div className="container mx-auto px-2 pt-4 min-h-svh bg-lux-gold/10 relative">
       <HeroSection />
       <CategoryFilter category={category} setCategory={setCategory} />
 
+      {/* Loader */}
       {loading && <Loader />}
 
-      {/* Error fallback */}
-      {!loading && error && (
-        <motion.p
-          className="text-red-600 text-center mt-12 text-lg font-semibold"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          aria-live="polite"
-        >
-          {t("errorLoading")}
-        </motion.p>
+      {/* Error or API/Empty fallback */}
+      {!loading && (
+        <>
+          {error && (
+            <DebugBox>
+              <div className="text-red-700 font-bold text-lg mb-2">Error</div>
+              <div className="text-sm text-gray-800">{error}</div>
+              <div className="mt-2 text-yellow-800">
+                <strong>Tips:</strong>
+                <ul className="list-disc ml-5 text-sm">
+                  <li>
+                    If you’re using Supabase and have <span className="font-mono">Row Level Security</span> ON, make sure you have a <span className="font-mono">SELECT USING (true)</span> policy for <span className="font-mono">products</span>.
+                  </li>
+                  <li>
+                    See console logs for more details. Open browser dev tools (F12) and look for "Fetched Products" or "Fetch Products Error".
+                  </li>
+                  <li>
+                    If using a custom REST API, ensure <span className="font-mono">{API_URL}</span> is not blocked (CORS/network error).
+                  </li>
+                </ul>
+              </div>
+            </DebugBox>
+          )}
+
+          {!error && !filtered.length && (
+            <DebugBox>
+              <p className="text-center text-yellow-900 font-semibold">
+                No products found for this category.<br />
+                {products.length === 0
+                  ? "The products list is empty. See data fetch logs above."
+                  : "Try switching categories or check if the data matches the selected category name."}
+              </p>
+            </DebugBox>
+          )}
+        </>
       )}
 
       {/* Product Grid */}
-      {!loading && !error && (
+      {!loading && !error && !!filtered.length && (
         <ProductGrid products={filtered} onCardClick={setSelectedProduct} />
       )}
 

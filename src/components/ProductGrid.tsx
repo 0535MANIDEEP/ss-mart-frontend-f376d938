@@ -26,28 +26,34 @@ const gridVariants = {
 const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
   const { t } = useTranslation();
 
-  // Log to check render
-  console.log("ProductGrid rendering {0} products", products?.length);
+  // Debug: clearly log render and product count
+  console.log("[ProductGrid] Rendering, product count:", products?.length);
 
-  if (!products.length) {
+  if (!products || products.length === 0) {
     return (
       <motion.div
-        className="text-gray-500 text-center my-14 text-xl"
+        className="text-gray-700 text-center my-16 text-xl bg-yellow-50 border border-yellow-300 rounded-xl p-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         aria-live="polite"
       >
-        {t("noProducts")}
+        <div>🔎 <span className="font-semibold">{t("noProducts") || "No products found."}</span></div>
+        <div className="mt-2 text-xs text-gray-600">
+          If you expected to see products, open developer tools (F12), check <b>Network</b> and <b>Console</b>:<br />
+          <span className="bg-lux-gold/20 px-2 rounded font-mono">Fetched Products</span> <span className="font-mono">/</span> <span className="bg-lux-gold/20 px-2 rounded font-mono">Fetch Products Error</span>
+        </div>
       </motion.div>
     );
   }
 
   return (
     <motion.div
-      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 animate-fade-in"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7 animate-fade-in bg-white/95 dark:bg-lux-black min-h-[200px] rounded-2xl border border-yellow-400 p-4"
       variants={gridVariants}
       initial="hidden"
       animate="visible"
+      style={{ minHeight: "200px" }}
+      data-testid="product-grid"
     >
       <AnimatePresence>
         {products.map((product) => (
@@ -58,6 +64,9 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products, onCardClick }) => {
               visible: { opacity: 1, y: 0, transition: { type: "spring", duration: 0.55 } }
             }}
             exit={{ opacity: 0, scale: 0.92, filter: "blur(4px)", transition: { duration: 0.3 } }}
+            className="min-h-[340px] flex flex-col justify-end"
+            style={{ background: "rgba(255,236,153,0.14)" }}
+            data-testid={`product-grid-item-${product.id}`}
           >
             <ProductCard product={product} onClick={() => onCardClick(product)} />
           </motion.div>
