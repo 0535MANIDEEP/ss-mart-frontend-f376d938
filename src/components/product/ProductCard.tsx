@@ -42,7 +42,7 @@ function getProductField(
 }
 
 /**
- * ProductCard: animated, contained, small and ready for grid.
+ * ProductCard: animated, contained, premium card for grid/list.
  */
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
@@ -53,12 +53,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const name = getProductField(product.name, lang, t("noDescription") || "No desc");
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
 
-  // Add visible border and background color for debugging
-  console.log("RENDER ProductCard for:", product);
-
   return (
     <motion.div
-      className="lux-card group transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer bg-white dark:bg-lux-black relative border-4 border-pink-500 bg-yellow-100"
+      className="lux-card group transition p-4 flex flex-col max-w-xs w-full mx-auto h-full will-change-transform cursor-pointer bg-white dark:bg-lux-black relative shadow-md border border-gray-200 dark:border-lux-gold/30"
       style={{ minHeight: 340, borderRadius: 8, margin: 10, padding: 16 }}
       initial="rest"
       whileHover="hover"
@@ -80,3 +77,4 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
+
