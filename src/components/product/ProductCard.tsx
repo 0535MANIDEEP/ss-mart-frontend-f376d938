@@ -7,6 +7,9 @@ import ProductControls from "./ProductControls";
 import ProductOutOfStockLabel from "./ProductOutOfStockLabel";
 import { useTranslation } from "react-i18next";
 import { cardVariants } from "./productCardVariants";
+import WishlistButton from "@/components/WishlistButton";
+import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";
+import { useWishlistStore } from "@/store/wishlistStore";
 
 export type MultiLang = { en: string; hi?: string; te?: string };
 
@@ -50,15 +53,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const desc = getProductField(product.description, lang, t("noDescription") || "No desc");
   const isOutOfStock = product.stock <= 0;
 
-  // --- Lazy-load wishlist
+  // --- Fetch wishlist on mount for MVP (ideally, move to AppShell/Provider)
   React.useEffect(() => {
-    // Only import useSupabaseAuth and fetchWishlist from the store in parent (or index) for perf, but fine here for MVP
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { useSupabaseAuth } = require("@/hooks/useSupabaseAuth");
-    const { fetchWishlist } = require("@/store/wishlistStore").useWishlistStore.getState();
     const { user } = useSupabaseAuth();
-    fetchWishlist(user);
-    // This is not optimal for batching, TODO: move to app shell/provider
+    useWishlistStore.getState().fetchWishlist(user);
+    // No need to cleanup; store manages its own state.
     // eslint-disable-next-line
   }, []);
 
@@ -135,6 +134,5 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   );
 };
 
-import WishlistButton from "@/components/WishlistButton";
 export default ProductCard;
 
