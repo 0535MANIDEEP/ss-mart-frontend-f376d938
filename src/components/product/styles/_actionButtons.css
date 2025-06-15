@@ -1,0 +1,55 @@
+
+/* Add to Cart, Reserve, and view-product button styling */
+.view-product-btn {
+  margin-top: 0.9rem;
+  width: 100%;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.75em !important;
+  border: 1.5px solid #ececf2;
+  box-shadow: 0 1.5px 8px #ffd70022;
+  background: #faf9ef !important;
+  color: #232336 !important;
+  font-weight: bold !important;
+  font-size: 0.99rem !important;
+  padding: 0.86em 0 !important;
+  transition: all 0.13s;
+}
+.view-product-btn:hover, .view-product-btn:focus {
+  background: linear-gradient(90deg, #fff6dc 70%, #ffd70017 120%) !important;
+  color: #c18500 !important;
+  border-color: #ffd700;
+  box-shadow: 0 4px 22px #ffd70026;
+}
+@media (max-width: 520px) {
+  .view-product-btn {
+    font-size: 0.91rem !important;
+    padding: 0.8em 0 !important;
+  }
+}
+.dark .view-product-btn {
+  background: #292848 !important;
+  color: #FFD700 !important;
+  border: 1.5px solid #FFD70044 !important;
+}
+.dark .view-product-btn:hover, .dark .view-product-btn:focus {
+  background: #FFD70099 !important;
+  color: #232336 !important;
+}
+/* Out Of Stock visual */
+.out-of-stock-text {
+  text-align: center;
+  color: #c0392b;
+  font-weight: bold;
+  padding: 8px 0 7px;
+  font-size: 1rem;
+  background: #ffeaea;
+  border-radius: 0.8em;
+  border: 1.5px solid #ffe6e6;
+}
+.dark .out-of-stock-text {
+  color: #ff8877;
+  background: #2d1b1b !important;
+  border: 1.5px solid #94423c !important;
+}

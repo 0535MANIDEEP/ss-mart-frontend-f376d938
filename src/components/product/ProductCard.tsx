@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
-import "./ProductCard.css";
+import "./styles/index.css";
 import ProductOutOfStockLabel from "./ProductOutOfStockLabel";
 import WishlistButton from "@/components/WishlistButton";
 import { useSupabaseAuth } from "@/hooks/useSupabaseAuth";

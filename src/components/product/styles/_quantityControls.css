@@ -1,0 +1,67 @@
+
+/* Plus/minus and count styling */
+.product-card-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-height: 56px;
+  margin-top: 0.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.qty-atc-row {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 44px;
+  width: 100%;
+}
+
+.qty-btn {
+  color: #232336;
+  background: #fff893;
+  border: 1.5px solid #ffe26d;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.38rem;
+  font-weight: 700;
+  transition: background 0.17s, color 0.14s, box-shadow 0.13s;
+  cursor: pointer;
+  box-shadow: 0 2px 12px #ffd70026;
+  outline: none;
+}
+.dark .qty-btn {
+  background: #24233C !important;
+  color: #FFD700;
+  border: 1.5px solid #ffd70099;
+}
+.dark .qty-btn:hover, .dark .qty-btn:focus {
+  background: #FFD70099 !important;
+  color: #232336 !important;
+  border-color: #FFD700;
+  z-index: 1;
+}
+.dark .qty-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #1a1a2d;
+  color: #b2aea1;
+}
+.qty-count {
+  padding: 0 12px;
+  min-width: 25px;
+  text-align: center;
+  font-size: 1.18rem;
+  font-weight: 500;
+  color: #40505d;
+  letter-spacing: 0.01em;
+}
+.dark .qty-count {
+  color: #FFD700;
+  text-shadow: none;
+}
+

@@ -1,0 +1,26 @@
+
+/* Title, description, price block, text styling */
+.card-title {
+  color: #171742;
+  /* No text-shadow! */
+}
+.dark .card-title {
+  color: #FFD700;
+  text-shadow: none;
+}
+
+.product-card-info .product-card-desc {
+  font-size: 0.98rem;
+  color: #889;
+  margin-bottom: 3px;
+  margin-top: 0;
+  line-height: 1.3;
+  min-height: 30px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+.dark .product-card-info .product-card-desc {
+  color: #ffe9a0;
+  text-shadow: none;
+}
+
