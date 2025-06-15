@@ -148,7 +148,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         </div>
         <div className="product-card-info">
           <h3
-            className="font-bold truncate text-lg card-title focus:underline cursor-pointer"
+            className="font-bold truncate text-lg card-title focus:underline cursor-pointer 
+              text-gray-800 dark:text-[#FFD700] dark:drop-shadow-lg"
             title={name}
             tabIndex={0}
             aria-label={name}
@@ -160,17 +161,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           >
             {name || <span className="text-red-600">No name</span>}
           </h3>
-          <p className="product-card-desc" title={desc}>
+          <p className="product-card-desc dark:text-[#eedd99] dark:font-medium dark:drop-shadow text-[.98rem]">
             {desc || <span className="text-red-600">No desc</span>}
           </p>
           <div className="flex items-center justify-between mt-1 gap-2">
-            <span className="text-green-700 font-bold text-lg">₹{product.price}</span>
+            <span className="text-green-700 font-bold text-lg dark:text-lux-gold dark:drop-shadow-lg">₹{product.price}</span>
             <span
               className={`
                 text-xs px-2 py-1 rounded-full font-medium
                 ${isOutOfStock
-                  ? "bg-red-100 text-red-700 border border-red-200"
-                  : "bg-green-50 text-green-700 border border-green-200"}
+                  ? "bg-red-100 text-red-700 border border-red-200 dark:bg-[#442823] dark:text-[#ffbab6] dark:border-[#94423c]"
+                  : "bg-green-50 text-green-700 border border-green-200 dark:bg-[#213c23] dark:text-lux-gold dark:border-[#FFD70066]"}
               `}
               style={{ minWidth: 85, textAlign: "center" }}
             >
@@ -208,7 +209,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 {qty > 0 && (
                   <Button
                     size="default"
-                    className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in"
+                    className="lux-btn text-base gap-1 relative overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in
+                      dark:bg-[#FFD70022] dark:text-[#FFD700] dark:border-[#FFD70099] 
+                      dark:hover:bg-[#FFD700aa] dark:hover:text-[#232336]
+                      dark:shadow-xl"
                     aria-label={t("addToCart")}
                     onClick={handleAddToCart}
                     type="button"
@@ -221,7 +225,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 )}
               </div>
             ) : (
-              <div className="out-of-stock-text">
+              <div className="out-of-stock-text dark:text-[#ff8877] dark:bg-[#352221]/50">
                 {t("outOfStock") || "Out of Stock"}
               </div>
             )}
@@ -229,7 +233,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <Button
             variant="ghost"
             size="sm"
-            className="view-product-btn"
+            className="view-product-btn dark:bg-[#292848] dark:text-[#FFD700] dark:border-[#FFD70044] dark:hover:bg-[#FFD70055] dark:hover:text-[#232336]"
             onClick={goToProductPage}
             aria-label={t("viewDetails")}
             tabIndex={0}

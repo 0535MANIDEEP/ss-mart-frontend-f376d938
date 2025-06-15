@@ -68,7 +68,10 @@ export default function AddToCartButton({ product, onCartChange, disabled, quant
   return (
     <Button
       size="default"
-      className="lux-btn text-base gap-1 overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in dark:bg-[#FFD70022] dark:text-[#FFD700] dark:border-[#FFD70099]"
+      className="lux-btn text-base gap-1 overflow-hidden min-h-[44px] rounded-[8px] !px-6 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none animate-fade-in
+        dark:bg-[#FFD70022] dark:text-[#FFD700] dark:border-[#FFD70099]
+        dark:hover:bg-[#FFD700aa] dark:hover:text-[#232336]
+        dark:shadow-xl"
       aria-label={t("addToCart")}
       onClick={handleClick}
       type="button"

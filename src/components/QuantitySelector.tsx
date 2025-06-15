@@ -27,20 +27,38 @@ export default function QuantitySelector({
         }}
         aria-label={t("subtract")}
         disabled={quantity <= 0 || disabled}
-        className="w-9 h-9 rounded-full bg-gray-800 text-white hover:bg-gray-900 disabled:opacity-50 shadow-md dark:bg-[#FFD70022] dark:hover:bg-[#FFD70055] dark:text-[#FFD700] dark:disabled:bg-[#23233666] transition-all"
+        className="w-9 h-9 rounded-full 
+          bg-gray-800 text-white 
+          hover:bg-gray-900 
+          disabled:opacity-50 shadow-md
+          dark:bg-[#292848] 
+          dark:hover:bg-[#FFD70055] 
+          dark:text-[#FFD700] 
+          dark:disabled:bg-[#23233699] 
+          transition-all"
         tabIndex={0}
         type="button"
       >
         <Minus size={18} />
       </button>
-      <span className="font-semibold text-green-700 px-1 text-base min-w-5 text-center dark:text-[#FFD700]">{quantity}</span>
+      <span className="font-semibold px-1 text-base min-w-5 text-center text-green-700 dark:text-[#FFD700] dark:font-bold dark:drop-shadow-md">
+        {quantity}
+      </span>
       <button
         onClick={() => {
           if (quantity < stock && !disabled) onInc();
         }}
         aria-label={t("add")}
         disabled={quantity >= stock || disabled}
-        className="w-9 h-9 rounded-full bg-gray-800 text-white hover:bg-gray-900 disabled:opacity-50 shadow-md dark:bg-[#FFD70022] dark:hover:bg-[#FFD70055] dark:text-[#FFD700] dark:disabled:bg-[#23233666] transition-all"
+        className="w-9 h-9 rounded-full 
+          bg-gray-800 text-white 
+          hover:bg-gray-900 
+          disabled:opacity-50 shadow-md
+          dark:bg-[#292848] 
+          dark:hover:bg-[#FFD70055] 
+          dark:text-[#FFD700] 
+          dark:disabled:bg-[#23233699] 
+          transition-all"
         tabIndex={0}
         type="button"
       >
