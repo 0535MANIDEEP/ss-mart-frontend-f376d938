@@ -1,11 +1,12 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion, Variants } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import Loader from "@/components/Loader";
 import ProductGrid from "@/components/ProductGrid";
 import ProductModalManager from "@/components/ProductModalManager";
 import FloatingActions from "@/components/FloatingActions";
+import SearchBar from "@/components/SearchBar";
+import CategoryFilter from "@/components/CategoryFilter";
 
 // Reusable debug helper
 function DebugBox({ children }: { children: React.ReactNode }) {
@@ -132,13 +133,13 @@ const API_URL = "https://ss-mart-backend.onrender.com/api/products";
 const Home = () => {
   const { t, i18n } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
-  const [filtered, setFiltered] = useState<Product[]>([]);
   const [category, setCategory] = useState<string>("All");
+  const [search, setSearch] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
-  // Debug: record API responses and errors
+  // Fetch API data (unchanged)
   useEffect(() => {
     setLoading(true);
     setError(null);
@@ -146,12 +147,11 @@ const Home = () => {
       .then(async res => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        // Defensive: try both .data and whole array
         const items: Product[] = Array.isArray(data?.data)
           ? data.data
           : Array.isArray(data)
-            ? data
-            : [];
+          ? data
+          : [];
         console.log("Fetched Products:", items);
         setProducts(items);
         if (items.length === 0) {
@@ -173,17 +173,45 @@ const Home = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    if (category === "All") setFiltered(products);
-    else {
+  // Find matching products by search/category - done in UI for MVP
+  const filtered = useMemo(() => {
+    let filteredList = products;
+    if (category && category !== "All") {
+      // Allow mapping category synonyms
       const catOptions = CATEGORY_MAP[category] || [category];
-      setFiltered(products.filter((p) => catOptions.includes(p.category)));
+      filteredList = filteredList.filter((p) =>
+        catOptions.includes(p.category)
+      );
     }
-  }, [products, category, i18n.language]);
+    if (search.trim()) {
+      filteredList = filteredList.filter((p) => {
+        // Support searching both multi-lang or plain string name/desc
+        const getField = (f: MultiLang | string | undefined) =>
+          typeof f === "string"
+            ? f
+            : f?.[i18n.language as keyof MultiLang] || f?.en || "";
+        const name = getField(p.name).toLowerCase();
+        const desc = getField(p.description).toLowerCase();
+        const term = search.trim().toLowerCase();
+        return (
+          name.includes(term) ||
+          desc.includes(term) ||
+          (p.category?.toLowerCase() || "").includes(term)
+        );
+      });
+    }
+    return filteredList;
+  }, [products, search, category, i18n.language]);
 
   return (
     <div className="container mx-auto px-2 pt-4 min-h-svh bg-lux-gold/10 relative">
+      {/* HERO */}
       <HeroSection />
+
+      {/* MVP SearchBar */}
+      <SearchBar value={search} onChange={setSearch} />
+
+      {/* MVP Category Filter */}
       <CategoryFilter category={category} setCategory={setCategory} />
 
       {/* Loader */}
@@ -193,6 +221,7 @@ const Home = () => {
       {!loading && (
         <>
           {error && (
+            // ... keep existing code (DebugBox for error) ...
             <DebugBox>
               <div className="text-red-700 font-bold text-lg mb-2">Error</div>
               <div className="text-sm text-gray-800">{error}</div>
@@ -216,10 +245,10 @@ const Home = () => {
           {!error && !filtered.length && (
             <DebugBox>
               <p className="text-center text-yellow-900 font-semibold">
-                No products found for this category.<br />
+                No products found for your search or filters.<br />
                 {products.length === 0
                   ? "The products list is empty. See data fetch logs above."
-                  : "Try switching categories or check if the data matches the selected category name."}
+                  : "Try searching or switching categories, or broaden your search terms."}
               </p>
             </DebugBox>
           )}
