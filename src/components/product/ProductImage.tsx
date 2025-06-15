@@ -5,14 +5,17 @@ import { motion } from "framer-motion";
 import { ROUTES } from "@/routes";
 import type { Product } from "./ProductCard";
 
-type Props = {
+/** Props for ProductImage subcomponent */
+export interface ProductImageProps {
   product: Product;
   name: string;
-};
-
+}
 const fallback = "https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=400&q=70";
 
-const ProductImage = React.memo(({ product, name }: Props) => (
+/**
+ * Product image rendered with router link, animates on hover.
+ */
+const ProductImage: React.FC<ProductImageProps> = ({ product, name }) => (
   <Link
     to={ROUTES.PRODUCT(product.id.toString())}
     tabIndex={0}
@@ -34,6 +37,5 @@ const ProductImage = React.memo(({ product, name }: Props) => (
       transition={{ type: "spring", stiffness: 100 }}
     />
   </Link>
-));
-
-export default ProductImage;
+);
+export default React.memo(ProductImage);

@@ -5,14 +5,17 @@ import { ROUTES } from "@/routes";
 import type { Product } from "./ProductCard";
 import { useTranslation } from "react-i18next";
 
-// Info: name, price, desc, click on name navigates
-type Props = {
+/** Props for ProductInfo subcomponent */
+export interface ProductInfoProps {
   product: Product;
   name: string;
   desc: string;
-};
+}
 
-const ProductInfo = ({ product, name, desc }: Props) => {
+/**
+ * Product title, description, and price block.
+ */
+const ProductInfo: React.FC<ProductInfoProps> = ({ product, name, desc }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   return (

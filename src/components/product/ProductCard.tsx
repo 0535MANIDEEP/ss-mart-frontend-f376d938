@@ -1,14 +1,18 @@
 
 import React from "react";
-import { motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import ProductImage from "./ProductImage";
 import ProductInfo from "./ProductInfo";
 import ProductControls from "./ProductControls";
 import ProductOutOfStockLabel from "./ProductOutOfStockLabel";
 import ProductRatings from "./ProductRatings";
 import { useTranslation } from "react-i18next";
+import { cardVariants } from "./productCardVariants";
 
+/** For i18n multi-language fields */
 export type MultiLang = { en: string; hi?: string; te?: string };
+
+/** Primary product type for product card */
 export type Product = {
   id: number | string;
   name: MultiLang | string;
@@ -18,11 +22,15 @@ export type Product = {
   category: string;
   image_url?: string | null;
 };
-type Props = {
+
+export interface ProductCardProps {
   product: Product;
   onClick?: (prod: Product) => void;
-};
+}
 
+/**
+ * Helper to get translated product field.
+ */
 function getProductField(
   data: MultiLang | string | undefined,
   lang: string,
@@ -33,22 +41,10 @@ function getProductField(
   return data[lang as keyof MultiLang] || data.en || fallback;
 }
 
-// Fix: set type of cardVariants and use the correct transition 'type'
-const cardVariants: Variants = {
-  rest: { scale: 1, boxShadow: "0 2px 20px 0 rgba(255,215,0,0.10)" },
-  hover: {
-    scale: 1.044,
-    boxShadow: "0 8px 35px 2px #FFD7002E",
-    transition: { type: "spring" as const, stiffness: 410, damping: 30 },
-  },
-  tap: {
-    scale: 0.98,
-    boxShadow: "0 2px 18px 0 #FFD70024",
-    transition: { type: "spring" as const, stiffness: 310 },
-  },
-};
-
-const ProductCard: React.FC<Props> = ({ product, onClick }) => {
+/**
+ * ProductCard: animated, contained, small and ready for grid.
+ */
+const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const { t, i18n } = useTranslation();
   if (!product || (typeof product.id !== "number" && typeof product.id !== "string")) {
     return <div className="text-red-500 text-center p-2">{t("productNotFound")}</div>;
@@ -81,4 +77,3 @@ const ProductCard: React.FC<Props> = ({ product, onClick }) => {
 };
 
 export default ProductCard;
-

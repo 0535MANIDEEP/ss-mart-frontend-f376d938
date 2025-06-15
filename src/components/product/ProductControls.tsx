@@ -9,12 +9,16 @@ import AddToCartButton from "@/components/AddToCartButton";
 import BuyNowButton from "@/components/BuyNowButton";
 import type { Product } from "./ProductCard";
 
-type Props = {
+/** Props for ProductControls */
+export interface ProductControlsProps {
   product: Product;
   name: string;
-};
+}
 
-const ProductControls = ({ product, name }: Props) => {
+/**
+ * Cart controls: add/remove/qty and buy now.
+ */
+const ProductControls: React.FC<ProductControlsProps> = ({ product, name }) => {
   const addToCart = useCartStore(s => s.addToCart);
   const updateQty = useCartStore(s => s.updateQuantity);
   const removeFromCart = useCartStore(s => s.removeFromCart);
