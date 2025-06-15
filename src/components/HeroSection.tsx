@@ -1,12 +1,13 @@
-
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
+// Remove the 'type' from transition, just keep duration.
+// This prevents TS errors on framer-motion strict typings.
 const heroVariants = {
   hidden: { opacity: 0, y: 32 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", duration: 0.7 } },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7 } },
 };
 const subVariants = {
   hidden: { opacity: 0, y: 8 },
