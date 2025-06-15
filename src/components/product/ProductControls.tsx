@@ -6,7 +6,6 @@ import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import QuantitySelector from "@/components/QuantitySelector";
 import AddToCartButton from "@/components/AddToCartButton";
-import BuyNowButton from "@/components/BuyNowButton";
 import type { Product } from "./ProductCard";
 
 /** Props for ProductControls */
@@ -16,7 +15,7 @@ export interface ProductControlsProps {
 }
 
 /**
- * Cart controls: add/remove/qty and buy now.
+ * Cart controls: add/remove/qty (no Buy Now button in product card/grid view).
  */
 const ProductControls: React.FC<ProductControlsProps> = ({ product, name }) => {
   const addToCart = useCartStore(s => s.addToCart);
@@ -79,9 +78,9 @@ const ProductControls: React.FC<ProductControlsProps> = ({ product, name }) => {
       ) : (
         <AddToCartButton product={{...product, id: product.id.toString(), name, image: product.image_url}} />
       )}
-      <BuyNowButton product={{...product, id: product.id.toString(), name, image: product.image_url}} />
     </div>
   );
 };
 
 export default React.memo(ProductControls);
+
