@@ -1,15 +1,8 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import Home from "@/pages/Home";
-import ProductDetails from "@/pages/ProductDetails";
-import Checkout from "@/pages/Checkout";
-import OrderSuccess from "@/pages/OrderSuccess";
-import AdminDashboard from "@/pages/AdminDashboard";
-import AddOrEditProduct from "@/pages/AddOrEditProduct";
-import Login from "@/auth/Login";
 import { AuthProvider } from "@/hooks/useSupabaseAuth";
-import Auth from "@/pages/Auth";
 import "./i18n";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
@@ -20,9 +13,9 @@ import React, { Suspense } from "react";
 import RouterManager from "@/components/RouterManager";
 import NotFound from "@/pages/NotFound";
 import { ROUTES } from "@/routes";
-// import Cart from "@/pages/Cart"; // Removed
-// import VisitList from "@/pages/VisitList"; // Don't import directly if you want it lazy!
-// Removed: const LazyCart = React.lazy(() => import("@/pages/Cart"));
+import PageWrapper from "@/layout/PageWrapper";
+
+// Lazy loaded components
 const LazyHome = React.lazy(() => import("@/pages/Home"));
 const LazyProductDetails = React.lazy(() => import("@/pages/ProductDetails"));
 const LazyCheckout = React.lazy(() => import("@/pages/Checkout"));
@@ -32,7 +25,6 @@ const LazyAddOrEditProduct = React.lazy(() => import("@/pages/AddOrEditProduct")
 const LazyLogin = React.lazy(() => import("@/auth/Login"));
 const LazyAuth = React.lazy(() => import("@/pages/Auth"));
 const LazyVisitList = React.lazy(() => import("@/pages/VisitList"));
-import PageWrapper from "@/layout/PageWrapper";
 
 const App = () => (
   <PageWrapper>
