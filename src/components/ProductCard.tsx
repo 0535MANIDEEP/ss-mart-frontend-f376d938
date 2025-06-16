@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
@@ -52,7 +53,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
   return (
     <motion.div
-      className="product-card-root group hover:scale-[1.025] hover:shadow-ssblue focus-within:scale-[1.025] transition-transform outline-none border border-ssblue-secondary bg-ssblue-card"
+      className="product-card-root group hover:scale-[1.025] hover:shadow-ssblue focus-within:scale-[1.025] transition-transform outline-none border border-ssblue-secondary bg-ssblue-card dark:bg-ssblue-primary dark:border-ssblue-accent"
       style={{ minHeight: 420 }}
       initial="rest"
       whileHover="hover"
@@ -83,20 +84,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       </div>
       <div className="product-card-info">
         <h3
-          className="font-bold truncate text-lg card-title cursor-pointer text-ssblue-primary"
+          className="font-bold truncate text-lg card-title cursor-pointer text-ssblue-primary dark:text-ssblue-onblue"
           title={name}
           tabIndex={0}
           aria-label={name}
         >
           {name || <span className="text-red-600">No name</span>}
         </h3>
-        <p className="product-card-desc text-ssblue-primary/90 font-medium">{desc || <span className="text-red-600">No desc</span>}</p>
+        <p className="product-card-desc text-ssblue-primary/90 dark:text-ssblue-onblue/80 font-medium">{desc || <span className="text-red-600">No desc</span>}</p>
         <div className="flex items-center justify-between mt-1 gap-2">
-          <span className="text-ssblue-primary font-bold text-lg">₹{product.price}</span>
+          <span className="text-ssblue-primary dark:text-ssblue-accent font-bold text-lg">₹{product.price}</span>
           <span
             className={`text-xs px-2 py-1 rounded-full font-medium ${isOutOfStock
-                ? "bg-red-100 text-red-700 border border-red-200"
-                : "bg-ssblue-accent/20 text-ssblue-primary border border-ssblue-accent/40"
+                ? "bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600/40"
+                : "bg-ssblue-accent/20 text-ssblue-primary border border-ssblue-accent/40 dark:bg-ssblue-secondary/30 dark:text-ssblue-accent dark:border-ssblue-accent/40"
               }`}
             style={{ minWidth: 85, textAlign: "center" }}
           >

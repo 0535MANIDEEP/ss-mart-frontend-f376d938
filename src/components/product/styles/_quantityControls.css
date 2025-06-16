@@ -18,9 +18,9 @@
 }
 
 .qty-btn {
-  color: #232336;
-  background: #fff893;
-  border: 1.5px solid #ffe26d;
+  color: #1E3A8A;
+  background: #EFF6FF;
+  border: 1.5px solid #3B82F6;
   min-width: 38px;
   min-height: 38px;
   border-radius: 50%;
@@ -31,25 +31,25 @@
   font-weight: 700;
   transition: background 0.17s, color 0.14s, box-shadow 0.13s;
   cursor: pointer;
-  box-shadow: 0 2px 12px #ffd70026;
+  box-shadow: 0 2px 12px #60A5FA26;
   outline: none;
 }
 .dark .qty-btn {
-  background: #24233C !important;
-  color: #FFD700;
-  border: 1.5px solid #ffd70099;
+  background: #3B82F6 !important;
+  color: #F9FAFB;
+  border: 1.5px solid #60A5FA;
 }
 .dark .qty-btn:hover, .dark .qty-btn:focus {
-  background: #FFD70099 !important;
-  color: #232336 !important;
-  border-color: #FFD700;
+  background: #60A5FA !important;
+  color: #1E3A8A !important;
+  border-color: #60A5FA;
   z-index: 1;
 }
 .dark .qty-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  background: #1a1a2d;
-  color: #b2aea1;
+  background: #1E3A8A;
+  color: #9CA3AF;
 }
 .qty-count {
   padding: 0 12px;
@@ -57,11 +57,10 @@
   text-align: center;
   font-size: 1.18rem;
   font-weight: 500;
-  color: #40505d;
+  color: #1E3A8A;
   letter-spacing: 0.01em;
 }
 .dark .qty-count {
-  color: #FFD700;
+  color: #F9FAFB;
   text-shadow: none;
 }
-

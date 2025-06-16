@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -118,7 +119,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   return (
     <>
       <motion.div
-        className="product-card-root group hover:scale-[1.025] focus-within:scale-[1.025] transition-transform outline-none bg-white dark:bg-[#232336] border border-yellow-100 dark:border-[#FFD70033] rounded-xl"
+        className="product-card-root group hover:scale-[1.025] focus-within:scale-[1.025] transition-transform outline-none bg-ssblue-card dark:bg-ssblue-primary border border-ssblue-secondary dark:border-ssblue-accent rounded-xl"
         style={{ minHeight: 420, boxShadow: "none" }}
         initial="rest"
         whileHover="hover"
@@ -141,7 +142,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <WishlistButton productId={typeof product.id === "string" ? parseInt(product.id) : product.id} />
         </div>
         <div
-          className="product-card-image group-hover:scale-[1.01] group-hover:border-yellow-400 transition-all"
+          className="product-card-image group-hover:scale-[1.01] group-hover:border-ssblue-accent transition-all"
           tabIndex={0}
           aria-label={name}
           role="button"
@@ -164,7 +165,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         </div>
         <div className="product-card-info">
           <h3
-            className="font-bold truncate text-lg card-title focus:underline cursor-pointer text-gray-800 dark:text-[#FFD700]"
+            className="font-bold truncate text-lg card-title focus:underline cursor-pointer text-ssblue-primary dark:text-ssblue-onblue"
             title={name}
             tabIndex={0}
             aria-label={name}
@@ -179,17 +180,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           >
             {name || <span className="text-red-600">{t("noDescription")}</span>}
           </h3>
-          <p className="product-card-desc dark:text-[#eedd99] dark:font-medium text-[.98rem]">
+          <p className="product-card-desc text-ssblue-primary/70 dark:text-ssblue-onblue/80 font-medium text-[.98rem]">
             {desc || <span className="text-red-600">{t("noDescription")}</span>}
           </p>
           <div className="flex items-center justify-between mt-1 gap-2">
-            <span className="text-green-700 font-bold text-lg dark:text-lux-gold">{`₹${product.price}`}</span>
+            <span className="text-ssblue-primary font-bold text-lg dark:text-ssblue-accent">{`₹${product.price}`}</span>
             <span
               className={`
                 text-xs px-2 py-1 rounded-full font-medium
                 ${isOutOfStock
-                  ? "bg-red-100 text-red-700 border border-red-200 dark:bg-[#442823] dark:text-[#ffbab6] dark:border-[#94423c]"
-                  : "bg-green-50 text-green-700 border border-green-200 dark:bg-[#213c23] dark:text-lux-gold dark:border-[#FFD70066]"}
+                  ? "bg-red-100 text-red-700 border border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-600/40"
+                  : "bg-green-50 text-green-700 border border-green-200 dark:bg-ssblue-secondary/30 dark:text-ssblue-accent dark:border-ssblue-accent/40"}
               `}
               style={{ minWidth: 85, textAlign: "center" }}
             >
@@ -207,9 +208,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                   disabled={qty === 0}
                   tabIndex={0}
                   style={{
-                    background: "#fff",
-                    color: "#232336",
-                    border: "1.5px solid #feea9d",
+                    background: "#EFF6FF",
+                    color: "#1E3A8A",
+                    border: "1.5px solid #3B82F6",
                     boxShadow: "none"
                   }}
                   onClick={() => setQty(q => (q > 0 ? q - 1 : 0))}
@@ -224,9 +225,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                   disabled={qty >= product.stock}
                   tabIndex={0}
                   style={{
-                    background: "#232336",
-                    color: "#FFD700",
-                    border: "1.5px solid #feea9d",
+                    background: "#1E3A8A",
+                    color: "#F9FAFB",
+                    border: "1.5px solid #3B82F6",
                     boxShadow: "none"
                   }}
                   onClick={() => setQty(q => Math.min(q + 1, product.stock))}
@@ -237,7 +238,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 {qty > 0 && (
                   <Button
                     size="default"
-                    className="bg-green-600 text-white rounded-md px-3 py-1 mt-2 hover:bg-green-700 focus-visible:ring-2 focus-visible:ring-yellow-400 focus:outline-none"
+                    className="bg-ssblue-primary text-ssblue-onblue rounded-md px-3 py-1 mt-2 hover:bg-ssblue-secondary focus-visible:ring-2 focus-visible:ring-ssblue-accent focus:outline-none dark:bg-ssblue-secondary dark:hover:bg-ssblue-accent dark:text-ssblue-onblue"
                     aria-label={t("reserveInStore") || "Reserve in Store"}
                     onClick={e => {
                       e.stopPropagation();
@@ -274,7 +275,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 )}
               </div>
             ) : (
-              <div className="out-of-stock-text dark:text-[#ff8877] dark:bg-[#352221]/50">
+              <div className="out-of-stock-text text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded text-center">
                 {t("outOfStock")}
               </div>
             )}
@@ -282,7 +283,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
           <Button
             variant="ghost"
             size="sm"
-            className="view-product-btn dark:bg-[#292848] dark:text-[#FFD700] dark:border-[#FFD70044] dark:hover:bg-[#FFD70055] dark:hover:text-[#232336]"
+            className="view-product-btn bg-ssblue-card dark:bg-ssblue-secondary text-ssblue-primary dark:text-ssblue-onblue border border-ssblue-secondary dark:border-ssblue-accent hover:bg-ssblue-secondary dark:hover:bg-ssblue-accent dark:hover:text-ssblue-primary"
             onClick={goToProductPage}
             aria-label={t("viewDetails")}
             tabIndex={0}
