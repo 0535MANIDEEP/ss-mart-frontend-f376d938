@@ -74,34 +74,34 @@ const VisitList = () => {
   };
 
   return (
-    <div className="container max-w-5xl mx-auto px-4 py-8">
+    <div className="container max-w-5xl mx-auto px-2 sm:px-4 py-8">
       {/* Header Section */}
-      <div className="bg-gradient-to-r from-ssblue-primary to-ssblue-secondary rounded-2xl p-8 mb-8 text-center shadow-lg">
+      <div className="bg-gradient-to-r from-ssblue-primary to-ssblue-secondary rounded-2xl p-4 sm:p-8 mb-8 text-center shadow-lg">
         <div className="flex items-center justify-center gap-3 mb-4">
-          <Store size={32} className="text-ssblue-onblue" />
-          <h1 className="text-3xl font-bold text-ssblue-onblue">
+          <Store size={24} sm:size={32} className="text-ssblue-onblue" />
+          <h1 className="text-xl sm:text-3xl font-bold text-ssblue-onblue">
             {t("visitListTitle") || "Your In-Store Reservation Summary"}
           </h1>
         </div>
-        <p className="text-ssblue-onblue/90 text-lg">
+        <p className="text-ssblue-onblue/90 text-sm sm:text-lg">
           {t("visitListSubtitle") || "Please show this summary at SS MART, Shankarpally counter to complete your purchase."}
         </p>
       </div>
 
       {/* Items Section */}
       <div className="bg-white dark:bg-ssblue-primary rounded-2xl shadow-lg border border-ssblue-secondary overflow-hidden mb-8">
-        <div className="bg-ssblue-card dark:bg-ssblue-secondary px-6 py-4 border-b border-ssblue-secondary">
-          <h2 className="text-xl font-semibold text-ssblue-primary dark:text-ssblue-onblue">
+        <div className="bg-ssblue-card dark:bg-ssblue-secondary px-3 sm:px-6 py-4 border-b border-ssblue-secondary">
+          <h2 className="text-lg sm:text-xl font-semibold text-ssblue-primary dark:text-ssblue-onblue">
             Reserved Items ({items.length})
           </h2>
         </div>
         
         <div className="divide-y divide-ssblue-border dark:divide-ssblue-secondary/30">
           {items.map(item => (
-            <div key={item._id} className="p-6 hover:bg-ssblue-card/50 dark:hover:bg-ssblue-secondary/10 transition-colors">
-              <div className="flex items-center gap-6">
+            <div key={item._id} className="p-3 sm:p-6 hover:bg-ssblue-card/50 dark:hover:bg-ssblue-secondary/10 transition-colors">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
                 {/* Product Image */}
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 self-center sm:self-auto">
                   <img
                     src={item.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=80&q=80"}
                     alt={item.name}
@@ -111,20 +111,21 @@ const VisitList = () => {
                 </div>
                 
                 {/* Product Info */}
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg font-semibold text-ssblue-primary dark:text-ssblue-onblue mb-2 truncate">
+                <div className="flex-1 min-w-0 text-center sm:text-left">
+                  <h3 className="text-base sm:text-lg font-semibold text-ssblue-primary dark:text-ssblue-onblue mb-2 break-words">
                     {item.name}
                   </h3>
-                  <div className="flex items-center gap-4 text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70">
                     <span>Price: ₹{item.price}</span>
                     <span>Stock: {item.stock}</span>
                   </div>
                 </div>
                 
-                {/* Quantity Controls */}
-                <div className="flex items-center gap-4">
-                  <div className="text-center">
-                    <div className="text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-2">Quantity</div>
+                {/* Controls and Total - Mobile Layout */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 mt-2 sm:mt-0">
+                  {/* Quantity Controls */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="text-xs sm:text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70">Quantity</div>
                     <QuantitySelector
                       quantity={item.quantity}
                       stock={item.stock}
@@ -135,9 +136,9 @@ const VisitList = () => {
                   </div>
                   
                   {/* Item Total */}
-                  <div className="text-center min-w-[100px]">
-                    <div className="text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-2">Total</div>
-                    <div className="text-xl font-bold text-ssblue-primary dark:text-ssblue-accent">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="text-xs sm:text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70">Total</div>
+                    <div className="text-lg sm:text-xl font-bold text-ssblue-primary dark:text-ssblue-accent">
                       ₹{item.price * item.quantity}
                     </div>
                   </div>
@@ -147,10 +148,10 @@ const VisitList = () => {
                     variant="ghost"
                     size="icon"
                     onClick={() => remove(item._id)}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 mt-2 sm:mt-0"
                     aria-label={t("remove")}
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={16} sm:size={18} />
                   </Button>
                 </div>
               </div>
@@ -160,29 +161,29 @@ const VisitList = () => {
       </div>
 
       {/* Summary and Actions */}
-      <div className="bg-gradient-to-r from-ssblue-card to-white dark:from-ssblue-primary dark:to-ssblue-secondary rounded-2xl p-8 shadow-lg border border-ssblue-secondary">
+      <div className="bg-gradient-to-r from-ssblue-card to-white dark:from-ssblue-primary dark:to-ssblue-secondary rounded-2xl p-4 sm:p-8 shadow-lg border border-ssblue-secondary">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
           {/* Total */}
           <div className="text-center lg:text-left">
-            <div className="text-lg text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-2">
+            <div className="text-sm sm:text-lg text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-2">
               {t("estimatedTotal") || "Estimated Total"}
             </div>
-            <div className="text-4xl font-bold text-ssblue-primary dark:text-ssblue-accent">
+            <div className="text-2xl sm:text-4xl font-bold text-ssblue-primary dark:text-ssblue-accent">
               ₹{total}
             </div>
-            <div className="text-sm text-ssblue-primary/60 dark:text-ssblue-onblue/60 mt-2">
+            <div className="text-xs sm:text-sm text-ssblue-primary/60 dark:text-ssblue-onblue/60 mt-2">
               Final price may vary at store
             </div>
           </div>
           
           {/* Action Buttons */}
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-3 w-full lg:w-auto">
             <Button
               variant="outline"
               onClick={clear}
-              className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+              className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20 text-xs sm:text-sm"
             >
-              <Trash2 size={16} className="mr-2" />
+              <Trash2 size={14} sm:size={16} className="mr-2" />
               {t("clearVisitList") || "Clear Visit List"}
             </Button>
             
@@ -191,9 +192,9 @@ const VisitList = () => {
             <Button
               onClick={handleDownloadJSON}
               variant="outline"
-              className="border-ssblue-secondary text-ssblue-primary hover:bg-ssblue-card dark:border-ssblue-accent dark:text-ssblue-accent dark:hover:bg-ssblue-accent/10"
+              className="border-ssblue-secondary text-ssblue-primary hover:bg-ssblue-card dark:border-ssblue-accent dark:text-ssblue-accent dark:hover:bg-ssblue-accent/10 text-xs sm:text-sm"
             >
-              <Download size={16} className="mr-2" />
+              <Download size={14} sm:size={16} className="mr-2" />
               {t("downloadVisitListJSON") || "Download JSON"}
             </Button>
           </div>

@@ -188,9 +188,9 @@ const ProductDetails = () => {
                     size="icon"
                     onClick={handleDec}
                     disabled={qty <= 1 && !cartItem}
-                    className="h-10 w-10 rounded-full border-ssblue-secondary text-ssblue-primary hover:bg-ssblue-accent/20 dark:border-ssblue-accent dark:text-ssblue-accent"
+                    className="h-10 w-10 rounded-lg border-ssblue-secondary text-ssblue-primary hover:bg-ssblue-accent/20 dark:border-ssblue-accent dark:text-ssblue-accent flex items-center justify-center"
                   >
-                    <Minus size={16} />
+                    <Minus size={16} className="flex-shrink-0" />
                   </Button>
                   <span className="text-xl font-medium min-w-[3rem] text-center text-ssblue-primary dark:text-ssblue-onblue">
                     {qty}
@@ -200,9 +200,9 @@ const ProductDetails = () => {
                     size="icon"
                     onClick={handleInc}
                     disabled={qty >= product.stock}
-                    className="h-10 w-10 rounded-full border-ssblue-secondary text-ssblue-primary hover:bg-ssblue-accent/20 dark:border-ssblue-accent dark:text-ssblue-accent"
+                    className="h-10 w-10 rounded-lg border-ssblue-secondary text-ssblue-primary hover:bg-ssblue-accent/20 dark:border-ssblue-accent dark:text-ssblue-accent flex items-center justify-center"
                   >
-                    <Plus size={16} />
+                    <Plus size={16} className="flex-shrink-0" />
                   </Button>
                 </div>
               </div>

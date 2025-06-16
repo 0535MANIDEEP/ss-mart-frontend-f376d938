@@ -74,7 +74,7 @@ export default function Navbar() {
   const navLinks: NavItem[] = [
     {
       icon: <Home className="mr-2" />,
-      label: t("home"),
+      label: "Home",
       to: ROUTES.HOME,
       show: true
     },
@@ -236,8 +236,8 @@ export default function Navbar() {
                   className={clsx(
                     "nav-link",
                     "flex items-center px-3 py-2 min-h-[44px] rounded-xl text-base font-semibold transition-colors",
-                    "hover:bg-ssblue-accent/25 dark:hover:bg-ssblue-accent/10",
-                    "focus:bg-ssblue-accent/25 dark:focus:bg-ssblue-accent/20",
+                    "hover:bg-ssblue-primary/20 dark:hover:bg-ssblue-accent/10",
+                    "focus:bg-ssblue-primary/25 dark:focus:bg-ssblue-accent/20",
                     "active:ring-2 active:ring-ssblue-accent/50",
                     "text-ssblue-primary dark:text-ssblue-accent"
                   )}
