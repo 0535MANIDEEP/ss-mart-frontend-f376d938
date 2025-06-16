@@ -52,7 +52,7 @@ export default function Navbar() {
       document.body.style.overflow = "";
     }
     return () => { document.body.style.overflow = ""; };
-  }, [menuOpen]);
+  }, []);
 
   const handleLogout = async () => {
     await signOut();
@@ -176,11 +176,10 @@ export default function Navbar() {
               </a>
             </div>
             
-            {/* Right section - Theme toggle more prominent */}
-            <div className="flex gap-2 sm:gap-3 items-center ml-2 sm:ml-4 pr-1 sm:pr-2">
-              <div className="hidden md:block">
-                <ThemeToggle />
-              </div>
+            {/* Right section - Theme toggle, Language switcher, Auth */}
+            <div className="flex gap-1 sm:gap-2 items-center ml-2 sm:ml-4 pr-1 sm:pr-2">
+              {/* Theme toggle - now always visible */}
+              <ThemeToggle />
               <div className="hidden md:block">
                 <LanguageSwitcher />
               </div>
@@ -215,8 +214,8 @@ export default function Navbar() {
             ×
           </button>
           
-          {/* Mobile Brand & Theme Toggle */}
-          <div className="mb-3 flex items-center justify-between">
+          {/* Mobile Brand */}
+          <div className="mb-3 flex items-center justify-start">
             <Link
               to={ROUTES.ROOT}
               className="text-xl font-black tracking-wide flex items-center gap-2 text-ssblue-primary pl-1"
@@ -224,7 +223,6 @@ export default function Navbar() {
             >
               {t("brand")}
             </Link>
-            <ThemeToggle />
           </div>
           
           {/* Mobile nav links */}
