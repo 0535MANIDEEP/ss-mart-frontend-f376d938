@@ -3,9 +3,10 @@ import { useCartStore } from "@/store/cartStore";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import QuantitySelector from "@/components/QuantitySelector";
-import { Minus } from "lucide-react";
+import { Minus, ShoppingBag, Download, Trash2, Store } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import DownloadVisitSummary from "@/components/DownloadVisitSummary";
+import { Button } from "@/components/ui/button";
 
 const VisitList = () => {
   const items = useCartStore(state => state.items);
@@ -22,9 +23,23 @@ const VisitList = () => {
 
   if (!Array.isArray(items) || !items.length) {
     return (
-      <div className="text-center py-16 px-2">
-        <h2 className="text-2xl mb-2">{t("visitListEmpty") || "Your In-Store Reservation Summary is Empty"}</h2>
-        <Link to="/" className="text-green-600 underline">{t("browseReserveNow") || "Browse & Reserve Now"}</Link>
+      <div className="container max-w-4xl mx-auto px-4 py-16">
+        <div className="text-center bg-ssblue-card dark:bg-ssblue-primary rounded-2xl p-12 shadow-lg border border-ssblue-secondary">
+          <div className="mb-6">
+            <ShoppingBag size={64} className="mx-auto text-ssblue-secondary dark:text-ssblue-accent" />
+          </div>
+          <h2 className="text-3xl font-bold mb-4 text-ssblue-primary dark:text-ssblue-onblue">
+            {t("visitListEmpty") || "Your In-Store Reservation Summary is Empty"}
+          </h2>
+          <p className="text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-8 text-lg">
+            Start adding items to create your visit list
+          </p>
+          <Link to="/">
+            <Button className="bg-ssblue-primary hover:bg-ssblue-secondary text-ssblue-onblue px-8 py-3 text-lg font-semibold">
+              {t("browseReserveNow") || "Browse & Reserve Now"}
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -59,36 +74,57 @@ const VisitList = () => {
   };
 
   return (
-    <div className="container max-w-3xl w-full mx-auto mt-6 animate-fade-in bg-white dark:bg-[#222230] p-2 sm:p-4 rounded-xl shadow-lg">
-      <h2 className="text-2xl font-bold mb-1 text-gray-900 dark:text-lux-gold text-center">{t("visitListTitle") || "Your In-Store Reservation Summary"}</h2>
-      <p className="text-xs sm:text-sm text-gray-500 mt-1 text-center">
-        {t("visitListSubtitle") || "Please show this summary at SS MART, Shankarpally counter to complete your purchase."}
-      </p>
-      <div className="overflow-x-auto mt-3 rounded-lg border border-yellow-100 dark:border-[#FFD70022]">
-        <table className="w-full text-left min-w-[320px]">
-          <thead>
-            <tr className="border-b border-gray-300 dark:border-[#FFD70033] text-xs sm:text-base">
-              <th className="py-2">{t("product") || "Product"}</th>
-              <th className="py-2">{t("qty") || "Qty"}</th>
-              <th className="py-2">{t("price") || "Price"}</th>
-              <th className="w-8"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map(item => (
-              <tr key={item._id} className="border-b border-gray-100 dark:border-[#FFD70022] align-top">
-                <td className="py-2 flex items-center gap-2 min-w-[88px]">
+    <div className="container max-w-5xl mx-auto px-4 py-8">
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-ssblue-primary to-ssblue-secondary rounded-2xl p-8 mb-8 text-center shadow-lg">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <Store size={32} className="text-ssblue-onblue" />
+          <h1 className="text-3xl font-bold text-ssblue-onblue">
+            {t("visitListTitle") || "Your In-Store Reservation Summary"}
+          </h1>
+        </div>
+        <p className="text-ssblue-onblue/90 text-lg">
+          {t("visitListSubtitle") || "Please show this summary at SS MART, Shankarpally counter to complete your purchase."}
+        </p>
+      </div>
+
+      {/* Items Section */}
+      <div className="bg-white dark:bg-ssblue-primary rounded-2xl shadow-lg border border-ssblue-secondary overflow-hidden mb-8">
+        <div className="bg-ssblue-card dark:bg-ssblue-secondary px-6 py-4 border-b border-ssblue-secondary">
+          <h2 className="text-xl font-semibold text-ssblue-primary dark:text-ssblue-onblue">
+            Reserved Items ({items.length})
+          </h2>
+        </div>
+        
+        <div className="divide-y divide-ssblue-border dark:divide-ssblue-secondary/30">
+          {items.map(item => (
+            <div key={item._id} className="p-6 hover:bg-ssblue-card/50 dark:hover:bg-ssblue-secondary/10 transition-colors">
+              <div className="flex items-center gap-6">
+                {/* Product Image */}
+                <div className="flex-shrink-0">
                   <img
-                    src={item.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80"}
+                    src={item.image || "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=80&q=80"}
                     alt={item.name}
-                    className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded-md bg-gray-100 dark:bg-[#292848]"
-                    style={{ borderRadius: 8 }}
-                    onError={e => (e.currentTarget.src = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=40&q=80")}
+                    className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-xl bg-ssblue-card dark:bg-ssblue-secondary border border-ssblue-secondary shadow-sm"
+                    onError={e => (e.currentTarget.src = "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=80&q=80")}
                   />
-                  <span className="break-all dark:text-lux-gold text-xs sm:text-base">{item.name}</span>
-                </td>
-                <td>
-                  <div className="flex gap-2 items-center">
+                </div>
+                
+                {/* Product Info */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-lg font-semibold text-ssblue-primary dark:text-ssblue-onblue mb-2 truncate">
+                    {item.name}
+                  </h3>
+                  <div className="flex items-center gap-4 text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70">
+                    <span>Price: ₹{item.price}</span>
+                    <span>Stock: {item.stock}</span>
+                  </div>
+                </div>
+                
+                {/* Quantity Controls */}
+                <div className="flex items-center gap-4">
+                  <div className="text-center">
+                    <div className="text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-2">Quantity</div>
                     <QuantitySelector
                       quantity={item.quantity}
                       stock={item.stock}
@@ -97,44 +133,70 @@ const VisitList = () => {
                       disabled={item.stock === 0}
                     />
                   </div>
-                </td>
-                <td className="text-xs sm:text-base">₹{item.price * item.quantity}</td>
-                <td>
-                  <button
+                  
+                  {/* Item Total */}
+                  <div className="text-center min-w-[100px]">
+                    <div className="text-sm text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-2">Total</div>
+                    <div className="text-xl font-bold text-ssblue-primary dark:text-ssblue-accent">
+                      ₹{item.price * item.quantity}
+                    </div>
+                  </div>
+                  
+                  {/* Remove Button */}
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => remove(item._id)}
-                    className="text-red-600 hover:underline dark:text-red-400"
-                    style={{ minHeight: 44 }}
-                    tabIndex={0}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
                     aria-label={t("remove")}
-                  >{t("remove") || "Remove"}</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  >
+                    <Trash2 size={18} />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="mt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <strong className="text-lg sm:text-xl dark:text-lux-gold">{t("estimatedTotal") || "Estimated Total"}: ₹{total}</strong>
-        <div className="flex gap-2 flex-wrap">
-          <button
-            onClick={clear}
-            className="bg-gray-100 text-gray-600 px-3 py-1 rounded hover:bg-red-100 mr-1 whitespace-nowrap dark:bg-[#FFD70021] dark:text-lux-gold dark:hover:bg-[#FFD70066] text-xs sm:text-base"
-            style={{ minHeight: 36, borderRadius: 8 }}
-            tabIndex={0}
-          >
-            {t("clearVisitList") || "Clear Visit List"}
-          </button>
-          <DownloadVisitSummary items={items} total={total} />
-          <button
-            onClick={handleDownloadJSON}
-            className="bg-[#FFD70033] text-[#232336] border border-[#FFD70088] font-semibold px-2 py-2 rounded flex items-center gap-2 hover:bg-[#FFD70055] dark:bg-[#FFD70033] dark:text-[#FFD700] dark:border-[#FFD700aa] text-xs sm:text-base"
-            style={{ borderRadius: 8 }}
-            type="button"
-            tabIndex={0}
-            aria-label="Download Visit List JSON"
-          >
-            🗄️ {t("downloadVisitListJSON") || "Download Visit List JSON"}
-          </button>
+
+      {/* Summary and Actions */}
+      <div className="bg-gradient-to-r from-ssblue-card to-white dark:from-ssblue-primary dark:to-ssblue-secondary rounded-2xl p-8 shadow-lg border border-ssblue-secondary">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+          {/* Total */}
+          <div className="text-center lg:text-left">
+            <div className="text-lg text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-2">
+              {t("estimatedTotal") || "Estimated Total"}
+            </div>
+            <div className="text-4xl font-bold text-ssblue-primary dark:text-ssblue-accent">
+              ₹{total}
+            </div>
+            <div className="text-sm text-ssblue-primary/60 dark:text-ssblue-onblue/60 mt-2">
+              Final price may vary at store
+            </div>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex flex-wrap gap-3">
+            <Button
+              variant="outline"
+              onClick={clear}
+              className="border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400 dark:border-red-600 dark:text-red-400 dark:hover:bg-red-900/20"
+            >
+              <Trash2 size={16} className="mr-2" />
+              {t("clearVisitList") || "Clear Visit List"}
+            </Button>
+            
+            <DownloadVisitSummary items={items} total={total} />
+            
+            <Button
+              onClick={handleDownloadJSON}
+              variant="outline"
+              className="border-ssblue-secondary text-ssblue-primary hover:bg-ssblue-card dark:border-ssblue-accent dark:text-ssblue-accent dark:hover:bg-ssblue-accent/10"
+            >
+              <Download size={16} className="mr-2" />
+              {t("downloadVisitListJSON") || "Download JSON"}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -142,4 +204,3 @@ const VisitList = () => {
 };
 
 export default VisitList;
-

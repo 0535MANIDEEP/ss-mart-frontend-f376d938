@@ -20,13 +20,13 @@ const QuantitySelector: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center border rounded-[8px] px-2 py-1 min-h-[44px] gap-1 select-none bg-white/90 dark:bg-[#232336] dark:border-[#FFD70050]">
+    <div className="flex items-center border rounded-lg px-2 py-1 min-h-[44px] gap-1 select-none bg-white/90 dark:bg-ssblue-primary border-ssblue-secondary dark:border-ssblue-accent/50 shadow-sm">
       {quantity > 0 && (
         <button
           onClick={() => { if (quantity > 0 && !disabled) onDec(); }}
           aria-label={t("subtract")}
           disabled={quantity <= 0 || disabled}
-          className="w-9 h-9 rounded-full bg-gray-800 text-white hover:bg-gray-900 disabled:opacity-50 shadow-md dark:bg-[#292848] dark:hover:bg-[#FFD70055] dark:text-[#FFD700] dark:disabled:bg-[#23233699] transition-all"
+          className="w-9 h-9 rounded-full bg-ssblue-primary text-ssblue-onblue hover:bg-ssblue-secondary disabled:opacity-50 shadow-sm dark:bg-ssblue-secondary dark:hover:bg-ssblue-accent dark:disabled:bg-ssblue-primary/50 transition-all"
           tabIndex={0}
           type="button"
         >
@@ -34,7 +34,7 @@ const QuantitySelector: React.FC<Props> = ({
         </button>
       )}
       {quantity > 0 && (
-        <span className="font-semibold px-1 text-base min-w-5 text-center text-green-700 dark:text-[#FFD700] dark:font-bold dark:drop-shadow-md">
+        <span className="font-semibold px-1 text-base min-w-5 text-center text-ssblue-primary dark:text-ssblue-accent dark:font-bold">
           {quantity}
         </span>
       )}
@@ -42,7 +42,7 @@ const QuantitySelector: React.FC<Props> = ({
         onClick={() => { if (quantity < stock && !disabled) onInc(); }}
         aria-label={t("add")}
         disabled={quantity >= stock || disabled}
-        className="w-9 h-9 rounded-full bg-gray-800 text-white hover:bg-gray-900 disabled:opacity-50 shadow-md dark:bg-[#292848] dark:hover:bg-[#FFD70055] dark:text-[#FFD700] dark:disabled:bg-[#23233699] transition-all"
+        className="w-9 h-9 rounded-full bg-ssblue-primary text-ssblue-onblue hover:bg-ssblue-secondary disabled:opacity-50 shadow-sm dark:bg-ssblue-secondary dark:hover:bg-ssblue-accent dark:disabled:bg-ssblue-primary/50 transition-all"
         tabIndex={0}
         type="button"
       >
