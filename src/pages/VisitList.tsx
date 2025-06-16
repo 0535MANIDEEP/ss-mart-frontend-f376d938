@@ -34,11 +34,13 @@ const VisitList = () => {
           <p className="text-ssblue-primary/70 dark:text-ssblue-onblue/70 mb-8 text-lg">
             Start adding items to create your visit list
           </p>
-          <Link to="/">
+          <div className="flex justify-center">
+           <Link to="/">
             <Button className="bg-ssblue-primary hover:bg-ssblue-secondary text-ssblue-onblue px-8 py-3 text-lg font-semibold">
-              {t("browseReserveNow") || "Browse & Reserve Now"}
+             {t("browseReserveNow") || "Browse & Reserve Now"}
             </Button>
-          </Link>
+           </Link>
+          </div>
         </div>
       </div>
     );
