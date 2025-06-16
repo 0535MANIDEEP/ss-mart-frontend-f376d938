@@ -21,13 +21,19 @@ export default function ProductImage({
   else if (size === "large") sizeCls = "w-full h-64";
   else sizeCls = "w-full h-40";
 
+  const imageUrl = src || fallback;
+
   return (
     <img
-      src={src || fallback}
+      src={imageUrl}
       alt={alt}
       loading="lazy"
-      className={`object-cover bg-gradient-to-b from-lux-gold/40 to-gray-200/10 shadow rounded ${sizeCls} ${className}`}
-      onError={e => (e.currentTarget.src = fallback)}
+      className={`object-cover bg-gradient-to-b from-ssblue-accent/20 to-ssblue-card/10 shadow rounded ${sizeCls} ${className}`}
+      onError={e => {
+        if (e.currentTarget.src !== fallback) {
+          e.currentTarget.src = fallback;
+        }
+      }}
       tabIndex={0}
       aria-label={alt}
     />
