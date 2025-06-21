@@ -24,6 +24,15 @@ export default defineConfig(({ mode }) => ({
   build: {
     rollupOptions: {
       external: ['jspdf-autotable'],
-    }
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['framer-motion', 'lucide-react']
+        }
+      }
+    },
+    cssCodeSplit: false,
+    chunkSizeWarningLimit: 1000
   }
 }));
