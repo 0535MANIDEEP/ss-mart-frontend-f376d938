@@ -206,7 +206,7 @@ export default function Navbar() {
         >
           {/* Close Button */}
           <button
-            className="absolute top-3 right-4 text-3xl font-bold text-ssblue-primary dark:text-ssblue-onblue hover:text-red-500 focus:outline focus:ring-2 focus:ring-red-400"
+            className="absolute top-3 right-4 text-3xl font-bold text-gray-800 dark:text-ssblue-onblue hover:text-red-500 focus:outline focus:ring-2 focus:ring-red-400"
             aria-label="Close menu"
             onClick={() => setMenuOpen(false)}
             tabIndex={0}
@@ -218,7 +218,7 @@ export default function Navbar() {
           <div className="mb-3 flex items-center justify-start">
             <Link
               to={ROUTES.ROOT}
-              className="text-xl font-black tracking-wide flex items-center gap-2 text-ssblue-primary dark:text-ssblue-onblue pl-1"
+              className="text-xl font-black tracking-wide flex items-center gap-2 text-gray-800 dark:text-ssblue-onblue pl-1"
               onClick={() => setMenuOpen(false)}
             >
               {t("brand")}
@@ -236,10 +236,10 @@ export default function Navbar() {
                   className={clsx(
                     "nav-link",
                     "flex items-center px-3 py-2 min-h-[44px] rounded-xl text-base font-semibold transition-colors",
-                    "hover:bg-ssblue-primary/10 dark:hover:bg-ssblue-accent/10",
-                    "focus:bg-ssblue-primary/20 dark:focus:bg-ssblue-accent/20",
+                    "hover:bg-gray-100 dark:hover:bg-ssblue-accent/10",
+                    "focus:bg-gray-200 dark:focus:bg-ssblue-accent/20",
                     "active:ring-2 active:ring-ssblue-accent/50",
-                    "text-ssblue-primary dark:text-ssblue-accent"
+                    "text-gray-800 dark:text-ssblue-accent"
                   )}
                   onClick={() => setMenuOpen(false)}
                   tabIndex={0}
@@ -263,7 +263,7 @@ export default function Navbar() {
             >
               <Button
                 variant="outline"
-                className="text-xs w-full border-ssblue-secondary hover:border-ssblue-primary text-ssblue-primary dark:border-ssblue-accent dark:text-ssblue-accent dark:hover:border-ssblue-accent"
+                className="text-xs w-full border-gray-300 hover:border-gray-400 text-gray-800 hover:bg-gray-50 dark:border-ssblue-accent dark:text-ssblue-accent dark:hover:border-ssblue-accent dark:hover:bg-ssblue-accent/10"
                 style={{
                   fontWeight: 600,
                   letterSpacing: "0.01em",
@@ -280,7 +280,7 @@ export default function Navbar() {
           </div>
           
           {/* Mobile Auth */}
-          <div className="sticky bottom-0 pb-1 bg-white dark:bg-ssblue-primary border-t border-ssblue-secondary/30">
+          <div className="sticky bottom-0 pb-1 bg-white dark:bg-ssblue-primary border-t border-gray-200 dark:border-ssblue-secondary/30">
             <AuthButtons
               onLogin={() => {
                 setAuthModal("login");
